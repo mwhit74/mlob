@@ -1,0 +1,3 @@
+http://engineering.stackexchange.com/questions/8650/general-solution-for-the-most-critical-pattern-of-live-loading
+https://en.wikipedia.org/wiki/Influence_line
+https://en.wikipedia.org/wiki/Betti%27s_theorem
