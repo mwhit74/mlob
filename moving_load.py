@@ -21,6 +21,10 @@ def main(axle_num, axle_config, axle_wt, span_length, num_nodes, nodes, steps):
             if Mc > maxM:
                 maxM = Mc
             '''
+
+        V.append(maxV)
+        M.append(maxM)
+
             
             
             
@@ -60,11 +64,7 @@ def load_to_right_and_loc(cur_axle_config, axle_wts, x):
     return Pl, xl
         
         
-        
-        
-        
-        
-        
+                
 if __name__ = "__main__":
     #input
     axle_num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
