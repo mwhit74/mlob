@@ -6,8 +6,8 @@ def main(axle_num, axle_config, axle_wt, span_length, num_nodes, nodes, steps):
     for x in nodes:
         maxV = 0.0
         maxM = 0.0
-        for y1 in steps:
-            cur_axle_config = move_axle_config(y1, axle_config)
+        for axle_id in axle_num:
+            cur_axle_config = move_axle_config(x, axle_id, axle_config)
             Pt, xt = total_load_and_loc(cur_axle_config, axle_wts)
             Pl, xl = load_to_right_and_loc(cur_axle_config, axle_wts, x)
             
