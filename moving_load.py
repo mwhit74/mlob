@@ -1,73 +1,100 @@
 
 
-def main(num_axles, axle_num, axle_config, axle_wt, span_length, num_nodes):
+def main(num_axles, axle_num, axle_spacing, axle_wt, span_length, num_nodes):
     V = []
     M = []
     dx = span_length/num_nodes
     x = 0 
+    #makes updating the location of the axle easier
+    abs_axle_spacing = get_abs_axle_spacing(axle_spacing)
     while x <= span_length:
         maxV = 0.0
         maxM = 0.0
-        print x
-        prev_axle_config = axle_config
+        prev_axle_loc = []
         for axle_id in axle_num:
-            print axle_id
-            cur_axle_config = move_axle_config(x, prev_axle_config, num_axles)
-            print cur_axle_config
-            #Pt, xt = total_load_and_loc(cur_axle_config, axle_wts)
-            #Pl, xl = load_to_right_and_loc(cur_axle_config, axle_wts, x)
-            ''' 
+            #calc current location of all axles on span with the axle_id axle over the current node
+            cur_axle_loc = move_axle_loc(x, abs_axle_spacing, axle_id, prev_axle_loc, num_axles)
+            Pt, xt = total_load_and_loc(cur_axle_loc, axle_wt, span_length)
+            Pl, xl = load_to_right_and_loc(cur_axle_loc, axle_wt, x, span_length)
+             
             Vc = Pt*(xt/span_length) - Pl
             if Vc > maxV:
                 maxV = Vc
                 
-            
+            '''
             #not sure what 'a' is yet
             Mc = Pt*(xt/span_length)*a - Pl*xl
             if Mc > maxM:
                 maxM = Mc
             '''
-            prev_axle_config = cur_axle_config
+            prev_axle_loc = cur_axle_loc
         x = x + dx
 
-        #V.append(maxV)
+        V.append(maxV)
         #M.append(maxM)
+    
+    print V 
 
+def get_abs_axle_spacing(axle_spacing):
+    #first axle location is at 0.00
+    abs_axle_spacing = [0.00]
+
+    loc = 0.00 #initialize
+
+    for spacing in axle_spacing:
+        loc = loc + spacing 
+        abs_axle_spacing.append(loc)
+
+    return abs_axle_spacing           
             
-            
-            
-def move_axle_config(x, prev_axle_config, num_axles):
-    cur_axle_config = []
+#updating the location of each axle             
+def move_axle_loc(x, abs_axle_spacing, axle_id, prev_axle_loc, num_axles):
+    cur_axle_loc = []
     
     for i in range(num_axles):
-        axle_loc = x + prev_axle_config[i]
-        cur_axle_config.append(axle_loc)
-        
-    return cur_axle_config
+        if axle_id == 1 and i == 0:
+            #sets the initial locaction of the first axle
+            axle_loc = x
+        elif axle_id == 1 and i > 0:
+            #sets the intial location of all subsequent axles
+            axle_loc = x - abs_axle_spacing[i]
+        else:
+            axle_loc = prev_axle_loc[i] + abs_axle_spacing[axle_id-1] 
+        cur_axle_loc.append(axle_loc)
+
+    return cur_axle_loc
     
-def total_load_and_loc(cur_axle_config, axle_wts):
+def total_load_and_loc(cur_axle_loc, axle_wt, span_length):
     Pt = 0.0
     xt = 0.0
+    sum_Px = 0.0
     
-    for i in range(len(cur_axle_config)):
-        if cur_axle_config[i] >= 0:
-            Pt = Pt + axle_wts[i]
-            sum_Px = cur_axle_config[i]*axle_wts[i]
-            
-    xt = sum_Px/Pt
+    for i in range(len(cur_axle_loc)):
+        if cur_axle_loc[i] >= 0 and cur_axle_loc[i] < span_length:
+            Pt = Pt + axle_wt[i]
+            sum_Px = sum_Px + cur_axle_loc[i]*axle_wt[i]
+
+    if Pt == 0:
+        xt = 0
+    else:        
+        xt = sum_Px/Pt
     
     return Pt, xt
     
-def load_to_right_and_loc(cur_axle_config, axle_wts, x):
+def load_to_right_and_loc(cur_axle_loc, axle_wts, x, span_length):
     Pl = 0.0
     xl = 0.0
+    sum_Px = 0.0
     
-    for i in range(len(cur_axle_config)):
-        if cur_axle_config[i] >= x:
+    for i in range(len(cur_axle_loc)):
+        if cur_axle_loc[i] >= x and x < span_length:
             Pl = Pl + axle_wts[i]
-            sum_Px = cur_axle_config[i]*axle_wts[i]
-            
-    xl = sum_Px/Pl
+            sum_Px = sum_Px + cur_axle_loc[i]*axle_wts[i]
+    
+    if Pl == 0:
+        xl = 0
+    else:        
+        xl = sum_Px/Pl
     
     return Pl, xl
 
@@ -83,15 +110,16 @@ def get_axle_num(num_axles):
                 
 if __name__ == "__main__":
     #input
-    #axle spacing must always start at 0.0, the spacing from axle 0 to axle 0 is 0.0
-    axle_config = [0.00, 8.00, 13.00, 18.00, 23.00, 32.00, 37.00, 43.00, 48.00, 56.00, 64.00, 69.00, 74.00, 79.00, 88.00, 93.00, 99.00, 104.00]
-    axle_wt = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
-    num_axles = len(axle_config)
+    #axle_spacing = [8.00, 13.00, 18.00, 23.00, 32.00, 37.00, 43.00, 48.00, 56.00, 64.00, 69.00, 74.00, 79.00, 88.00, 93.00, 99.00, 104.00]
+    #axle_wt = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
+    axle_spacing = [3.00, 2.00]
+    axle_wt = [13.0, 10.0, 5.00]
+    num_axles = len(axle_wt)
     axle_num = get_axle_num(num_axles)
-    span_length = 60.0
-    num_nodes = 20.0
+    span_length = 20.0
+    num_nodes = 19.0 
     
-    main(num_axles, axle_num, axle_config, axle_wt, span_length, num_nodes)
+    main(num_axles, axle_num, axle_spacing, axle_wt, span_length, num_nodes)
     
 
 
