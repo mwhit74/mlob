@@ -11,13 +11,14 @@ def main(num_axles, axle_num, axle_spacing, axle_wt, span_length, num_nodes):
         maxV = 0.0
         maxM = 0.0
         prev_axle_loc = []
+        print "x: " + str(x)
         for axle_id in axle_num:
             #calc current location of all axles on span with the axle_id axle over the current node
             cur_axle_loc = move_axle_loc(x, abs_axle_spacing, axle_id, prev_axle_loc, num_axles)
-            Pt, xt = total_load_and_loc(cur_axle_loc, axle_wt, span_length)
-            Pl, xl = load_to_right_and_loc(cur_axle_loc, axle_wt, x, span_length)
+            Pt, xt = total_load_and_loc(cur_axle_loc, axle_wt, span_length, num_axles)
+            Pr, xr = load_to_right_and_loc(cur_axle_loc, axle_wt, x, span_length, num_axles)
              
-            Vc = Pt*(xt/span_length) - Pl
+            Vc = Pt*(xt/span_length) - Pr
             if Vc > maxV:
                 maxV = Vc
                 
@@ -64,13 +65,13 @@ def move_axle_loc(x, abs_axle_spacing, axle_id, prev_axle_loc, num_axles):
 
     return cur_axle_loc
     
-def total_load_and_loc(cur_axle_loc, axle_wt, span_length):
+def total_load_and_loc(cur_axle_loc, axle_wt, span_length, num_axles):
     Pt = 0.0
     xt = 0.0
     sum_Px = 0.0
     
-    for i in range(len(cur_axle_loc)):
-        if cur_axle_loc[i] >= 0 and cur_axle_loc[i] < span_length:
+    for i in range(num_axles):
+        if cur_axle_loc[i] >= 0 and cur_axle_loc[i] <= span_length:
             Pt = Pt + axle_wt[i]
             sum_Px = sum_Px + cur_axle_loc[i]*axle_wt[i]
 
@@ -78,25 +79,28 @@ def total_load_and_loc(cur_axle_loc, axle_wt, span_length):
         xt = 0
     else:        
         xt = sum_Px/Pt
-    
+
     return Pt, xt
     
-def load_to_right_and_loc(cur_axle_loc, axle_wts, x, span_length):
-    Pl = 0.0
-    xl = 0.0
+def load_to_right_and_loc(cur_axle_loc, axle_wts, x, span_length, num_axles):
+    Pr = 0.0
+    xr = 0.0
     sum_Px = 0.0
     
-    for i in range(len(cur_axle_loc)):
-        if cur_axle_loc[i] >= x and x < span_length:
-            Pl = Pl + axle_wts[i]
+    for i in range(num_axles):
+        if cur_axle_loc[i] >= x and cur_axle_loc[i] <= span_length:
+            Pr = Pr + axle_wts[i]
             sum_Px = sum_Px + cur_axle_loc[i]*axle_wts[i]
     
-    if Pl == 0:
-        xl = 0
+    if Pr == 0:
+        xr = 0
     else:        
-        xl = sum_Px/Pl
+        xr = sum_Px/Pr
+
+    print "Pr: " + str(Pr)
+    print "xr: " + str(xr)
     
-    return Pl, xl
+    return Pr, xr
 
 def get_axle_num(num_axles):
     axle_num = []
@@ -117,7 +121,7 @@ if __name__ == "__main__":
     num_axles = len(axle_wt)
     axle_num = get_axle_num(num_axles)
     span_length = 20.0
-    num_nodes = 19.0 
+    num_nodes = 20.0 
     
     main(num_axles, axle_num, axle_spacing, axle_wt, span_length, num_nodes)
     
