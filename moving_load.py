@@ -15,6 +15,7 @@ def main(num_axles, axle_num, axle_spacing, axle_wt, span_length, num_nodes):
         for axle_id in axle_num:
             #calc current location of all axles on span with the axle_id axle over the current node
             cur_axle_loc = move_axle_loc(x, abs_axle_spacing, axle_id, prev_axle_loc, num_axles)
+            print cur_axle_loc
             Pt, xt = total_load_and_loc(cur_axle_loc, axle_wt, span_length, num_axles)
             Pr, xr = load_to_right_and_loc(cur_axle_loc, axle_wt, x, span_length, num_axles)
              
