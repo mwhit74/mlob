@@ -29,8 +29,8 @@ def main(num_axles, axle_num, axle_spacing, axle_wt, span_length, num_nodes):
             Ra = Pt*((span_length-xt)/span_length)
             Rb = Pt*(xt/span_length)
             
-            Va =  
-            Vb = Ra - Pl
+            #Va =  
+            Vc = Ra - Pl
             print "Vc: " + str(Vc)
             if Vc < 0:
                 if Vc < minV:
