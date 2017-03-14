@@ -1,7 +1,7 @@
 
 
 def run_load_left_to_right(axle_spacing, axle_wt,
-        span_length, num_nodes, spacing_to_trailing_load, distributed_load):
+        span_length, num_nodes, space_to_trailing_load, distributed_load):
     V_max = []
     V_min = []
     M = []
@@ -24,9 +24,7 @@ def run_load_left_to_right(axle_spacing, axle_wt,
             #calc current location of all axles on span with the axle_id axle over the current node
             cur_axle_loc = move_axle_loc(x, axle_spacing, abs_axle_location, axle_id, prev_axle_loc, num_axles)
 
-            Pt, xt = total_load_and_loc(cur_axle_loc, axle_wt, span_length, num_axles)
-            Pl, xl = load_to_left_and_loc(cur_axle_loc, axle_wt, x, span_length, num_axles)
-            Pr, xr = load_to_right_and_loc(cur_axle_loc, axle_wt, x, span_length, num_axles)
+            Pt, xt, Pl, xl, Pr, xr = load_and_loc(cur_axle_loc, axle_wt, x, span_length, num_axles)
 
 
             Ra = Pt*((span_length-xt)/span_length)
@@ -67,6 +65,15 @@ def run_load_left_to_right(axle_spacing, axle_wt,
     print min(V_min)/2
     print max(M)/2
 
+def get_axle_num(num_axles):
+    axle_num = []
+
+    for i in range(num_axles):
+        axle_num.append(i+1)
+
+    return axle_num
+
+
 def get_abs_axle_location(axle_spacing):
     abs_axle_location = []
 
@@ -96,68 +103,55 @@ def move_axle_loc(x, axle_spacing, abs_axle_location, axle_id, prev_axle_loc, nu
 
     return cur_axle_loc
     
-def total_load_and_loc(cur_axle_loc, axle_wt, span_length, num_axles):
+def load_and_loc(cur_axle_loc, axle_wt, x, span_length, num_axles):
     Pt = 0.0
     xt = 0.0
-    sum_Px = 0.0
+    sum_Ptx = 0.0
+
+    Pl = 0.0
+    xl = 0.0
+    sum_Plx = 0.0
+
+    Pr = 0.0
+    xr = 0.0
+    sum_Prx = 0.0
+
     
     for i in range(num_axles):
         if cur_axle_loc[i] >= 0 and cur_axle_loc[i] <= span_length:
             Pt = Pt + axle_wt[i]
-            sum_Px = sum_Px + cur_axle_loc[i]*axle_wt[i]
+            sum_Ptx = sum_Ptx + cur_axle_loc[i]*axle_wt[i]
+
+        if cur_axle_loc[i] >= 0.0 and cur_axle_loc[i] <= x:
+            Pl = Pl + axle_wt[i]
+            sum_Plx = sum_Plx + cur_axle_loc[i]*axle_wt[i]
+
+        if cur_axle_loc[i] >= x and cur_axle_loc[i] <= span_length:
+            Pr = Pr + axle_wt[i]
+            sum_Prx = sum_Prx + cur_axle_loc[i]*axle_wt[i]
+
+
     
     #avoid divide by zero error
     if Pt == 0:
         xt = 0
     else:        
-        xt = sum_Px/Pt
+        xt = sum_Ptx/Pt
 
-    return Pt, xt
-    
-def load_to_left_and_loc(cur_axle_loc, axle_wts, x, span_length, num_axles):
-    Pl = 0.0
-    xl = 0.0
-    sum_Px = 0.0
-    
-    for i in range(num_axles):
-        if cur_axle_loc[i] >= 0.0 and cur_axle_loc[i] <= x:
-            Pl = Pl + axle_wts[i]
-            sum_Px = sum_Px + cur_axle_loc[i]*axle_wts[i]
-
-    #avoid divide by zero error
     if Pl == 0:
         xl = 0
     else:        
-        xl = sum_Px/Pl
+        xl = sum_Plx/Pl
 
-    return Pl, xl
-
-def load_to_right_and_loc(cur_axle_loc, axle_wts, x, span_length, num_axles):
-    Pr = 0.0
-    xr = 0.0
-    sum_Px = 0.0
-    
-    for i in range(num_axles):
-        if cur_axle_loc[i] >= x and cur_axle_loc[i] <= span_length:
-            Pr = Pr + axle_wts[i]
-            sum_Px = sum_Px + cur_axle_loc[i]*axle_wts[i]
-    
-    #avoid divide by zero error
     if Pr == 0:
         xr = 0
     else:        
-        xr = sum_Px/Pr
+        xr = sum_Prx/Pr
 
-    return Pr, xr
 
-def get_axle_num(num_axles):
-    axle_num = []
 
-    for i in range(num_axles):
-        axle_num.append(i+1)
-
-    return axle_num
-
+    return Pt, xt, Pl, xl, Pr, xr
+    
 def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
         distributed_load, span_length):
 
@@ -165,16 +159,16 @@ def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
     #each point load is the distributed load times the point load spacing
     #the point load spacing is a function of the span lenght and number of
     #divisions required
+    
 
-    dist_load_division = 1000.0
-
-    pt_load_spacing = span_length/dist_load_division
+    pt_load_spacing = 0.5
+    num_loads = int(span_length/pt_load_spacing)
     equivalent_pt_load = distributed_load*pt_load_spacing
 
     axle_spacing.append(space_to_trailing_load)
     axle_wt.append(equivalent_pt_load)
 
-    for x in range(int(dist_load_division)):
+    for x in range(num_loads):
         axle_spacing.append(pt_load_spacing)
         axle_wt.append(equivalent_pt_load)
 
@@ -191,20 +185,11 @@ if __name__ == "__main__":
     #axle_spacing = []
     #axle_wt = [1.0]
     span_length = 189.0
-    num_nodes = 100.0 
-    
+    num_nodes = 20.0
+
     run_load_left_to_right(axle_spacing, axle_wt,
-            span_length, num_nodes, space_to_trailing_load, distributed_load)
+        span_length, num_nodes, space_to_trailing_load, distributed_load)
     
-
-
-
-
-
-
-
-
-
 
 '''
 class Axle():
