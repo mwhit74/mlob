@@ -1,14 +1,19 @@
 
 
-def main(num_axles, axle_num, axle_spacing, axle_wt, span_length, num_nodes):
+def run_load_left_to_right(axle_spacing, axle_wt,
+        span_length, num_nodes, spacing_to_trailing_load, distributed_load):
     V_max = []
     V_min = []
     M = []
     dx = span_length/num_nodes
-    x = 0 
+    x = 0
+    add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
+        distributed_load, span_length)
     #makes updating the location of the axle easier
     axle_spacing.insert(0, 0.0) #insert a dummy spacing for the first axle
     abs_axle_location = get_abs_axle_location(axle_spacing)
+    num_axles = len(axle_wt)
+    axle_num = get_axle_num(num_axles)
 
     while x <= span_length:
         maxV = 0.0
@@ -152,6 +157,28 @@ def get_axle_num(num_axles):
         axle_num.append(i+1)
 
     return axle_num
+
+def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
+        distributed_load, span_length):
+
+    #approximate a distributed trailing load as closely spaced point loads
+    #each point load is the distributed load times the point load spacing
+    #the point load spacing is a function of the span lenght and number of
+    #divisions required
+
+    dist_load_division = 1000.0
+
+    pt_load_spacing = span_length/dist_load_division
+    equivalent_pt_load = distributed_load*pt_load_spacing
+
+    axle_spacing.append(space_to_trailing_load)
+    axle_wt.append(equivalent_pt_load)
+
+    for x in range(int(dist_load_division)):
+        axle_spacing.append(pt_load_spacing)
+        axle_wt.append(equivalent_pt_load)
+
+    
         
         
                 
@@ -159,14 +186,15 @@ if __name__ == "__main__":
     #input
     axle_spacing = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00]
     axle_wt = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
+    space_to_trailing_load = 5.00
+    distributed_load = 8.00
     #axle_spacing = []
     #axle_wt = [1.0]
-    num_axles = len(axle_wt)
-    axle_num = get_axle_num(num_axles)
     span_length = 189.0
-    num_nodes = 20.0 
+    num_nodes = 100.0 
     
-    main(num_axles, axle_num, axle_spacing, axle_wt, span_length, num_nodes)
+    run_load_left_to_right(axle_spacing, axle_wt,
+            span_length, num_nodes, space_to_trailing_load, distributed_load)
     
 
 
