@@ -58,9 +58,9 @@ def main(num_axles, axle_num, axle_spacing, axle_wt, span_length, num_nodes):
         V_min.append(minV)
         M.append(maxM)
     
-    print max(V_max)
-    print min(V_min)
-    print max(M)
+    print max(V_max)/2
+    print min(V_min)/2
+    print max(M)/2
 
 def get_abs_axle_location(axle_spacing):
     abs_axle_location = []
@@ -163,8 +163,8 @@ if __name__ == "__main__":
     #axle_wt = [1.0]
     num_axles = len(axle_wt)
     axle_num = get_axle_num(num_axles)
-    span_length = 20.0
-    num_nodes = 100.0 
+    span_length = 189.0
+    num_nodes = 20.0 
     
     main(num_axles, axle_num, axle_spacing, axle_wt, span_length, num_nodes)
     
