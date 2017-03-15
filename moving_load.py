@@ -66,6 +66,7 @@ def run_load_left_to_right(axle_spacing, axle_wt,
     print max(M)/2
 
 def get_axle_num(num_axles):
+    """Numbers the axles starting with 0."""
     axle_num = []
 
     for i in range(num_axles):
@@ -75,6 +76,8 @@ def get_axle_num(num_axles):
 
 
 def get_abs_axle_location(axle_spacing):
+    """Calculates the absolute location of the axles, left support is the
+    origin."""
     abs_axle_location = []
 
     loc = 0.00 #initialize
@@ -87,6 +90,8 @@ def get_abs_axle_location(axle_spacing):
 
 #updating the location of each axle             
 def move_axle_loc(x, axle_spacing, abs_axle_location, axle_id, prev_axle_loc, num_axles):
+    """Steps the axles across the span placing each axle at each node (critical
+    section."""
     cur_axle_loc = []
     
     for i in range(num_axles):
@@ -104,6 +109,9 @@ def move_axle_loc(x, axle_spacing, abs_axle_location, axle_id, prev_axle_loc, nu
     return cur_axle_loc
     
 def load_and_loc(cur_axle_loc, axle_wt, x, span_length, num_axles):
+    """Calculates the total load and its location on the span, and the load and
+    its location to the left and right of the node (critical section)."""
+
     Pt = 0.0
     xt = 0.0
     sum_Ptx = 0.0
@@ -154,6 +162,8 @@ def load_and_loc(cur_axle_loc, axle_wt, x, span_length, num_axles):
     
 def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
         distributed_load, span_length):
+    """Approximates the distributed trailing load as closely spaced point
+    loads."""
 
     #approximate a distributed trailing load as closely spaced point loads
     #each point load is the distributed load times the point load spacing
