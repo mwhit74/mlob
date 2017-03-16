@@ -15,110 +15,115 @@ def run_load_left_to_right(axle_spacing, axle_wt, span_length1, span_length2,
     span2_begin = span_length1
     span2_end = span_length1 + span_length2
 
-    node_loc = node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes)
+    node_loc_ltr = node_location(span1_begin, span1_end, span2_begin,
+                                 span2_end, num_nodes)
+    node_loc_rtl = reversed(node_loc_ltr)
 
     add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
-        distributed_load, span1_begin, span2_end)
-    #makes updating the location of the axle easier
+                      distributed_load, span1_begin, span2_end)
     axle_spacing.insert(0, 0.0) #insert a dummy spacing for the first axle
-    abs_axle_location = get_abs_axle_location(axle_spacing)
     num_axles = len(axle_wt)
     axle_num = get_axle_num(num_axles)
     
-    for x in node_loc: 
-        Vmax1 = 0.0
-        Vmin1 = 0.0
-        Mmax1 = 0.0
-        Vmax2 = 0.0
-        Vmin2 = 0.0
-        Mmax2 = 0.0
-        Rmax_pier = 0.0
-        prev_axle_loc = []
-    
-        #print "x: " + str(x)
-        for axle_id in axle_num:
-            #print "axle_id: " + str(axle_id)
-            #calc current location of all axles on span with the
-            #axle_id axle over the current node
-            cur_axle_loc = move_axle_loc(x, axle_spacing,
-                                         abs_axle_location, axle_id,
-                                         prev_axle_loc, num_axles)
-            #print cur_axle_loc
-    
-            prev_axle_loc = cur_axle_loc
-    
-            Pt1, xt1, Pl1, xl1, Pr1, xr1 = calc_load_and_loc(cur_axle_loc,
-                       axle_wt, x, span1_begin, span1_end, num_axles)
-               
-            Pt2, xt2, Pl2, xl2, Pr2, xr2 = calc_load_and_loc(cur_axle_loc,
-                    axle_wt, x, span2_begin, span2_end, num_axles)
-            
-            Rpier = calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin,
-                                       span1_end, span2_begin, span2_end)
-            
-            Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier)
-            
-    
-    
-            if x >= span1_begin and x <= span1_end:
-    
-                Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end) 
+    for node_loc,direction in zip([node_loc_ltr, node_loc_rtl], ["ltr", "rtl"]):
+
+        if direction == "ltr":
+            start_pt = span1_begin
+        elif direction == "rtl":
+            start_pt = span2_end
+        abs_axle_location = get_abs_axle_location(axle_spacing, start_pt)
+
+        for x in node_loc: 
+            Vmax1 = 0.0
+            Vmin1 = 0.0
+            Mmax1 = 0.0
+            Vmax2 = 0.0
+            Vmin2 = 0.0
+            Mmax2 = 0.0
+            Rmax_pier = 0.0
+            prev_axle_loc = []
+        
+            #print "x: " + str(x)
+            for axle_id in axle_num:
+                #print "axle_id: " + str(axle_id)
+                cur_axle_loc = move_axle_loc(x, axle_spacing,
+                                             abs_axle_location, axle_id,
+                                             prev_axle_loc, num_axles, direction)
+                prev_axle_loc = cur_axle_loc
+                #print cur_axle_loc
+        
+                Pt1, xt1, Pl1, xl1, Pr1, xr1 = calc_load_and_loc(cur_axle_loc,
+                           axle_wt, x, span1_begin, span1_end, num_axles)
+                   
+                Pt2, xt2, Pl2, xl2, Pr2, xr2 = calc_load_and_loc(cur_axle_loc,
+                        axle_wt, x, span2_begin, span2_end, num_axles)
                 
-                Vb1, Ve1 = calc_shear(Rb1, Re1, Pr1, Pl1)
+                Rpier = calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin,
+                                           span1_end, span2_begin, span2_end)
                 
-                Vmax1, Vmin1 = envelope_shear(Vmax1, Vmin1, Vb1, Ve1)
+                Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier)
                 
-                M1 = calc_moment(x, xl1, span1_begin, Rb1, Pl1)
+        
+        
+                if x >= span1_begin and x <= span1_end:
+        
+                    Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end) 
+                    
+                    Vb1, Ve1 = calc_shear(Rb1, Re1, Pr1, Pl1)
+                    
+                    Vmax1, Vmin1 = envelope_shear(Vmax1, Vmin1, Vb1, Ve1)
+                    
+                    M1 = calc_moment(x, xl1, span1_begin, Rb1, Pl1)
+                    
+                    Mmax1 = envelope_moment(Mmax1, M1)
+        
+                    V_max1.append(Vmax1)
+                    V_min1.append(Vmin1)
+                    M_max1.append(Mmax1)
+                    
+        
+        
+                if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
+        
+                    Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end)
+        
+                    Vb2, Ve2 = calc_shear(Rb2, Re2, Pr2, Pl2)
+        
+                    Vmax2, Vmin2 = envelope_shear(Vmax2, Vmin2, Vb2, Ve2)
+        
+                    M2 = calc_moment(x, xl2, span2_begin, Rb2, Pl2)
+        
+                    Mmax2 = envelope_moment(Mmax2, M2)
+        
+                    V_max2.append(Vmax2)
+                    V_min2.append(Vmin2)
+                    M_max2.append(Mmax2)
+                    
+        
+                    #print "Pt2: " + str(Pt2)
+                    #print "xt2: " + str(xt2)
+                    #print "Pl2: " + str(Pl2)
+                    #print "xl2: " + str(xl2)
+                    #print "Pr2: " + str(Pr2)
+                    #print "xr2: " + str(xr2)
+                    #print "Rb2: " + str(Rb2)
+                    #print "Re2: " + str(Re2)
+                    #print "Vb2: " + str(Vb2)
+                    #print "Ve2: " + str(Ve2)
+                    #print "Vmax2: " + str(Vmax2)
+                    #print "Vmin2: " + str(Vmin2)
+                    #print "M2: " + str(M2)
+                    
+                """
+                #print Pt1, xt1, Pl1, xl1, Pr1, xr1
+                #print Rb1, Re1
+                #print Vb1, Ve1
+                #print Vmax1, Vmin1
+                """
                 
-                Mmax1 = envelope_moment(Mmax1, M1)
-    
-                V_max1.append(Vmax1)
-                V_min1.append(Vmin1)
-                M_max1.append(Mmax1)
                 
-    
-    
-            if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
-    
-                Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end)
-    
-                Vb2, Ve2 = calc_shear(Rb2, Re2, Pr2, Pl2)
-    
-                Vmax2, Vmin2 = envelope_shear(Vmax2, Vmin2, Vb2, Ve2)
-    
-                M2 = calc_moment(x, xl2, span2_begin, Rb2, Pl2)
-    
-                Mmax2 = envelope_moment(Mmax2, M2)
-    
-                V_max2.append(Vmax2)
-                V_min2.append(Vmin2)
-                M_max2.append(Mmax2)
+                #stop = raw_input(">")
                 
-    
-                #print "Pt2: " + str(Pt2)
-                #print "xt2: " + str(xt2)
-                #print "Pl2: " + str(Pl2)
-                #print "xl2: " + str(xl2)
-                #print "Pr2: " + str(Pr2)
-                #print "xr2: " + str(xr2)
-                #print "Rb2: " + str(Rb2)
-                #print "Re2: " + str(Re2)
-                #print "Vb2: " + str(Vb2)
-                #print "Ve2: " + str(Ve2)
-                #print "Vmax2: " + str(Vmax2)
-                #print "Vmin2: " + str(Vmin2)
-                #print "M2: " + str(M2)
-                
-            """
-            #print Pt1, xt1, Pl1, xl1, Pr1, xr1
-            #print Rb1, Re1
-            #print Vb1, Ve1
-            #print Vmax1, Vmin1
-            """
-            
-            
-            #stop = raw_input(">")
-            
     
     
     output(V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier)
@@ -217,12 +222,12 @@ def get_axle_num(num_axles):
     return axle_num
 
 
-def get_abs_axle_location(axle_spacing):
+def get_abs_axle_location(axle_spacing, start_pt):
     """Calculates the absolute location of the axles, left support is the
     origin."""
     abs_axle_location = []
 
-    loc = 0.00 #initialize
+    loc = start_pt #initialize
 
     for spacing in axle_spacing:
         loc = loc + spacing 
@@ -230,20 +235,30 @@ def get_abs_axle_location(axle_spacing):
 
     return abs_axle_location          
 
-#updating the location of each axle             
-def move_axle_loc(x, axle_spacing, abs_axle_location, axle_id, prev_axle_loc, num_axles):
+def move_axle_loc(x, axle_spacing, abs_axle_location, axle_id, prev_axle_loc,
+                  num_axles, direction):
     """Steps the axles across the span placing each axle at each node."""
+    #calc current location of all axles on span with the
+    #axle_id axle over the current node
+
     cur_axle_loc = []
     
     for i in range(num_axles):
         if axle_id == 1 and i == 0:
             #sets the initial locaction of the first axle
             axle_loc = x
-        elif axle_id == 1 and i > 0:
-            #sets the intial location of all subsequent axles
+        elif axle_id == 1 and i > 0 and direction == "ltr":
+            #sets the intial location of all subsequent axles for moving left to
+            #right
             axle_loc = x - abs_axle_location[i]
-        else:
+        elif axle_id == 1 and i > 0 and direction == "rtl":
+            #sets the intial location of all subsequent axles for moving right
+            #to left
+            axle_loc = x + abs_axle_location[i]
+        elif axle_id > 1 and direction == "ltr":
             axle_loc = prev_axle_loc[i] + axle_spacing[axle_id-1] 
+        elif axle_id > 1 and direction == "rtl":
+            axle_loc = prev_axle_loc[i] - axle_spacing[axle_id-1]
 
         cur_axle_loc.append(axle_loc)
 
@@ -357,8 +372,8 @@ if __name__ == "__main__":
     distributed_load = 8.00
     #axle_spacing = []
     #axle_wt = [1.0]
-    span_length1 = 20.0
-    span_length2 = 20.0
+    span_length1 = 189.0
+    span_length2 = 0.0
     """
     num_nodes should always be odd to place a node at midspan and at 
     each support
