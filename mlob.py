@@ -1,8 +1,8 @@
 import pdb
 
-def run_load_left_to_right(axle_spacing, axle_wt, span_length1, span_length2,
-                           num_nodes, space_to_trailing_load,
-                           distributed_load):
+def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
+                    num_nodes, space_to_trailing_load,
+                    distributed_load):
     V_max1 = []
     V_min1 = []
     M_max1 = []
@@ -17,7 +17,7 @@ def run_load_left_to_right(axle_spacing, axle_wt, span_length1, span_length2,
 
     node_loc_ltr = node_location(span1_begin, span1_end, span2_begin,
                                  span2_end, num_nodes)
-    node_loc_rtl = reversed(node_loc_ltr)
+    node_loc_rtl = list(reversed(node_loc_ltr))
 
     add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
                       distributed_load, span1_begin, span2_end)
@@ -373,7 +373,7 @@ if __name__ == "__main__":
     #axle_spacing = []
     #axle_wt = [1.0]
     span_length1 = 189.0
-    span_length2 = 0.0
+    span_length2 = 189.0
     """
     num_nodes should always be odd to place a node at midspan and at 
     each support
@@ -381,8 +381,8 @@ if __name__ == "__main__":
     """
     num_nodes = 21
 
-    run_load_left_to_right(axle_spacing, axle_wt,
-        span_length1, span_length2, num_nodes, space_to_trailing_load, distributed_load)
+    analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
+                    space_to_trailing_load, distributed_load)
     
 
 '''
