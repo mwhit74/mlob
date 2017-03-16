@@ -1,4 +1,5 @@
 import pdb
+import timeit
 
 def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     num_nodes, space_to_trailing_load,
@@ -365,6 +366,7 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
         
                 
 if __name__ == "__main__":
+    start = timeit.default_timer()
     #input
     axle_spacing = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00]
     axle_wt = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
@@ -383,6 +385,9 @@ if __name__ == "__main__":
 
     analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
                     space_to_trailing_load, distributed_load)
+
+    stop = timeit.default_timer()
+    print stop - start
     
 
 '''
