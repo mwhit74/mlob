@@ -28,11 +28,14 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     
     for node_loc,direction in zip([node_loc_ltr, node_loc_rtl], ["ltr", "rtl"]):
 
+        pdb.set_trace()
+
         if direction == "ltr":
             start_pt = span1_begin
         elif direction == "rtl":
             start_pt = span2_end
-        abs_axle_location = get_abs_axle_location(axle_spacing, start_pt)
+        abs_axle_location = get_abs_axle_location(axle_spacing, start_pt,
+                                                  direction)
 
         for x in node_loc: 
             Vmax1 = 0.0
@@ -223,7 +226,7 @@ def get_axle_num(num_axles):
     return axle_num
 
 
-def get_abs_axle_location(axle_spacing, start_pt):
+def get_abs_axle_location(axle_spacing, start_pt, direction):
     """Calculates the absolute location of the axles, left support is the
     origin."""
     abs_axle_location = []
@@ -231,7 +234,10 @@ def get_abs_axle_location(axle_spacing, start_pt):
     loc = start_pt #initialize
 
     for spacing in axle_spacing:
-        loc = loc + spacing 
+        if direction == "ltr":
+            loc = loc - spacing
+        elif direction == "rtl":
+            loc = loc + spacing 
         abs_axle_location.append(loc)
 
     return abs_axle_location          
@@ -245,18 +251,7 @@ def move_axle_loc(x, axle_spacing, abs_axle_location, axle_id, prev_axle_loc,
     cur_axle_loc = []
     
     for i in range(num_axles):
-        if axle_id == 1 and i == 0:
-            #sets the initial locaction of the first axle
-            axle_loc = x
-        elif axle_id == 1 and i > 0 and direction == "ltr":
-            #sets the intial location of all subsequent axles for moving left to
-            #right
-            axle_loc = x - abs_axle_location[i]
-        elif axle_id == 1 and i > 0 and direction == "rtl":
-            #sets the intial location of all subsequent axles for moving right
-            #to left
-            axle_loc = x + abs_axle_location[i]
-        elif axle_id > 1 and direction == "ltr":
+        if axle_id > 1 and direction == "ltr":
             axle_loc = prev_axle_loc[i] + axle_spacing[axle_id-1] 
         elif axle_id > 1 and direction == "rtl":
             axle_loc = prev_axle_loc[i] - axle_spacing[axle_id-1]
@@ -366,6 +361,7 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
         
                 
 if __name__ == "__main__":
+    pdb.set_trace()
     start = timeit.default_timer()
     #input
     axle_spacing = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00]
@@ -374,8 +370,8 @@ if __name__ == "__main__":
     distributed_load = 8.00
     #axle_spacing = []
     #axle_wt = [1.0]
-    span_length1 = 189.0
-    span_length2 = 189.0
+    span_length1 = 20.0
+    span_length2 = 20.0
     """
     num_nodes should always be odd to place a node at midspan and at 
     each support
