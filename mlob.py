@@ -27,15 +27,13 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     axle_num = get_axle_num(num_axles)
     
     for node_loc,direction in zip([node_loc_ltr, node_loc_rtl], ["ltr", "rtl"]):
-
+        
         pdb.set_trace()
 
         if direction == "ltr":
             start_pt = span1_begin
         elif direction == "rtl":
             start_pt = span2_end
-        abs_axle_location = get_abs_axle_location(axle_spacing, start_pt,
-                                                  direction)
 
         for x in node_loc: 
             Vmax1 = 0.0
@@ -45,17 +43,18 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
             Vmin2 = 0.0
             Mmax2 = 0.0
             Rmax_pier = 0.0
-            prev_axle_loc = []
         
-            #print "x: " + str(x)
             for axle_id in axle_num:
-                #print "axle_id: " + str(axle_id)
-                cur_axle_loc = move_axle_loc(x, axle_spacing,
-                                             abs_axle_location, axle_id,
-                                             prev_axle_loc, num_axles, direction)
-                prev_axle_loc = cur_axle_loc
-                #print cur_axle_loc
-        
+                if axle_id == 1:
+                    cur_axle_loc = get_abs_axle_location(axle_spacing, x,
+                            direction)
+                else:
+                    prev_axle_loc = cur_axle_loc
+
+                    cur_axle_loc = move_axle_loc(x, axle_spacing, axle_id,
+                                                 prev_axle_loc, num_axles,
+                                                 direction)
+
                 Pt1, xt1, Pl1, xl1, Pr1, xr1 = calc_load_and_loc(cur_axle_loc,
                            axle_wt, x, span1_begin, span1_end, num_axles)
                    
@@ -67,8 +66,6 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 
                 Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier)
                 
-        
-        
                 if x >= span1_begin and x <= span1_end:
         
                     Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end) 
@@ -102,38 +99,15 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     V_max2.append(Vmax2)
                     V_min2.append(Vmin2)
                     M_max2.append(Mmax2)
+
+    return V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier
                     
         
-                    #print "Pt2: " + str(Pt2)
-                    #print "xt2: " + str(xt2)
-                    #print "Pl2: " + str(Pl2)
-                    #print "xl2: " + str(xl2)
-                    #print "Pr2: " + str(Pr2)
-                    #print "xr2: " + str(xr2)
-                    #print "Rb2: " + str(Rb2)
-                    #print "Re2: " + str(Re2)
-                    #print "Vb2: " + str(Vb2)
-                    #print "Ve2: " + str(Ve2)
-                    #print "Vmax2: " + str(Vmax2)
-                    #print "Vmin2: " + str(Vmin2)
-                    #print "M2: " + str(M2)
-                    
-                """
-                #print Pt1, xt1, Pl1, xl1, Pr1, xr1
-                #print Rb1, Re1
-                #print Vb1, Ve1
-                #print Vmax1, Vmin1
-                """
-                
-                
-                #stop = raw_input(">")
-                
-    
-    
-    output(V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier)
 
-def output(V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier):
+def output(V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier,
+           analysis_time):
     """Format and print output."""
+
     print max(V_max1)/2
     print min(V_min1)/2
     print max(M_max1)/2
@@ -144,6 +118,8 @@ def output(V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier):
         print max(M_max2)/2
         
     print Rmax_pier/2
+
+    print "Runtime: " + str(analysis_time) + " sec"
     
 def calc_reactions(Pt, xt, span_begin, span_end):
     """Calculate reactions."""
@@ -242,7 +218,7 @@ def get_abs_axle_location(axle_spacing, start_pt, direction):
 
     return abs_axle_location          
 
-def move_axle_loc(x, axle_spacing, abs_axle_location, axle_id, prev_axle_loc,
+def move_axle_loc(x, axle_spacing, axle_id, prev_axle_loc,
                   num_axles, direction):
     """Steps the axles across the span placing each axle at each node."""
     #calc current location of all axles on span with the
@@ -251,9 +227,9 @@ def move_axle_loc(x, axle_spacing, abs_axle_location, axle_id, prev_axle_loc,
     cur_axle_loc = []
     
     for i in range(num_axles):
-        if axle_id > 1 and direction == "ltr":
+        if direction == "ltr":
             axle_loc = prev_axle_loc[i] + axle_spacing[axle_id-1] 
-        elif axle_id > 1 and direction == "rtl":
+        elif direction == "rtl":
             axle_loc = prev_axle_loc[i] - axle_spacing[axle_id-1]
 
         cur_axle_loc.append(axle_loc)
@@ -358,11 +334,25 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
                 node_loc.append(x2)
 
     return node_loc
+
+def manager(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
+            space_to_trailing_load, distributed_load):
         
-                
-if __name__ == "__main__":
-    pdb.set_trace()
     start = timeit.default_timer()
+
+    V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier = \
+    analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
+                    space_to_trailing_load, distributed_load)
+
+    stop = timeit.default_timer()
+
+    analysis_time = stop - start
+
+    output(V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier,
+        analysis_time)
+
+
+if __name__ == "__main__":
     #input
     axle_spacing = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00]
     axle_wt = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
@@ -371,29 +361,14 @@ if __name__ == "__main__":
     #axle_spacing = []
     #axle_wt = [1.0]
     span_length1 = 20.0
-    span_length2 = 20.0
+    span_length2 = 0.0
     """
     num_nodes should always be odd to place a node at midspan and at 
     each support
     a minimum of 3 nodes should be used for analysis
     """
-    num_nodes = 21
+    num_nodes = 5 
 
-    analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
-                    space_to_trailing_load, distributed_load)
+    manager(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
+            space_to_trailing_load, distributed_load)
 
-    stop = timeit.default_timer()
-    print stop - start
-    
-
-'''
-class Axle():
-    def __init__(self, axle_loc, axle_wt):
-        self.axle_loc = axle_loc
-        self.axle_wt = axle_wt
-'''
-        
-
-            
-            
-        
