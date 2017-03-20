@@ -28,7 +28,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     
     for node_loc,direction in zip([node_loc_ltr, node_loc_rtl], ["ltr", "rtl"]):
         
-        pdb.set_trace()
+        #pdb.set_trace()
 
         if direction == "ltr":
             start_pt = span1_begin
@@ -78,9 +78,6 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     
                     Mmax1 = envelope_moment(Mmax1, M1)
         
-                    V_max1.append(Vmax1)
-                    V_min1.append(Vmin1)
-                    M_max1.append(Mmax1)
                     
         
         
@@ -95,31 +92,72 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     M2 = calc_moment(x, xl2, span2_begin, Rb2, Pl2)
         
                     Mmax2 = envelope_moment(Mmax2, M2)
-        
-                    V_max2.append(Vmax2)
-                    V_min2.append(Vmin2)
-                    M_max2.append(Mmax2)
 
-    return V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier
+            V_max1.append(Vmax1)
+            V_min1.append(Vmin1)
+            M_max1.append(Mmax1)
+            
+            V_max2.append(Vmax2)
+            V_min2.append(Vmin2)
+            M_max2.append(Mmax2)
+            
+    return node_loc_ltr, V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier
                     
         
 
-def output(V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier,
-           analysis_time):
+def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
+            space_to_trailing_load, distributed_load, node_loc, V_max1,
+            V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier, analysis_time):
     """Format and print output."""
+    echo_input = ""
+    out_tb = ""
+    out_val = ""
 
-    print max(V_max1)/2
-    print min(V_min1)/2
-    print max(M_max1)/2
+    echo_input += "\n\nECHO INPUT\n"
+    echo_input += "Axle spacing: " + str(axle_spacing) + "\n"
+    echo_input += "Axle weights: " + str(axle_wt) + "\n"
+    echo_input += "Length Span 1: " + str(span_length1) + "\n"
+    echo_input += "Length Span 2: " + str(span_length2) + "\n"
+    echo_input += "Number of Nodes: " + str(num_nodes) + "\n"
+    echo_input += "Space to trailing load: " + str(space_to_trailing_load) + "\n"
+    echo_input += "Distributed trailing load: " + str(distributed_load) + "\n"
+
+
+    out_tb += "\n\nOUTPUT\n"
+    out_tb += "SPAN 1"
+    out_tb += "\n" #span 1 title spacing
+    out_tb += "{0:^15s}{1:^15s}{2:^15s}{3:^15s}".format("x [ft]", "V [kip]", "V [kip]", "M [kip-ft]")
+    out_tb += "\n" #span 1 header spacing
+
+    for x,Vmax,Vmin,Mmax in zip(node_loc, V_max1, V_min1, M_max1):
+        out_tb += "{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}\n".format(x, Vmax,
+                Vmin, Mmax)
+
+    out_tb += "\n" #span 1 table spacing
+
+
+    out_val += "Vmax [kip]: {0:<-.3f}\nVmin [kip]: {1:<-.3f}\nMmax [kip-ft]: {2:<-.3f}".format(max(V_max1)/2, min(V_min1)/2, max(M_max1)/2)
+    out_val += "\n" #span 1 max/min spacing
+
 
     if V_max2 != []:
-        print max(V_max2)/2
-        print min(V_min2)/2
-        print max(M_max2)/2
-        
-    print Rmax_pier/2
+        out_tb += "SPAN 2"
+        out_tb += "\n" #span 2 title spacing
+        out_tb += "{0:^15s}{1:^15s}{2:^15s}{3:^15s}".format("x [ft]", "V [kip]", "V [kip]", "M [kip-ft]")
+        out_tb += "\n" #span 2 header spacing
 
-    print "Runtime: " + str(analysis_time) + " sec"
+        for x,Vmax,Vmin,Mmax in zip(node_loc, V_max2, V_min2, M_max2):
+            out_tb += "{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}\n".format(x, Vmax, Vmin, Mmax)
+
+        out_tb += "\n\n" #span 2 table spacing
+        
+        out_val += "Vmax [kip]: {0:<-.3f}\nVmin [kip]: {1:<-.3f}\nMmax [kip-ft]: {2:<-.3f}".format(max(V_max2)/2, min(V_min2)/2, max(M_max2)/2)
+
+    out_val += "\nRmax_pier: {0:<-.3f}".format(Rmax_pier/2)
+      
+    print echo_input + out_tb + out_val
+       
+    print "Runtime [sec]: {0:<.3f}\n\n".format(analysis_time)
     
 def calc_reactions(Pt, xt, span_begin, span_end):
     """Calculate reactions."""
@@ -337,10 +375,15 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
 
 def manager(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
             space_to_trailing_load, distributed_load):
-        
+
+    uias = [] #user_input_axle_spacing
+    [uias.append(x) for x in axle_spacing]
+    uiaw = [] #user_input_axle_wt
+    [uiaw.append(x) for x in axle_wt]
+
     start = timeit.default_timer()
 
-    V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier = \
+    node_loc, V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier = \
     analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
                     space_to_trailing_load, distributed_load)
 
@@ -348,8 +391,9 @@ def manager(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
 
     analysis_time = stop - start
 
-    output(V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier,
-        analysis_time)
+    output(uias, uiaw, span_length1, span_length2, num_nodes,
+            space_to_trailing_load, distributed_load, node_loc, V_max1,
+            V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier, analysis_time)
 
 
 if __name__ == "__main__":
