@@ -2,3 +2,4 @@ http://engineering.stackexchange.com/questions/8650/general-solution-for-the-mos
 https://en.wikipedia.org/wiki/Influence_line
 https://en.wikipedia.org/wiki/Betti%27s_theorem
 https://ecourses.ou.edu/cgi-bin/ebook.cgi?doc=&topic=me&chap_sec=03.3&page=theory
+http://onlinelibrary.wiley.com/doi/10.1002/nme.1620280604/full
