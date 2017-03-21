@@ -4,6 +4,7 @@ import timeit
 def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     num_nodes, space_to_trailing_load,
                     distributed_load):
+    """Initialize variables, set up loops, run analysis by calling functions."""
     V_max1 = []
     V_min1 = []
     M_max1 = []
@@ -77,9 +78,6 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     M1 = calc_moment(x, xl1, span1_begin, Rb1, Pl1)
                     
                     Mmax1 = envelope_moment(Mmax1, M1)
-        
-                    
-        
         
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
         
@@ -404,14 +402,14 @@ if __name__ == "__main__":
     distributed_load = 8.00
     #axle_spacing = []
     #axle_wt = [1.0]
-    span_length1 = 20.0
-    span_length2 = 0.0
+    span_length1 = 190.0
+    span_length2 = 190.0
     """
     num_nodes should always be odd to place a node at midspan and at 
     each support
     a minimum of 3 nodes should be used for analysis
     """
-    num_nodes = 5 
+    num_nodes = 21 
 
     manager(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
             space_to_trailing_load, distributed_load)
