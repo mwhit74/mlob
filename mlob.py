@@ -124,32 +124,51 @@ def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
     out_tb += "\n\nOUTPUT\n"
     out_tb += "SPAN 1"
     out_tb += "\n" #span 1 title spacing
-    out_tb += "{0:^15s}{1:^15s}{2:^15s}{3:^15s}".format("x [ft]", "V [kip]", "V [kip]", "M [kip-ft]")
+    out_tb += "{0:^15s}{1:^15s}{2:^15s}{3:^15s}".format("x [ft]",
+                                                        "V [kip]",
+                                                        "V [kip]",
+                                                        "M [kip-ft]")
     out_tb += "\n" #span 1 header spacing
 
     for x,Vmax,Vmin,Mmax in zip(node_loc, V_max1, V_min1, M_max1):
-        out_tb += "{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}\n".format(x, Vmax,
-                Vmin, Mmax)
+        out_tb += """{0:^-15.3f}\
+                     {1:^-15.3f}\
+                     {2:^-15.3f}\
+                     {3:^-15.3f}\n""".format(x, Vmax, Vmin, Mmax)
 
     out_tb += "\n" #span 1 table spacing
 
 
-    out_val += "Vmax [kip]: {0:<-.3f}\nVmin [kip]: {1:<-.3f}\nMmax [kip-ft]: {2:<-.3f}".format(max(V_max1)/2, min(V_min1)/2, max(M_max1)/2)
+    out_val += """Vmax [kip]: {0:<-.3f}\n
+                  Vmin [kip]: {1:<-.3f}\n
+                  Mmax [kip-ft]:{2:<-.3f}""".format(max(V_max1)/2,
+                                                    min(V_min1)/2,
+                                                    max(M_max1)/2)
     out_val += "\n" #span 1 max/min spacing
 
 
     if V_max2 != []:
         out_tb += "SPAN 2"
         out_tb += "\n" #span 2 title spacing
-        out_tb += "{0:^15s}{1:^15s}{2:^15s}{3:^15s}".format("x [ft]", "V [kip]", "V [kip]", "M [kip-ft]")
+        out_tb += "{0:^15s}{1:^15s}{2:^15s}{3:^15s}".format("x [ft]",
+                                                            "V [kip]",
+                                                            "V [kip]",
+                                                            "M [kip-ft]")
         out_tb += "\n" #span 2 header spacing
 
         for x,Vmax,Vmin,Mmax in zip(node_loc, V_max2, V_min2, M_max2):
-            out_tb += "{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}\n".format(x, Vmax, Vmin, Mmax)
+            out_tb += """{0:^-15.3f}\
+                         {1:^-15.3f}\
+                         {2:^-15.3f}\
+                         {3:^-15.3f}\n""".format(x, Vmax, Vmin, Mmax)
 
         out_tb += "\n\n" #span 2 table spacing
         
-        out_val += "Vmax [kip]: {0:<-.3f}\nVmin [kip]: {1:<-.3f}\nMmax [kip-ft]: {2:<-.3f}".format(max(V_max2)/2, min(V_min2)/2, max(M_max2)/2)
+        out_val += """Vmax [kip]: {0:<-.3f}\n
+                      Vmin [kip]: {1:<-.3f}\n
+                      Mmax [kip-ft]: {2:<-.3f}""".format(max(V_max2)/2,
+                                                         min(V_min2)/2,
+                                                         max(M_max2)/2)
 
     out_val += "\nRmax_pier: {0:<-.3f}".format(Rmax_pier/2)
       
@@ -177,7 +196,8 @@ def calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin, span1_end, span2_begin,
     if span_length2 == 0.0:
         Rpier = 0.0
     else:
-        Rpier = Pt1*(xt1 - span1_begin)/span_length1 + Pt2*(span2_end - xt2)/span_length2
+        Rpier = (Pt1*(xt1 - span1_begin)/span_length1 +
+                    Pt2*(span2_end - xt2)/span_length2)
 
     return Rpier
 
@@ -394,13 +414,14 @@ def manager(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
             V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier, analysis_time)
 
 def get_inputs():
-    """Get user inputs for calculation values"""
+    """Get user inputs for calculation values."""
     print "Enter axle spacing values separated by a space. Hit enter when done."
     while True:
         try:
             axle_spacing=([float(x) for x in raw_input().split(' ')])
         except ValueError:
-            print "Invalid values. Please only enter numbers.\nStart from beginning of axle spacing values:"
+            print """Invalid values. Please only enter numbers.\n
+                     Start from beginning of axle spacing values:"""
         else:
             break
 
@@ -412,7 +433,8 @@ def get_inputs():
                 print "Please enter %d axle weight values:" % (len(axle_spacing) + 1)
                 continue
         except ValueError:
-            print "Invalid values. Please only enter numbers.\nStart from beginning of axle weight values:"
+            print """Invalid values. Please only enter numbers.\n
+                     Start from beginning of axle weight values:"""
         else:
             break
 
@@ -452,12 +474,14 @@ def get_inputs():
         else:
             break
 
-    print "Enter the number of nodes as an integer. Number should be odd and greater than or equal to 3."
+    print """Enter the number of nodes as an integer. \
+             Number should be odd and greater than or equal to 21."""
     while True:
         try:
             num_nodes=(int(raw_input()))
-            if num_nodes < 3:
-                print "Number of nodes should be greater than or equal to 3\nPlease enter the number of nodes:"
+            if num_nodes < 21:
+                print """Number of nodes should be greater than or equal to 21\n
+                         Please enter the number of nodes:"""
                 continue
             elif (num_nodes % 2) == 0:
                 print "Please enter an odd number of nodes:"
@@ -467,9 +491,11 @@ def get_inputs():
         else:
             break
 
-    return axle_spacing, axle_wt, space_to_trailing_load, distributed_load, span_length1, span_length2, num_nodes
+    return axle_spacing, axle_wt, space_to_trailing_load, distributed_load, \
+           span_length1, span_length2, num_nodes
 
- __name__ == "__main__":
+if __name__ == "__main__":
+    """
     #input
     axle_spacing = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00]
     axle_wt = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
@@ -479,12 +505,14 @@ def get_inputs():
     #axle_wt = [1.0]
     span_length1 = 190.0
     span_length2 = 190.0
-    """
-    num_nodes should always be odd to place a node at midspan and at 
-    each support
-    a minimum of 3 nodes should be used for analysis
-    """
+    #num_nodes should always be odd to place a node at midspan and at 
+    #each support
+    #a minimum of 3 nodes should be used for analysis
     num_nodes = 21 
+    """
+
+    axle_spacing, axle_wt, space_to_trailing_load, distributed_load, \
+    span_length1, span_length2, num_nodes = get_inputs()
 
     manager(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
             space_to_trailing_load, distributed_load)
