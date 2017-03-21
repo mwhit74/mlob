@@ -31,12 +31,8 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
         
         #pdb.set_trace()
 
-        if direction == "ltr":
-            start_pt = span1_begin
-        elif direction == "rtl":
-            start_pt = span2_end
-
         for x in node_loc: 
+            #pdb.set_trace()
             Vmax1 = 0.0
             Vmin1 = 0.0
             Mmax1 = 0.0
@@ -90,22 +86,25 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     M2 = calc_moment(x, xl2, span2_begin, Rb2, Pl2)
         
                     Mmax2 = envelope_moment(Mmax2, M2)
+            
 
-            V_max1.append(Vmax1)
-            V_min1.append(Vmin1)
-            M_max1.append(Mmax1)
+                V_max1.append(Vmax1)
+                V_min1.append(Vmin1)
+                M_max1.append(Mmax1)
+               
+                V_max2.append(Vmax2)
+                V_min2.append(Vmin2)
+                M_max2.append(Mmax2)
             
-            V_max2.append(Vmax2)
-            V_min2.append(Vmin2)
-            M_max2.append(Mmax2)
-            
-    return node_loc_ltr, V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier
+    return node_loc_ltr, V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, \
+           Rmax_pier, span1_begin, span2_begin
                     
         
 
 def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
             space_to_trailing_load, distributed_load, node_loc, V_max1,
-            V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier, analysis_time):
+            V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier, analysis_time,
+            span1_begin, span2_begin):
     """Format and print output."""
     echo_input = ""
     out_tb = ""
@@ -401,9 +400,12 @@ def manager(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
 
     start = timeit.default_timer()
 
-    node_loc, V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier = \
-    analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
-                    space_to_trailing_load, distributed_load)
+    node_loc, V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier,\
+    span1_begin, span2_begin = analyze_vehicle(axle_spacing, axle_wt,
+                                               span_length1, span_length2,
+                                               num_nodes,
+                                               space_to_trailing_load, 
+                                               distributed_load)
 
     stop = timeit.default_timer()
 
@@ -411,7 +413,8 @@ def manager(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
 
     output(uias, uiaw, span_length1, span_length2, num_nodes,
             space_to_trailing_load, distributed_load, node_loc, V_max1,
-            V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier, analysis_time)
+            V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier, analysis_time,
+            span1_begin, span2_begin)
 
 def get_inputs():
     """Get user inputs for calculation values."""
@@ -499,8 +502,8 @@ if __name__ == "__main__":
     #input
     axle_spacing = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00]
     axle_wt = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
-    space_to_trailing_load = 5.00
-    distributed_load = 8.00
+    space_to_trailing_load = 0.00
+    distributed_load = 0.00
     #axle_spacing = []
     #axle_wt = [1.0]
     span_length1 = 190.0
