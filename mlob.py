@@ -418,7 +418,7 @@ def get_inputs():
                 print "Number of nodes should be greater than or equal to 3\nPlease enter the number of nodes:"
                 continue
             elif (num_nodes % 2) == 0:
-                print "Please enter an odd number of ndoes:"
+                print "Please enter an odd number of nodes:"
                 continue
         except ValueError:
             print "Invalid value. Please enter an integer:"
