@@ -374,6 +374,24 @@ def get_inputs():
         else:
             break
 
+    print "Enter value of the space to trailing load. Hit enter when done."
+    while True:
+        try:
+            space_to_trailing_load=(float(raw_input()))
+        except ValueError:
+            print "Invalid value. Please enter one number."
+        else:
+            break
+
+    print "Enter value of the distributed load. Hit enter when done."
+    while True:
+        try:
+            distributed_load=(float(raw_input()))
+        except ValueError:
+            print "Invalid value. Please enter one number."
+        else:
+            break
+
     print "Enter value of span length 1. Hit enter when done."
     while True:
         try:
@@ -407,7 +425,7 @@ def get_inputs():
         else:
             break
 
-    return axle_spacing, axle_wt, span_length1, span_length2, num_nodes
+    return axle_spacing, axle_wt, space_to_trailing_load, distributed_load, span_length1, span_length2, num_nodes
 
  __name__ == "__main__":
     #input
