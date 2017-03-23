@@ -5,6 +5,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     num_nodes, space_to_trailing_load,
                     distributed_load):
     """Initialize variables, set up loops, run analysis by calling functions."""
+    #calculates for a full track (2 rails)
     V_max1 = []
     V_min1 = []
     M_max1 = []
@@ -65,7 +66,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
         
                     Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end) 
                     
-                    Vb1, Ve1 = calc_shear(Rb1, Re1, Pr1, Pl1)
+                    Vb1, Ve1 = calc_shear(Rb1, Re1, Pr1, Pl1, direction)
                     
                     Vmax1, Vmin1 = envelope_shear(Vmax1, Vmin1, Vb1, Ve1)
                     
@@ -77,7 +78,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
         
                     Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end)
         
-                    Vb2, Ve2 = calc_shear(Rb2, Re2, Pr2, Pl2)
+                    Vb2, Ve2 = calc_shear(Rb2, Re2, Pr2, Pl2, direction)
         
                     Vmax2, Vmin2 = envelope_shear(Vmax2, Vmin2, Vb2, Ve2)
         
@@ -86,13 +87,13 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     Mmax2 = envelope_moment(Mmax2, M2)
             
 
-                V_max1.append(Vmax1)
-                V_min1.append(Vmin1)
-                M_max1.append(Mmax1)
-               
-                V_max2.append(Vmax2)
-                V_min2.append(Vmin2)
-                M_max2.append(Mmax2)
+            V_max1.append(Vmax1)
+            V_min1.append(Vmin1)
+            M_max1.append(Mmax1)
+            
+            V_max2.append(Vmax2)
+            V_min2.append(Vmin2)
+            M_max2.append(Mmax2)
             
     return node_loc_ltr, V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, \
            Rmax_pier, span1_begin, span2_begin
@@ -132,10 +133,14 @@ def envelope_pier_reaction(Rmax_pier, Rpier):
 
     return Rmax_pier
 
-def calc_shear(Rb, Re, Pr, Pl):
+def calc_shear(Rb, Re, Pr, Pl, direction):
     """Calculate shear on each side of the node."""
-    Vb = Re - Pr 
-    Ve = Pl - Rb
+    if direction == "ltr":
+        Vb = Re - Pr 
+        Ve = Pl - Rb
+    elif direction == "rtl":
+        Vb = Pl - Rb
+        Ve = Re - Pr 
 
     return Vb, Ve
 
@@ -402,6 +407,7 @@ def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
             V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier, analysis_time,
             span1_begin, span2_begin):
     """Format and print output."""
+    #currently outputs half track (one rail)
     echo_input = ""
     out_tb = ""
     out_val = ""
@@ -420,20 +426,23 @@ def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
     out_tb += "SPAN 1"
     out_tb += "\n" #span 1 title spacing
     out_tb += "{0:^15s}{1:^15s}{2:^15s}{3:^15s}".format("x [ft]",
-                                                        "V [kip]",
-                                                        "V [kip]",
-                                                        "M [kip-ft]")
+                                                        "Vmax [kip]",
+                                                        "Vmin [kip]",
+                                                        "Mmax [kip-ft]")
     out_tb += "\n" #span 1 header spacing
 
     for x,Vmax,Vmin,Mmax in zip(node_loc, V_max1, V_min1, M_max1):
-        out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}\n""".format(x, Vmax, Vmin, Mmax)
+        out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}\n""".format(x,
+                                                                              Vmax/2,
+                                                                              Vmin/2,
+                                                                              Mmax/2)
 
     out_tb += "\n" #span 1 table spacing
 
 
     out_val += """Vmax [kip]: {0:<-.3f}\nVmin [kip]: {1:<-.3f}\nMax [kip-ft]:{2:<-.3f}""".format(max(V_max1)/2,
-                                                    min(V_min1)/2,
-                                                    max(M_max1)/2)
+                                                                                                 min(V_min1)/2,
+                                                                                                 max(M_max1)/2)
     out_val += "\n" #span 1 max/min spacing
 
 
@@ -441,19 +450,22 @@ def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
         out_tb += "SPAN 2"
         out_tb += "\n" #span 2 title spacing
         out_tb += "{0:^15s}{1:^15s}{2:^15s}{3:^15s}".format("x [ft]",
-                                                            "V [kip]",
-                                                            "V [kip]",
-                                                            "M [kip-ft]")
+                                                            "Vmax [kip]",
+                                                            "Vmin [kip]",
+                                                            "Mmax [kip-ft]")
         out_tb += "\n" #span 2 header spacing
 
         for x,Vmax,Vmin,Mmax in zip(node_loc, V_max2, V_min2, M_max2):
-            out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}\n""".format(x, Vmax, Vmin, Mmax)
+            out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}\n""".format(x,
+                                                                                  Vmax/2,
+                                                                                  Vmin/2,
+                                                                                  Mmax/2)
 
         out_tb += "\n\n" #span 2 table spacing
         
         out_val += """Vmax [kip]: {0:<-.3f}\nVmin [kip]: {1:<-.3f}\nMmax [kip-ft]: {2:<-.3f}""".format(max(V_max2)/2,
-                                                         min(V_min2)/2,
-                                                         max(M_max2)/2)
+                                                                                                       min(V_min2)/2,
+                                                                                                       max(M_max2)/2)
 
     out_val += "\nRmax_pier: {0:<-.3f}".format(Rmax_pier/2)
       
