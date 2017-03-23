@@ -30,7 +30,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     
     for node_loc,direction in zip([node_loc_ltr, node_loc_rtl], ["ltr", "rtl"]):
         
-        for x in node_loc: 
+        for x,i in zip(node_loc, range(len(node_loc))): 
             #pdb.set_trace()
             Vmax1 = 0.0
             Vmin1 = 0.0
@@ -68,32 +68,28 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     
                     Vb1, Ve1 = calc_shear(Rb1, Re1, Pr1, Pl1, direction)
                     
-                    Vmax1, Vmin1 = envelope_shear(Vmax1, Vmin1, Vb1, Ve1)
+                    Vmax1 = envelope_max_shear(Vb1, Ve1, V_max1, i)
+
+                    Vmin1 = envelope_min_shear(Vb1, Ve1, V_min1, i)
                     
                     M1 = calc_moment(x, xl1, span1_begin, Rb1, Pl1)
                     
-                    Mmax1 = envelope_moment(Mmax1, M1)
+                    Mmax1 = envelope_moment(M1, M_max1, i)
         
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
         
                     Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end)
         
                     Vb2, Ve2 = calc_shear(Rb2, Re2, Pr2, Pl2, direction)
-        
-                    Vmax2, Vmin2 = envelope_shear(Vmax2, Vmin2, Vb2, Ve2)
+
+                    Vmax2 = envelope_max_shear(Vb2, Ve2, V_max2, i)
+
+                    Vmin2 = envelope_min_shear(Vb2, Ve2, V_min2, i)
         
                     M2 = calc_moment(x, xl2, span2_begin, Rb2, Pl2)
         
-                    Mmax2 = envelope_moment(Mmax2, M2)
-            
+                    Mmax2 = envelope_moment(M2, M_max2, i)
 
-            V_max1.append(Vmax1)
-            V_min1.append(Vmin1)
-            M_max1.append(Mmax1)
-            
-            V_max2.append(Vmax2)
-            V_min2.append(Vmin2)
-            M_max2.append(Mmax2)
             
     return node_loc_ltr, V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, \
            Rmax_pier, span1_begin, span2_begin
@@ -135,32 +131,36 @@ def envelope_pier_reaction(Rmax_pier, Rpier):
 
 def calc_shear(Rb, Re, Pr, Pl, direction):
     """Calculate shear on each side of the node."""
-    if direction == "ltr":
-        Vb = Re - Pr 
-        Ve = Pl - Rb
-    elif direction == "rtl":
-        Vb = Pl - Rb
-        Ve = Re - Pr 
+   #if direction == "ltr":
+   #    Vb = Re - Pr 
+   #    Ve = Pl - Rb
+   #elif direction == "rtl":
+   #    Ve = Re - Pr 
+   #    Vb = Pl - Rb
+
+    Vb = Re - Pr 
+    Ve = Pl - Rb
 
     return Vb, Ve
 
-def envelope_shear(Vmax, Vmin, Vb, Ve):
+def envelope_max_shear(Vb, Ve, V_max, i):
     """Envelope the maximum and minimum shear at each node."""
-    if Vb < 0:
-        if Vb < Vmin:
-            Vmin = Vb
-    if Vb >= 0:
-        if Vb > Vmax:
-            Vmax = Vb 
+    Vmax = max(Vb, Ve) 
 
-    if Ve < 0:
-        if Ve < Vmin:
-            Vmin = Ve
-    if Ve >= 0:
-        if Ve > Vmax:
-            Vmax = Ve
+    try:
+        if V_max[i] < Vmax:
+            V_max[i] = Vmax
+    except:
+        V_max.append(Vmax)
 
-    return Vmax, Vmin
+def envelope_min_shear(Vb, Ve, V_min, i):
+    """Envelope the maximum and minimum shear at each node."""
+    Vmin = min(Vb, Ve)
+    try:
+        if V_min[i] > Vmin:
+            V_min[i] = Vmin
+    except:
+        V_min.append(Vmin)
 
 def calc_moment(x, xl, span_begin, Rb, Pl):
     """Calculate moment at node."""
@@ -170,12 +170,13 @@ def calc_moment(x, xl, span_begin, Rb, Pl):
 
     return M
 
-def envelope_moment(Mmax, M):
+def envelope_moment(M, M_max, i):
     """Envelope maximum positive moment at each node."""
-    if M > Mmax:
-        Mmax = M
-
-    return Mmax
+    try:
+        if M_max[i] < M:
+            M_max[i] = M
+    except:
+        M_max.append(M)
 
 def get_axle_num(num_axles):
     """Numbers the axles starting with 0."""
