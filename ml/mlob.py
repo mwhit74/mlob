@@ -426,17 +426,12 @@ def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
     out_tb += "\n" #span 1 header spacing
 
     for x,Vmax,Vmin,Mmax in zip(node_loc, V_max1, V_min1, M_max1):
-        out_tb += """{0:^-15.3f}
-                     {1:^-15.3f}
-                     {2:^-15.3f}
-                     {3:^-15.3f}\n""".format(x, Vmax, Vmin, Mmax)
+        out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}\n""".format(x, Vmax, Vmin, Mmax)
 
     out_tb += "\n" #span 1 table spacing
 
 
-    out_val += """Vmax [kip]: {0:<-.3f}\n
-                  Vmin [kip]: {1:<-.3f}\n
-                  Mmax [kip-ft]:{2:<-.3f}""".format(max(V_max1)/2,
+    out_val += """Vmax [kip]: {0:<-.3f}\nVmin [kip]: {1:<-.3f}\nMax [kip-ft]:{2:<-.3f}""".format(max(V_max1)/2,
                                                     min(V_min1)/2,
                                                     max(M_max1)/2)
     out_val += "\n" #span 1 max/min spacing
@@ -452,16 +447,11 @@ def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
         out_tb += "\n" #span 2 header spacing
 
         for x,Vmax,Vmin,Mmax in zip(node_loc, V_max2, V_min2, M_max2):
-            out_tb += """{0:^-15.3f}\
-                         {1:^-15.3f}\
-                         {2:^-15.3f}\
-                         {3:^-15.3f}\n""".format(x, Vmax, Vmin, Mmax)
+            out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}\n""".format(x, Vmax, Vmin, Mmax)
 
         out_tb += "\n\n" #span 2 table spacing
         
-        out_val += """Vmax [kip]: {0:<-.3f}\n
-                      Vmin [kip]: {1:<-.3f}\n
-                      Mmax [kip-ft]: {2:<-.3f}""".format(max(V_max2)/2,
+        out_val += """Vmax [kip]: {0:<-.3f}\nVmin [kip]: {1:<-.3f}\nMmax [kip-ft]: {2:<-.3f}""".format(max(V_max2)/2,
                                                          min(V_min2)/2,
                                                          max(M_max2)/2)
 
