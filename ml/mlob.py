@@ -122,12 +122,15 @@ def envelope_pier_reaction(Rmax_pier, Rpier):
     return Rmax_pier
 
 def calc_shear(Rb, Re, Pr, Pl, direction):
-    """Calculate shear on each side of the node."""
-    if direction == "ltr":
-        Ve = Pl - Rb
-    elif direction == "rtl":
-        Ve = Re - Pr
-    
+    """Calculate shear on one side of the node."""
+    #calculate shear on opposite side of section
+    #if load move ltr, calc shear on right
+    #if load move rtl, calc shear on left
+   #if direction == "ltr":
+   #    Ve = Pl - Rb
+   #elif direction == "rtl":
+   #    Ve = Re - Pr
+    Ve = Pl - Rb
     return Ve
 
 def envelope_max_shear(Ve, V_max, i):
