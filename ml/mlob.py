@@ -7,10 +7,8 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     """Initialize variables, set up loops, run analysis by calling functions."""
     #calculates for a full track (2 rails)
     V_max1 = []
-    V_min1 = []
     M_max1 = []
     V_max2 = []
-    V_min2 = []
     M_max2 = []
 
     span1_begin = 0.0
@@ -29,18 +27,19 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     axle_num = get_axle_num(num_axles)
     
     for node_loc,direction in zip([node_loc_ltr, node_loc_rtl], ["ltr", "rtl"]):
-        
+        #pdb.set_trace()
         for x,i in zip(node_loc, range(len(node_loc))): 
             #pdb.set_trace()
             Vmax1 = 0.0
-            Vmin1 = 0.0
             Mmax1 = 0.0
             Vmax2 = 0.0
-            Vmin2 = 0.0
             Mmax2 = 0.0
             Rmax_pier = 0.0
         
             for axle_id in axle_num:
+               # if direction == "rtl" and x == 0.0:
+                    #pdb.set_trace()
+
                 if axle_id == 1:
                     cur_axle_loc = get_abs_axle_location(axle_spacing, x,
                             direction)
@@ -67,8 +66,9 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end, direction) 
                     
                     Ve1 = calc_shear(Rb1, Re1, Pr1, Pl1, direction)
-                    
-                    Vmax1 = envelope_max_shear(Ve1, V_max1, i)
+
+                    Vmax1 = envelope_max_shear(Ve1, V_max1, i, num_nodes,
+                                               direction)
 
                     M1 = calc_moment(x, xl1, span1_begin, Rb1, Pl1)
                     
@@ -80,11 +80,13 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
         
                     Ve2 = calc_shear(Rb2, Re2, Pr2, Pl2, direction)
 
-                    Vmax2 = envelope_max_shear(Ve2, V_max2, i)
+                    Vmax2 = envelope_max_shear(Ve2, V_max2, i, num_nodes,
+                                               direction)
         
                     M2 = calc_moment(x, xl2, span2_begin, Rb2, Pl2)
         
                     Mmax2 = envelope_moment(M2, M_max2, i)
+
 
     return node_loc_ltr, V_max1, M_max1, V_max2, M_max2, \
            Rmax_pier, span1_begin, span2_begin
@@ -96,8 +98,12 @@ def calc_reactions(Pt, xt, span_begin, span_end, direction):
         Rb = 0.0
         Re = 0.0
     else:
-        Rb = Pt*(span_end - xt)/span_length
-        Re = Pt*(xt - span_begin)/span_length
+        if direction == "ltr":
+            Rb = Pt*(span_end - xt)/span_length
+            Re = Pt*(xt - span_begin)/span_length
+        elif direction == "rtl":
+            Rb = Pt*(xt - span_begin)/span_length
+            Re = Pt*(span_end - xt)/span_length
 
     return Rb, Re
 
@@ -126,20 +132,26 @@ def calc_shear(Rb, Re, Pr, Pl, direction):
     #calculate shear on opposite side of section
     #if load move ltr, calc shear on right
     #if load move rtl, calc shear on left
-   #if direction == "ltr":
-   #    Ve = Pl - Rb
-   #elif direction == "rtl":
-   #    Ve = Re - Pr
-    Ve = Pl - Rb
+    if direction == "ltr":
+        Ve = Pl - Rb
+    elif direction == "rtl":
+        Ve = abs(Pr - Rb)
+   #Ve = Pl - Rb
     return Ve
 
-def envelope_max_shear(Ve, V_max, i):
+def envelope_max_shear(Ve, V_max, i, num_nodes, direction):
     """Envelope the maximum and minimum shear at each node."""
     Vmax = Ve 
 
     try:
+       #if direction == "ltr":
+       #    node_id = i
+       #elif direction == "rtl":
+       #    node_id = num_nodes - i
+
         if V_max[i] < Vmax:
             V_max[i] = Vmax
+
     except:
         V_max.append(Vmax)
 
@@ -259,18 +271,18 @@ def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
     #each point load is the distributed load times the point load spacing
     #the point load spacing is a function of the span lenght and number of
     #divisions required
-    
-    total_span_length = span2_end - span1_begin
-    pt_load_spacing = 0.5
-    num_loads = int(total_span_length/pt_load_spacing)
-    equivalent_pt_load = distributed_load*pt_load_spacing
+    if space_to_trailing_load != 0.0 and distributed_load != 0.0:
+        total_span_length = span2_end - span1_begin
+        pt_load_spacing = 0.5
+        num_loads = int(total_span_length/pt_load_spacing)
+        equivalent_pt_load = distributed_load*pt_load_spacing
 
-    axle_spacing.append(space_to_trailing_load)
-    axle_wt.append(equivalent_pt_load)
-
-    for x in range(num_loads):
-        axle_spacing.append(pt_load_spacing)
+        axle_spacing.append(space_to_trailing_load)
         axle_wt.append(equivalent_pt_load)
+
+        for x in range(num_loads):
+            axle_spacing.append(pt_load_spacing)
+            axle_wt.append(equivalent_pt_load)
 
 def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
 
