@@ -127,8 +127,14 @@ def envelope_pier_reaction(Rmax_pier, Rpier):
 
 def calc_shear(Rb, Re, Pr, Pl, direction):
     """Calculate shear on each side of the node."""
-    Vb = Re - Pr 
-    Ve = Pl - Rb
+    if direction == "ltr":
+        Vb = Re - Pr
+        Ve = Pl - Rb
+    elif direction == "rtl":
+        #Vb = Re - Pr
+        #Ve = Pl - Rb
+        Vb = 0
+        Ve = 0
 
     return Vb, Ve
 
@@ -145,6 +151,7 @@ def envelope_max_shear(Vb, Ve, V_max, i):
 def envelope_min_shear(Vb, Ve, V_min, i):
     """Envelope the maximum and minimum shear at each node."""
     Vmin = min(Vb, Ve)
+
     try:
         if V_min[i] > Vmin:
             V_min[i] = Vmin
