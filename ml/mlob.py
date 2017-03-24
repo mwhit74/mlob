@@ -64,36 +64,32 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 
                 if x >= span1_begin and x <= span1_end:
         
-                    Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end) 
+                    Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end, direction) 
                     
-                    Vb1, Ve1 = calc_shear(Rb1, Re1, Pr1, Pl1, direction)
+                    Ve1 = calc_shear(Rb1, Re1, Pr1, Pl1, direction)
                     
-                    Vmax1 = envelope_max_shear(Vb1, Ve1, V_max1, i)
+                    Vmax1 = envelope_max_shear(Ve1, V_max1, i)
 
-                    Vmin1 = envelope_min_shear(Vb1, Ve1, V_min1, i)
-                    
                     M1 = calc_moment(x, xl1, span1_begin, Rb1, Pl1)
                     
                     Mmax1 = envelope_moment(M1, M_max1, i)
         
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
         
-                    Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end)
+                    Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end, direction)
         
-                    Vb2, Ve2 = calc_shear(Rb2, Re2, Pr2, Pl2, direction)
+                    Ve2 = calc_shear(Rb2, Re2, Pr2, Pl2, direction)
 
-                    Vmax2 = envelope_max_shear(Vb2, Ve2, V_max2, i)
-
-                    Vmin2 = envelope_min_shear(Vb2, Ve2, V_min2, i)
+                    Vmax2 = envelope_max_shear(Ve2, V_max2, i)
         
                     M2 = calc_moment(x, xl2, span2_begin, Rb2, Pl2)
         
                     Mmax2 = envelope_moment(M2, M_max2, i)
 
-    return node_loc_ltr, V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, \
+    return node_loc_ltr, V_max1, M_max1, V_max2, M_max2, \
            Rmax_pier, span1_begin, span2_begin
     
-def calc_reactions(Pt, xt, span_begin, span_end):
+def calc_reactions(Pt, xt, span_begin, span_end, direction):
     """Calculate reactions."""
     span_length = span_end - span_begin
     if span_length == 0.0:
@@ -128,35 +124,21 @@ def envelope_pier_reaction(Rmax_pier, Rpier):
 def calc_shear(Rb, Re, Pr, Pl, direction):
     """Calculate shear on each side of the node."""
     if direction == "ltr":
-        Vb = Re - Pr
         Ve = Pl - Rb
     elif direction == "rtl":
-        #Vb = Re - Pr
-        #Ve = Pl - Rb
-        Vb = 0
-        Ve = 0
+        Ve = Re - Pr
+    
+    return Ve
 
-    return Vb, Ve
-
-def envelope_max_shear(Vb, Ve, V_max, i):
+def envelope_max_shear(Ve, V_max, i):
     """Envelope the maximum and minimum shear at each node."""
-    Vmax = max(Vb, Ve) 
+    Vmax = Ve 
 
     try:
         if V_max[i] < Vmax:
             V_max[i] = Vmax
     except:
         V_max.append(Vmax)
-
-def envelope_min_shear(Vb, Ve, V_min, i):
-    """Envelope the maximum and minimum shear at each node."""
-    Vmin = min(Vb, Ve)
-
-    try:
-        if V_min[i] > Vmin:
-            V_min[i] = Vmin
-    except:
-        V_min.append(Vmin)
 
 def calc_moment(x, xl, span_begin, Rb, Pl):
     """Calculate moment at node."""
@@ -401,7 +383,7 @@ def get_inputs():
 
 def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
             space_to_trailing_load, distributed_load, node_loc, V_max1,
-            V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier, analysis_time,
+            M_max1, V_max2, M_max2, Rmax_pier, analysis_time,
             span1_begin, span2_begin):
     """Format and print output."""
     #currently outputs half track (one rail)
@@ -427,7 +409,7 @@ def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
                                                 "Mmax [kip-ft]")
     out_tb += "\n" #span 1 header spacing
 
-    for x,Vmax,Vmin,Mmax in zip(node_loc, V_max1, V_min1, M_max1):
+    for x,Vmax,Mmax in zip(node_loc, V_max1, M_max1):
         out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}\n""".format(x,
                                                                    Vmax/2,
                                                                    Mmax/2)
@@ -448,7 +430,7 @@ def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
                                                     "Mmax [kip-ft]")
         out_tb += "\n" #span 2 header spacing
 
-        for x,Vmax,Vmin,Mmax in zip(node_loc, V_max2, V_min2, M_max2):
+        for x,Vmax,Mmax in zip(node_loc, V_max2, M_max2):
             out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}\n""".format(x,
                                                                        Vmax/2,
                                                                        Mmax/2)
@@ -492,7 +474,7 @@ def manager():
 
     start = timeit.default_timer()
 
-    node_loc, V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier,\
+    node_loc, V_max1, M_max1, V_max2, M_max2, Rmax_pier,\
     span1_begin, span2_begin = analyze_vehicle(axle_spacing, axle_wt,
                                                span_length1, span_length2,
                                                num_nodes,
@@ -505,7 +487,7 @@ def manager():
 
     output(uias, uiaw, span_length1, span_length2, num_nodes,
             space_to_trailing_load, distributed_load, node_loc, V_max1,
-            V_min1, M_max1, V_max2, V_min2, M_max2, Rmax_pier, analysis_time,
+            M_max1, V_max2, M_max2, Rmax_pier, analysis_time,
             span1_begin, span2_begin)
 
 if __name__ == "__main__":
