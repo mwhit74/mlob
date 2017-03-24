@@ -90,12 +90,8 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
         
                     Mmax2 = envelope_moment(M2, M_max2, i)
 
-            
     return node_loc_ltr, V_max1, V_min1, M_max1, V_max2, V_min2, M_max2, \
            Rmax_pier, span1_begin, span2_begin
-                    
-        
-
     
 def calc_reactions(Pt, xt, span_begin, span_end):
     """Calculate reactions."""
@@ -131,13 +127,6 @@ def envelope_pier_reaction(Rmax_pier, Rpier):
 
 def calc_shear(Rb, Re, Pr, Pl, direction):
     """Calculate shear on each side of the node."""
-   #if direction == "ltr":
-   #    Vb = Re - Pr 
-   #    Ve = Pl - Rb
-   #elif direction == "rtl":
-   #    Ve = Re - Pr 
-   #    Vb = Pl - Rb
-
     Vb = Re - Pr 
     Ve = Pl - Rb
 
@@ -426,49 +415,43 @@ def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
     out_tb += "\n\nOUTPUT\n"
     out_tb += "SPAN 1"
     out_tb += "\n" #span 1 title spacing
-    out_tb += "{0:^15s}{1:^15s}{2:^15s}{3:^15s}".format("x [ft]",
-                                                        "Vmax [kip]",
-                                                        "Vmin [kip]",
-                                                        "Mmax [kip-ft]")
+    out_tb += "{0:^15s}{1:^15s}{2:^15s}".format("x [ft]",
+                                                "Vmax [kip]",
+                                                "Mmax [kip-ft]")
     out_tb += "\n" #span 1 header spacing
 
     for x,Vmax,Vmin,Mmax in zip(node_loc, V_max1, V_min1, M_max1):
-        out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}\n""".format(x,
-                                                                              Vmax/2,
-                                                                              Vmin/2,
-                                                                              Mmax/2)
+        out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}\n""".format(x,
+                                                                   Vmax/2,
+                                                                   Mmax/2)
 
     out_tb += "\n" #span 1 table spacing
 
 
-    out_val += """Vmax [kip]: {0:<-.3f}\nVmin [kip]: {1:<-.3f}\nMax [kip-ft]:{2:<-.3f}""".format(max(V_max1)/2,
-                                                                                                 min(V_min1)/2,
-                                                                                                 max(M_max1)/2)
+    out_val += """Vmax [kip]: {0:<-.3f}\nMmax [kip-ft]: {1:<-.3f}""".format(max(V_max1)/2,
+                                                                            max(M_max1)/2)
     out_val += "\n" #span 1 max/min spacing
 
 
     if V_max2 != []:
         out_tb += "SPAN 2"
         out_tb += "\n" #span 2 title spacing
-        out_tb += "{0:^15s}{1:^15s}{2:^15s}{3:^15s}".format("x [ft]",
-                                                            "Vmax [kip]",
-                                                            "Vmin [kip]",
-                                                            "Mmax [kip-ft]")
+        out_tb += "{0:^15s}{1:^15s}{2:^15s}".format("x [ft]",
+                                                    "Vmax [kip]",
+                                                    "Mmax [kip-ft]")
         out_tb += "\n" #span 2 header spacing
 
         for x,Vmax,Vmin,Mmax in zip(node_loc, V_max2, V_min2, M_max2):
-            out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}\n""".format(x,
-                                                                                  Vmax/2,
-                                                                                  Vmin/2,
-                                                                                  Mmax/2)
+            out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}\n""".format(x,
+                                                                       Vmax/2,
+                                                                       Mmax/2)
 
         out_tb += "\n\n" #span 2 table spacing
         
-        out_val += """Vmax [kip]: {0:<-.3f}\nVmin [kip]: {1:<-.3f}\nMmax [kip-ft]: {2:<-.3f}""".format(max(V_max2)/2,
-                                                                                                       min(V_min2)/2,
-                                                                                                       max(M_max2)/2)
+        out_val += """Vmax [kip]: {0:<-.3f}\nMmax [kip-ft]: {1:<-.3f}""".format(max(V_max2)/2,
+                                                                                max(M_max2)/2)
 
-    out_val += "\nRmax_pier: {0:<-.3f}".format(Rmax_pier/2)
+        out_val += "\nRmax_pier: {0:<-.3f}".format(Rmax_pier/2)
       
     print echo_input + out_tb + out_val
        
