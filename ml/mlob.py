@@ -67,12 +67,12 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     
                     Ve1 = calc_shear(Rb1, Re1, Pr1, Pl1, direction)
 
-                    Vmax1 = envelope_max_shear(Ve1, V_max1, i, num_nodes,
-                                               direction)
+                    envelope_shear(Ve1, V_max1, i, num_nodes,
+                                   direction)
 
                     M1 = calc_moment(x, xl1, span1_begin, Rb1, Pl1)
                     
-                    Mmax1 = envelope_moment(M1, M_max1, i)
+                    envelope_moment(M1, M_max1, i, num_nodes, direction)
         
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
         
@@ -80,12 +80,12 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
         
                     Ve2 = calc_shear(Rb2, Re2, Pr2, Pl2, direction)
 
-                    Vmax2 = envelope_max_shear(Ve2, V_max2, i, num_nodes,
-                                               direction)
+                    envelope_shear(Ve2, V_max2, i, num_nodes,
+                                   direction)
         
                     M2 = calc_moment(x, xl2, span2_begin, Rb2, Pl2)
         
-                    Mmax2 = envelope_moment(M2, M_max2, i)
+                    envelope_moment(M2, M_max2, i, num_nodes, direction)
 
 
     return node_loc_ltr, V_max1, M_max1, V_max2, M_max2, \
@@ -139,21 +139,19 @@ def calc_shear(Rb, Re, Pr, Pl, direction):
    #Ve = Pl - Rb
     return Ve
 
-def envelope_max_shear(Ve, V_max, i, num_nodes, direction):
+def envelope_shear(Ve, V_max, i, num_nodes, direction):
     """Envelope the maximum and minimum shear at each node."""
-    Vmax = Ve 
-
     try:
-       #if direction == "ltr":
-       #    node_id = i
-       #elif direction == "rtl":
-       #    node_id = num_nodes - i
+        if direction == "ltr":
+           node_id = i
+        elif direction == "rtl":
+           node_id = (num_nodes - 1) - i
 
-        if V_max[i] < Vmax:
-            V_max[i] = Vmax
+        if V_max[node_id] < Ve:
+            V_max[node_id] = Ve
 
     except:
-        V_max.append(Vmax)
+        V_max.append(Ve)
 
 def calc_moment(x, xl, span_begin, Rb, Pl):
     """Calculate moment at node."""
@@ -163,11 +161,15 @@ def calc_moment(x, xl, span_begin, Rb, Pl):
 
     return M
 
-def envelope_moment(M, M_max, i):
+def envelope_moment(M, M_max, i, num_nodes, direction):
     """Envelope maximum positive moment at each node."""
     try:
-        if M_max[i] < M:
-            M_max[i] = M
+        if direction == "ltr":
+           node_id = i
+        elif direction == "rtl":
+           node_id = (num_nodes - 1) - i
+        if M_max[node_id] < M:
+            M_max[node_id] = M
     except:
         M_max.append(M)
 
