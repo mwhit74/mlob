@@ -30,10 +30,10 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
         #pdb.set_trace()
         for x,i in zip(node_loc, range(len(node_loc))): 
             #pdb.set_trace()
-            Vmax1 = 0.0
-            Mmax1 = 0.0
-            Vmax2 = 0.0
-            Mmax2 = 0.0
+            Ve1 = 0.0
+            M1 = 0.0
+            Ve2 = 0.0
+            M2 = 0.0
             Rmax_pier = 0.0
         
             for axle_id in axle_num:
@@ -70,7 +70,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     envelope_shear(Ve1, V_max1, i, num_nodes,
                                    direction)
 
-                    M1 = calc_moment(x, xl1, span1_begin, Rb1, Pl1)
+                    M1 = calc_moment(x, xl1, xr1, span1_begin, span1_end, Rb1, Pl1, Pr1, direction)
                     
                     envelope_moment(M1, M_max1, i, num_nodes, direction)
         
@@ -83,7 +83,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     envelope_shear(Ve2, V_max2, i, num_nodes,
                                    direction)
         
-                    M2 = calc_moment(x, xl2, span2_begin, Rb2, Pl2)
+                    M2 = calc_moment(x, xl2, xr2, span2_begin, span2_end, Rb2, Pl2, Pr2, direction)
         
                     envelope_moment(M2, M_max2, i, num_nodes, direction)
 
@@ -149,15 +149,19 @@ def envelope_shear(Ve, V_max, i, num_nodes, direction):
 
         if V_max[node_id] < Ve:
             V_max[node_id] = Ve
-
     except:
         V_max.append(Ve)
 
-def calc_moment(x, xl, span_begin, Rb, Pl):
+def calc_moment(x, xl, xr, span_begin, span_end, Rb, Pl, Pr, direction):
     """Calculate moment at node."""
-    el = x - xl 
-    eb = x - span_begin
-    M = Rb*eb- Pl*el
+    if direction == "ltr":
+        el = x - xl 
+        eb = x - span_begin
+        M = Rb*eb- Pl*el
+    elif direction == "rtl":
+        er = xr - x
+        eb = span_end - x
+        M = Rb*eb - Pr*er
 
     return M
 
@@ -168,6 +172,7 @@ def envelope_moment(M, M_max, i, num_nodes, direction):
            node_id = i
         elif direction == "rtl":
            node_id = (num_nodes - 1) - i
+
         if M_max[node_id] < M:
             M_max[node_id] = M
     except:
@@ -469,16 +474,16 @@ def manager():
     #input
     axle_spacing = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00]
     axle_wt = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
-    space_to_trailing_load = 0.00
-    distributed_load = 0.00
+    space_to_trailing_load = 5.00
+    distributed_load = 8.00
     #axle_spacing = []
     #axle_wt = [1.0]
-    span_length1 = 90.0
-    span_length2 = 0.0
+    span_length1 = 20.0
+    span_length2 = 20.0
     #num_nodes should always be odd to place a node at midspan and at 
     #each support
     #a minimum of 21 nodes should be used for analysis
-    num_nodes = 21 
+    num_nodes = 21
      
 
     #axle_spacing, axle_wt, space_to_trailing_load, distributed_load, \
