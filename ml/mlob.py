@@ -136,7 +136,7 @@ def calc_shear(Rb, Re, Pr, Pl, direction):
         Ve = Pl - Rb
     elif direction == "rtl":
         Ve = abs(Pr - Rb)
-   #Ve = Pl - Rb
+
     return Ve
 
 def envelope_shear(Ve, V_max, i, num_nodes, direction):
