@@ -2,7 +2,7 @@ import pdb
 import timeit
 
 def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
-                    num_nodes, space_to_trailing_load,
+                    num_user_nodes, space_to_trailing_load,
                     distributed_load):
     """Initialize variables, set up loops, run analysis by calling functions."""
     #calculates for a full track (2 rails)
@@ -17,7 +17,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     span2_end = span_length1 + span_length2
 
     node_loc_ltr = node_location(span1_begin, span1_end, span2_begin,
-                                 span2_end, num_nodes)
+                                 span2_end, num_user_nodes)
     node_loc_rtl = list(reversed(node_loc_ltr))
 
     add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
@@ -28,6 +28,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     
     for node_loc,direction in zip([node_loc_ltr, node_loc_rtl], ["ltr", "rtl"]):
         #pdb.set_trace()
+        num_analysis_nodes = len(node_loc)
         for x,i in zip(node_loc, range(len(node_loc))): 
             #pdb.set_trace()
             Ve1 = 0.0
@@ -37,8 +38,6 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
             Rmax_pier = 0.0
         
             for axle_id in axle_num:
-               # if direction == "rtl" and x == 0.0:
-                    #pdb.set_trace()
 
                 if axle_id == 1:
                     cur_axle_loc = get_abs_axle_location(axle_spacing, x,
@@ -67,25 +66,26 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     
                     Ve1 = calc_shear(Rb1, Re1, Pr1, Pl1, direction)
 
-                    envelope_shear(Ve1, V_max1, i, num_nodes,
+                    envelope_shear(Ve1, V_max1, i, num_analysis_nodes,
                                    direction)
 
                     M1 = calc_moment(x, xl1, xr1, span1_begin, span1_end, Rb1, Pl1, Pr1, direction)
                     
-                    envelope_moment(M1, M_max1, i, num_nodes, direction)
+                    envelope_moment(M1, M_max1, i, num_analysis_nodes, direction)
         
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
+                    pdb.set_trace()
         
                     Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end, direction)
         
                     Ve2 = calc_shear(Rb2, Re2, Pr2, Pl2, direction)
 
-                    envelope_shear(Ve2, V_max2, i, num_nodes,
+                    envelope_shear(Ve2, V_max2, i, num_analysis_nodes,
                                    direction)
         
                     M2 = calc_moment(x, xl2, xr2, span2_begin, span2_end, Rb2, Pl2, Pr2, direction)
         
-                    envelope_moment(M2, M_max2, i, num_nodes, direction)
+                    envelope_moment(M2, M_max2, i, num_analysis_nodes, direction)
 
 
     return node_loc_ltr, V_max1, M_max1, V_max2, M_max2, \
@@ -404,15 +404,15 @@ def get_inputs():
            span_length1, span_length2, num_nodes
 
 def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
-            space_to_trailing_load, distributed_load, node_loc, V_max1,
-            M_max1, V_max2, M_max2, Rmax_pier, analysis_time,
-            span1_begin, span2_begin):
+           space_to_trailing_load, distributed_load, node_loc, V_max1,
+           M_max1, V_max2, M_max2, Rmax_pier, analysis_time,
+           span1_begin, span2_begin):
     """Format and print output."""
     #currently outputs half track (one rail)
     echo_input = ""
     out_tb = ""
     out_val = ""
-
+  
     echo_input += "\n\nECHO INPUT\n"
     echo_input += "Axle spacing: " + str(axle_spacing) + "\n"
     echo_input += "Axle weights: " + str(axle_wt) + "\n"
@@ -421,8 +421,8 @@ def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
     echo_input += "Number of Nodes: " + str(num_nodes) + "\n"
     echo_input += "Space to trailing load: " + str(space_to_trailing_load) + "\n"
     echo_input += "Distributed trailing load: " + str(distributed_load) + "\n"
-
-
+  
+  
     out_tb += "\n\nOUTPUT\n"
     out_tb += "SPAN 1"
     out_tb += "\n" #span 1 title spacing
@@ -430,20 +430,20 @@ def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
                                                 "Vmax [kip]",
                                                 "Mmax [kip-ft]")
     out_tb += "\n" #span 1 header spacing
-
+  
     for x,Vmax,Mmax in zip(node_loc, V_max1, M_max1):
         out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}\n""".format(x,
                                                                    Vmax/2,
                                                                    Mmax/2)
-
+  
     out_tb += "\n" #span 1 table spacing
-
-
+  
+  
     out_val += """Vmax [kip]: {0:<-.3f}\nMmax [kip-ft]: {1:<-.3f}""".format(max(V_max1)/2,
                                                                             max(M_max1)/2)
     out_val += "\n" #span 1 max/min spacing
-
-
+  
+  
     if V_max2 != []:
         out_tb += "SPAN 2"
         out_tb += "\n" #span 2 title spacing
@@ -451,17 +451,17 @@ def output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
                                                     "Vmax [kip]",
                                                     "Mmax [kip-ft]")
         out_tb += "\n" #span 2 header spacing
-
+  
         for x,Vmax,Mmax in zip(node_loc, V_max2, M_max2):
             out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}\n""".format(x,
                                                                        Vmax/2,
                                                                        Mmax/2)
-
+  
         out_tb += "\n\n" #span 2 table spacing
         
         out_val += """Vmax [kip]: {0:<-.3f}\nMmax [kip-ft]: {1:<-.3f}""".format(max(V_max2)/2,
                                                                                 max(M_max2)/2)
-
+  
         out_val += "\nRmax_pier: {0:<-.3f}".format(Rmax_pier/2)
       
     print echo_input + out_tb + out_val
