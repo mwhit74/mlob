@@ -74,7 +74,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     envelope_moment(M1, M_max1, i, num_analysis_nodes, direction)
         
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
-                    pdb.set_trace()
+                    #pdb.set_trace()
         
                     Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end, direction)
         
