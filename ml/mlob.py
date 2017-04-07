@@ -29,8 +29,8 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     for node_loc,direction in zip([node_loc_ltr, node_loc_rtl], ["ltr", "rtl"]):
         #pdb.set_trace()
         num_analysis_nodes = len(node_loc)
-        for x,i in zip(node_loc, range(len(node_loc))): 
-            #pdb.set_trace()
+        for x,i in zip(node_loc, range(num_user_nodes)): 
+            pdb.set_trace()
             Ve1 = 0.0
             M1 = 0.0
             Ve2 = 0.0
@@ -61,7 +61,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier)
                 
                 if x >= span1_begin and x <= span1_end:
-        
+                    print "In span 1" 
                     Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end, direction) 
                     
                     Ve1 = calc_shear(Rb1, Re1, Pr1, Pl1, direction)
@@ -75,6 +75,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
         
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
                     #pdb.set_trace()
+                    print "In span 2"
         
                     Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end, direction)
         
@@ -297,6 +298,8 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
     span_length2 = span2_end - span2_begin
 
     node_loc = []
+    
+    #span length 1 node locations
     x1 = 0.0
     dx1 = span_length1/(num_nodes - 1)
 
@@ -307,6 +310,7 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
             x1 = x1 + dx1
             node_loc.append(x1)
 
+    #span length 2 node locations
     if span_length2 > 0:
 
         x2 = span_length1
