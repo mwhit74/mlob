@@ -29,13 +29,27 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     for node_loc,direction in zip([node_loc_ltr, node_loc_rtl], ["ltr", "rtl"]):
         #pdb.set_trace()
         num_analysis_nodes = len(node_loc)
-        for x,i in zip(node_loc, range(num_user_nodes)): 
-            pdb.set_trace()
+        span1_index_id = -1
+        span2_index_id = -1
+        for x,i in zip(node_loc, range(num_analysis_nodes)): 
+            #pdb.set_trace()
             Ve1 = 0.0
             M1 = 0.0
             Ve2 = 0.0
             M2 = 0.0
             Rmax_pier = 0.0
+
+            if x >= span1_begin and x <= span1_end:
+                if direction == "ltr":
+                    span1_index_id = span1_index_id + 1
+                elif direction == "rtl":
+                    span1_index_id = num_user_nodes - 1
+
+            if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
+                if direction == "ltr":
+                    span2_index_id = span2_index_id + 1
+                elif direction == "rtl":
+                    span2_index_id = num_user_nodes - 1
         
             for axle_id in axle_num:
 
@@ -61,32 +75,27 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier)
                 
                 if x >= span1_begin and x <= span1_end:
-                    print "In span 1" 
                     Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end, direction) 
                     
                     Ve1 = calc_shear(Rb1, Re1, Pr1, Pl1, direction)
 
-                    envelope_shear(Ve1, V_max1, i, num_analysis_nodes,
-                                   direction)
+                    envelope_shear(Ve1, V_max1, span1_index_id)
 
                     M1 = calc_moment(x, xl1, xr1, span1_begin, span1_end, Rb1, Pl1, Pr1, direction)
                     
-                    envelope_moment(M1, M_max1, i, num_analysis_nodes, direction)
+                    envelope_moment(M1, M_max1, span1_index_id)
         
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
                     #pdb.set_trace()
-                    print "In span 2"
-        
                     Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end, direction)
         
                     Ve2 = calc_shear(Rb2, Re2, Pr2, Pl2, direction)
 
-                    envelope_shear(Ve2, V_max2, i, num_analysis_nodes,
-                                   direction)
+                    envelope_shear(Ve2, V_max2, span2_index_id)
         
                     M2 = calc_moment(x, xl2, xr2, span2_begin, span2_end, Rb2, Pl2, Pr2, direction)
         
-                    envelope_moment(M2, M_max2, i, num_analysis_nodes, direction)
+                    envelope_moment(M2, M_max2, span2_index_id)
 
 
     return node_loc_ltr, V_max1, M_max1, V_max2, M_max2, \
@@ -140,16 +149,11 @@ def calc_shear(Rb, Re, Pr, Pl, direction):
 
     return Ve
 
-def envelope_shear(Ve, V_max, i, num_nodes, direction):
+def envelope_shear(Ve, V_max, index_id):
     """Envelope the maximum and minimum shear at each node."""
     try:
-        if direction == "ltr":
-           node_id = i
-        elif direction == "rtl":
-           node_id = (num_nodes - 1) - i
-
-        if V_max[node_id] < Ve:
-            V_max[node_id] = Ve
+        if V_max[index_id] < Ve:
+            V_max[index_id] = Ve
     except:
         V_max.append(Ve)
 
@@ -166,16 +170,11 @@ def calc_moment(x, xl, xr, span_begin, span_end, Rb, Pl, Pr, direction):
 
     return M
 
-def envelope_moment(M, M_max, i, num_nodes, direction):
+def envelope_moment(M, M_max, index_id):
     """Envelope maximum positive moment at each node."""
     try:
-        if direction == "ltr":
-           node_id = i
-        elif direction == "rtl":
-           node_id = (num_nodes - 1) - i
-
-        if M_max[node_id] < M:
-            M_max[node_id] = M
+        if M_max[index_id] < M:
+            M_max[index_id] = M
     except:
         M_max.append(M)
 
