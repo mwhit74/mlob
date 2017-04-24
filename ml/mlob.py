@@ -29,8 +29,15 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     for node_loc,direction in zip([node_loc_ltr, node_loc_rtl], ["ltr", "rtl"]):
         #pdb.set_trace()
         num_analysis_nodes = len(node_loc)
-        span1_index_id = -1
-        span2_index_id = -1
+
+        #initialize span index id value
+        if direction == "ltr":
+            span1_index_id = -1
+            span2_index_id = -1
+        elif direction == "rtl":
+            span1_index_id = num_user_nodes
+            span2_index_id = num_user_nodes
+
         for x,i in zip(node_loc, range(num_analysis_nodes)): 
             #pdb.set_trace()
             Ve1 = 0.0
@@ -39,18 +46,19 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
             M2 = 0.0
             Rmax_pier = 0.0
 
+            #calculate span index id value
             if x >= span1_begin and x <= span1_end:
                 if direction == "ltr":
                     span1_index_id = span1_index_id + 1
                 elif direction == "rtl":
-                    span1_index_id = num_user_nodes - 1
+                    span1_index_id = span1_index_id - 1
 
             if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
                 if direction == "ltr":
                     span2_index_id = span2_index_id + 1
                 elif direction == "rtl":
-                    span2_index_id = num_user_nodes - 1
-        
+                    span2_index_id = span2_index_id - 1
+
             for axle_id in axle_num:
 
                 if axle_id == 1:
