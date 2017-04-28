@@ -8,4 +8,4 @@ calculated.
 By placing the axle at each node it ensures that the maximum forces are
 calculated at those nodes. 
 
-This program uses a functional porgramming paradigm approach. 
+This program uses a functional programming paradigm approach. 
