@@ -20,3 +20,7 @@ class TestMlob(unittest.TestCase):
 
     def test_node_location(self):
         self.assert
+
+    #write unit tests for a single example problem
+    #test each function along the way for the 
+    #example problem
