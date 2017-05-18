@@ -1,4 +1,4 @@
-def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
+def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2=0.0,
                     num_user_nodes, space_to_trailing_load,
                     distributed_load):
     """Initialize variables, set up loops, run analysis by calling functions."""
