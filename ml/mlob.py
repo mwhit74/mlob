@@ -1,4 +1,4 @@
-def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2=0.0,
+def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     num_user_nodes, space_to_trailing_load,
                     distributed_load):
     """Initialize variables, set up loops, run analysis by calling functions."""
@@ -325,7 +325,7 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
 
     return node_loc
 
-def span_begin_end_coords(span_length1, span_length2):
+def span_begin_end_coords(span_length1, span_length2=0.0):
 
     if span_length1 < 0.0:
         raise ValueError("Must enter a positive float for span 1 length.")
