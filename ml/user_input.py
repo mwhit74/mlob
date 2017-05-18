@@ -1,5 +1,15 @@
 def get_input():
     """Get user inputs for calculation values."""
+    axle_spacing = get_axle_spacing()
+    axle_wt = get_axle_wt()
+    space_to_trailing_load = get_space_to_trailing_load()
+    distributed_load = get_distributed_load()
+    span1_length = get_span1_length()
+    span2_length = get_span2_length()
+    num_analysis_nodes = get_num_analysis_nodes()
+
+def get_axle_spacing():
+    """Get axle spacing from user"""
     print "Enter axle spacing values separated by a space. Hit enter when done."
     while True:
         try:
@@ -10,6 +20,10 @@ def get_input():
         else:
             break
 
+    return axle_spacing
+
+def get_axle_wt():
+    """Get axle weights from user"""
     print "Enter axle weight values separated by a space. Hit enter when done."
     while True:
         try:
@@ -23,6 +37,10 @@ def get_input():
         else:
             break
 
+    return axle_wt
+
+def get_space_to_trailing_load():
+    """Get space to trailing load from user"""
     print "Enter value of the space to trailing load. Hit enter when done."
     while True:
         try:
@@ -31,7 +49,11 @@ def get_input():
             print "Invalid value. Please enter one number."
         else:
             break
+    
+    return space_to_trailing_load
 
+def get_distributed_load():
+    """Get distributed trailing load from user"""
     print "Enter value of the distributed load. Hit enter when done."
     while True:
         try:
@@ -41,24 +63,36 @@ def get_input():
         else:
             break
 
+    return distributed_load
+
+def get_span1_length():
+    """Get span 1 length from user"""
     print "Enter value of span length 1. Hit enter when done."
     while True:
         try:
-            span_length1=(float(raw_input()))
+            span1_length=(float(raw_input()))
         except ValueError:
             print "Invalid value. Please enter one number."
         else:
             break
 
+    return span1_length
+
+def get_span2_length():
+    """Get span 2 length from user"""
     print "Enter value of span length 2. Hit enter when done."
     while True:
         try:
-            span_length2=(float(raw_input()))
+            span2_length=(float(raw_input()))
         except ValueError:
             print "Invalid value. Please enter one number."
         else:
             break
 
+    return span2_length
+
+def get_num_analysis_nodes():
+    """Get number of analysis nodes from user"""
     print """Enter the number of nodes as an integer. \
              Number should be odd and greater than or equal to 21."""
     while True:
@@ -76,7 +110,6 @@ def get_input():
         else:
             break
 
-    return axle_spacing, axle_wt, space_to_trailing_load, distributed_load, \
-           span_length1, span_length2, num_nodes
+    return num_nodes
 
 
