@@ -8,10 +8,10 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     V_max2 = []
     M_max2 = []
 
-    span1_begin = 0.0
-    span1_end = span_length1
-    span2_begin = span_length1
-    span2_end = span_length1 + span_length2
+    (span1_begin,
+    span1_end,
+    span2_begin,
+    span2_end) = span_begin_end_coords(span_length1, span_length2)
 
     node_loc_ltr = node_location(span1_begin, span1_end, span2_begin,
                                  span2_end, num_user_nodes)
@@ -294,7 +294,6 @@ def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
             axle_wt.append(equivalent_pt_load)
 
 def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
-
     span_length1 = span1_end - span1_begin
     span_length2 = span2_end - span2_begin
 
@@ -325,3 +324,16 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
                 node_loc.append(x2)
 
     return node_loc
+
+def span_begin_end_coords(span_length1, span_length2):
+
+    if span_length1 < 0.0:
+        raise ValueError("Must enter a positive float for span 1 length.")
+    elif span_length2 < 0.0:
+        raise ValueError("Must enter a positive float for span 2 length.")
+    else:
+        span1_begin = 0.0
+        span1_end = span_length1
+        span2_begin = span_length1
+        span2_end = span_length1 + span_length2
+        return span1_begin, span1_end, span2_begin, span2_end
