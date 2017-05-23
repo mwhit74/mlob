@@ -1,6 +1,8 @@
+from tqdm import tqdm
+
 def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     num_user_nodes, space_to_trailing_load,
-                    distributed_load, point_load_spacing):
+                    distributed_load, point_load_spacing=0.5):
     """Initialize variables, set up loops, run analysis by calling functions."""
     #calculates for a full track (2 rails)
     V_max1 = []
@@ -24,7 +26,9 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     num_axles = len(axle_wt)
     axle_num = get_axle_num(num_axles)
     
-    for node_loc,direction in zip([node_loc_ltr, node_loc_rtl], ["ltr", "rtl"]):
+    for node_loc,direction in tqdm(zip([node_loc_ltr, 
+                                        node_loc_rtl],
+                                        ["ltr","rtl"])):
         num_analysis_nodes = len(node_loc)
 
         #initialize span index id value
@@ -35,7 +39,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
             span1_index_id = num_user_nodes
             span2_index_id = num_user_nodes
 
-        for x,i in zip(node_loc, range(num_analysis_nodes)): 
+        for x,i in tqdm(zip(node_loc, range(num_analysis_nodes))): 
             Ve1 = 0.0
             M1 = 0.0
             Ve2 = 0.0
@@ -55,7 +59,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 elif direction == "rtl":
                     span2_index_id = span2_index_id - 1
 
-            for axle_id in axle_num:
+            for axle_id in tqdm(axle_num):
 
                 if axle_id == 1:
                     cur_axle_loc = get_abs_axle_location(axle_spacing, x,
@@ -273,7 +277,7 @@ def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles)
     return Pt, xt, Pl, xl, Pr, xr
     
 def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
-        distributed_load, span1_begin, span2_end, point_load_spacing=0.5):
+        distributed_load, span1_begin, span2_end, pt_load_spacing=0.5):
     """Approximates the distributed trailing load as closely spaced point
     loads."""
 
