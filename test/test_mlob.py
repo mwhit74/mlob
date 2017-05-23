@@ -88,9 +88,8 @@ class TestMlob(unittest.TestCase):
                 self.assertTrue(nl == cnl)
             else:
                 error = abs((cnl-nl)/cnl)
-                self.assertTrue(error<=0.01, msg="Error: " + str(error))
-                err_str = err_str + str(cnl) + ":" + str(error) + "\n"
-        print err_str
+                msg = str(nl) + " : " + str(cnl) + " : " + str(error)
+                self.assertAlmostEqual(nl, cnl, places=2, msg=msg)
 
 
     def test_span_begin_end_coords_l1pos_l2(self):
