@@ -1,8 +1,8 @@
 from tqdm import tqdm
 
 def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
-                    num_user_nodes, space_to_trailing_load,
-                    distributed_load, point_load_spacing=0.5):
+                     num_user_nodes, space_to_trailing_load, distributed_load,
+                      point_load_spacing=0.5):
     """Initialize variables, set up loops, run analysis by calling functions."""
     #calculates for a full track (2 rails)
     V_max1 = []
@@ -89,7 +89,15 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
 
                     envelope_shear(Ve1, V_max1, span1_index_id)
 
-                    M1 = calc_moment(x, xl1, xr1, span1_begin, span1_end, Rb1, Pl1, Pr1, direction)
+                    M1 = calc_moment(x, 
+                                     xl1, 
+                                     xr1, 
+                                     span1_begin, 
+                                     span1_end, 
+                                     Rb1, 
+                                     Pl1, 
+                                     Pr1, 
+                                     direction)
                     
                     envelope_moment(M1, M_max1, span1_index_id)
         
@@ -100,7 +108,15 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
 
                     envelope_shear(Ve2, V_max2, span2_index_id)
         
-                    M2 = calc_moment(x, xl2, xr2, span2_begin, span2_end, Rb2, Pl2, Pr2, direction)
+                    M2 = calc_moment(x, 
+                                     xl2, 
+                                     xr2, 
+                                     span2_begin, 
+                                     span2_end, 
+                                     Rb2, 
+                                     Pl2, 
+                                     Pr2, 
+                                     direction)
         
                     envelope_moment(M2, M_max2, span2_index_id)
 
@@ -285,7 +301,15 @@ def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
     #each point load is the distributed load times the point load spacing
     #the point load spacing is a function of the span lenght and number of
     #divisions required
-    if space_to_trailing_load != 0.0 and distributed_load != 0.0:
+    if space_to_trailing_load < 0.0:
+        raise ValueError("Must enter a positive float for space to trialing"
+                            "load.")
+    elif distributed_load < 0.0:
+        raise ValueError("Must enter a positive float for distributed load.")
+    elif pt_load_spacing <= 0.0:
+        raise ValueError("Must enter a positive float (or nothing for default"
+                            "value of 0.5) for the point load spacing.")
+    elif distributed_load != 0.0 and space_to_trailing_load != 0.0:
         total_span_length = span2_end - span1_begin
         num_loads = int(total_span_length/pt_load_spacing)
         equivalent_pt_load = distributed_load*pt_load_spacing
@@ -301,31 +325,40 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
     span_length1 = span1_end - span1_begin
     span_length2 = span2_end - span2_begin
 
-    node_loc = []
-    
-    #span length 1 node locations
-    x1 = 0.0
-    dx1 = span_length1/(num_nodes - 1)
-
-    for i in range(num_nodes):
-        if i == 0:
-            node_loc.append(x1)
-        else:
-            x1 = x1 + dx1
-            node_loc.append(x1)
-
-    #span length 2 node locations
-    if span_length2 > 0:
-
-        x2 = span_length1
-        dx2 = span_length2/(num_nodes - 1)
+    if span_length1 < 0.0:
+        raise ValueError("Must enter a positive float for span 1 length.")
+    elif span_length2 < 0.0:
+        raise ValueError("Must enter a positive float for span 2 length (or"
+                "nothing for a default value of 0.0).")
+    elif num_nodes <= 0:
+        raise ValueError("Must enter a postive interger for number of nodes"
+                            "(the recommended minimum number of nodes is 21.).")
+    else:
+        node_loc = []
         
+        #span length 1 node locations
+        x1 = 0.0
+        dx1 = span_length1/(num_nodes - 1)
+
         for i in range(num_nodes):
             if i == 0:
-                pass #second span beginning is end of first span
+                node_loc.append(x1)
             else:
-                x2 = x2 + dx2
-                node_loc.append(x2)
+                x1 = x1 + dx1
+                node_loc.append(x1)
+
+        #span length 2 node locations
+        if span_length2 > 0:
+
+            x2 = span_length1
+            dx2 = span_length2/(num_nodes - 1)
+            
+            for i in range(num_nodes):
+                if i == 0:
+                    pass #second span beginning is end of first span
+                else:
+                    x2 = x2 + dx2
+                    node_loc.append(x2)
 
     return node_loc
 
@@ -334,7 +367,8 @@ def span_begin_end_coords(span_length1, span_length2=0.0):
     if span_length1 < 0.0:
         raise ValueError("Must enter a positive float for span 1 length.")
     elif span_length2 < 0.0:
-        raise ValueError("Must enter a positive float for span 2 length.")
+        raise ValueError("Must enter a positive float for span 2 length (or"
+                            "nothing for a default value of 0.0).")
     else:
         span1_begin = 0.0
         span1_end = span_length1
