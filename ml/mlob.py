@@ -1,6 +1,6 @@
 def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     num_user_nodes, space_to_trailing_load,
-                    distributed_load):
+                    distributed_load, point_load_spacing):
     """Initialize variables, set up loops, run analysis by calling functions."""
     #calculates for a full track (2 rails)
     V_max1 = []
@@ -18,7 +18,8 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     node_loc_rtl = list(reversed(node_loc_ltr))
 
     add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
-                      distributed_load, span1_begin, span2_end)
+                      distributed_load, span1_begin, span2_end,
+                      point_load_spacing)
     axle_spacing.insert(0, 0.0) #insert a dummy spacing for the first axle
     num_axles = len(axle_wt)
     axle_num = get_axle_num(num_axles)
@@ -272,7 +273,7 @@ def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles)
     return Pt, xt, Pl, xl, Pr, xr
     
 def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
-        distributed_load, span1_begin, span2_end):
+        distributed_load, span1_begin, span2_end, point_load_spacing=0.5):
     """Approximates the distributed trailing load as closely spaced point
     loads."""
 
@@ -282,7 +283,6 @@ def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
     #divisions required
     if space_to_trailing_load != 0.0 and distributed_load != 0.0:
         total_span_length = span2_end - span1_begin
-        pt_load_spacing = 0.5
         num_loads = int(total_span_length/pt_load_spacing)
         equivalent_pt_load = distributed_load*pt_load_spacing
 
@@ -326,7 +326,7 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
     return node_loc
 
 def span_begin_end_coords(span_length1, span_length2=0.0):
-
+    """Calculate the span beginning and end coordinates for spans 1 and 2."""
     if span_length1 < 0.0:
         raise ValueError("Must enter a positive float for span 1 length.")
     elif span_length2 < 0.0:
