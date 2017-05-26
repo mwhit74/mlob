@@ -125,7 +125,26 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
            Rmax_pier, span1_begin, span2_begin
     
 def calc_reactions(Pt, xt, span_begin, span_end, direction):
-    """Calculate reactions."""
+    """Calculate reactions.
+
+    Calculates the reactions at the end of each span. The pier reaction is not
+    calculated in this function.
+    
+    Moving left to right:
+        Rb = Pt*(span_end - xt)/span_length
+        Re = Pt*(xt - span_begin)/span_length
+    Moving right to left:
+        Rb = Pt*(xt - span_begin)/span_length
+        Re = Pt*(span_end - xt)/span_length
+
+    Args:
+        Pt (float): total load on the span
+        xt (float): location of the total load on the span
+        span_begin (float): span begin coordinate
+        span_end (float): span end coordinate
+        direction (str): flag to determine which direction is being calculated,
+                            either 'ltr' or 'rtl'
+    """
     span_length = span_end - span_begin
     if span_length == 0.0:
         Rb = 0.0
