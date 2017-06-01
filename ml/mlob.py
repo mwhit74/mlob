@@ -24,7 +24,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                       point_load_spacing)
     axle_spacing.insert(0, 0.0) #insert a dummy spacing for the first axle
     num_axles = len(axle_wt)
-    axle_num = get_axle_num(num_axles)
+    axle_num = number_axles(num_axles)
     
     for node_loc,direction in tqdm(zip([node_loc_ltr, 
                                         node_loc_rtl],
@@ -220,8 +220,8 @@ def envelope_moment(M, M_max, index_id):
     except:
         M_max.append(M)
 
-def get_axle_num(num_axles):
-    """Numbers the axles starting with 0."""
+def number_axles(num_axles):
+    """Numbers the axles starting with 1."""
     axle_num = []
 
     for i in range(num_axles):
