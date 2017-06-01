@@ -221,3 +221,5 @@ class TestMlob(unittest.TestCase):
                                       self.axle_wt_286k):
             self.assertAlmostEqual(cas, uas, places=3)
             self.assertAlmostEqual(cas, uas, places=3)
+
+    def test_calc_load_and_loc(self):
