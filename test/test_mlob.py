@@ -38,6 +38,7 @@ class TestMlob(unittest.TestCase):
         self.axle_wt_ul = [1.0]
 
         self.span_0 = 0.0
+        self.span_20 = 20.0
         self.span_25 = 25.0
         self.span_50 = 50.0
         self.span_100 = 100.0
@@ -120,8 +121,10 @@ class TestMlob(unittest.TestCase):
                 self.span_50, -1*self.span_25)
 
     def test_add_trailing_load_single_span_e80(self):
-        span1_begin = 0.0
-        span2_end = 20.0
+        (span1_begin,
+        span1_end,
+        span2_begin,
+        span2_end) = mlob.span_begin_end_coords(self.span_20)
         mlob.add_trailing_load(self.axle_spacing_E80,
                           self.axle_wt_E80,
                           self.space_to_trailing_load_E80,
@@ -151,8 +154,10 @@ class TestMlob(unittest.TestCase):
             self.assertAlmostEqual(cas, uas, places=3)
 
     def test_add_trailing_load_two_span_e80(self):
-        span1_begin = 0.0
-        span2_end = 70.0
+        (span1_begin,
+        span1_end,
+        span2_begin,
+        span2_end) = mlob.span_begin_end_coords(self.span_20, self.span_50)
         mlob.add_trailing_load(self.axle_spacing_E80,
                           self.axle_wt_E80,
                           self.space_to_trailing_load_E80,
@@ -202,8 +207,10 @@ class TestMlob(unittest.TestCase):
             self.assertAlmostEqual(cas, uas, places=3)
 
     def test_add_trailing_load_single_span_none(self):
-        span1_begin = 0.0
-        span2_end = 20.0
+        (span1_begin,
+        span1_end,
+        span2_begin,
+        span2_end) = mlob.span_begin_end_coords(self.span_20)
         mlob.add_trailing_load(self.axle_spacing_286k,
                           self.axle_wt_286k,
                           self.space_to_trailing_load_286k,
@@ -222,4 +229,71 @@ class TestMlob(unittest.TestCase):
             self.assertAlmostEqual(cas, uas, places=3)
             self.assertAlmostEqual(cas, uas, places=3)
 
-    def test_calc_load_and_loc(self):
+    def test_number_axles_E80_l25(self):
+        (span1_begin,
+        span1_end,
+        span2_begin,
+        span2_end) = mlob.span_begin_end_coords(self.span_25)
+        mlob.add_trailing_load(self.axle_spacing_E80,
+                          self.axle_wt_E80,
+                          self.space_to_trailing_load_E80,
+                          self.distributed_load_E80,
+                          span1_begin,
+                          span2_end)
+        num_axles = len(self.axle_wt_E80)
+
+        c_axle_num = [1,2,3,4,5,6,7,8,9,10,
+                      11,12,13,14,15,16,17,18,19,20,
+                      21,22,23,24,25,26,27,28,29,30,
+                      31,32,33]
+
+        axle_num = mlob.number_axles(num_axles)
+
+        for c_num, num in zip(c_axle_num, axle_num):
+            self.assertEqual(c_num, num)
+
+    def test_number_axles_E80_l20_l50(self):
+        (span1_begin,
+        span1_end,
+        span2_begin,
+        span2_end) = mlob.span_begin_end_coords(self.span_20, self.span_50)
+        mlob.add_trailing_load(self.axle_spacing_E80,
+                          self.axle_wt_E80,
+                          self.space_to_trailing_load_E80,
+                          self.distributed_load_E80,
+                          span1_begin,
+                          span2_end)
+        num_axles = len(self.axle_wt_E80)
+
+        c_axle_num = [1,2,3,4,5,6,7,8,9,10,
+                      11,12,13,14,15,16,17,18,19,20,
+                      21,22,23,24,25,26,27,28,29,30,
+                      31,32,33,34,35,36,37,38,39,40,
+                      41,42,43,44,45,46,47,48,49,50,
+                      51,52,53,54,55]
+
+        axle_num = mlob.number_axles(num_axles)
+
+        for c_num, num in zip(c_axle_num, axle_num):
+            self.assertEqual(c_num, num)
+
+
+    def test_number_axles_286k_l50(self):
+        (span1_begin,
+        span1_end,
+        span2_begin,
+        span2_end) = mlob.span_begin_end_coords(self.span_20)
+        mlob.add_trailing_load(self.axle_spacing_286k,
+                          self.axle_wt_286k,
+                          self.space_to_trailing_load_286k,
+                          self.distributed_load_286k,
+                          span1_begin,
+                          span2_end)
+        num_axles = len(self.axle_wt_286k)
+
+        c_axle_num = [1,2,3,4]
+
+        axle_num = mlob.number_axles(num_axles)
+
+        for c_num, num in zip(c_axle_num, axle_num):
+            self.assertEqual(c_num, num)
