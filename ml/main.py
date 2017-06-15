@@ -13,8 +13,8 @@ def manager():
     distributed_load = 8.00
     #axle_spacing = []
     #axle_wt = [1.0]
-    span_length1 = 400.0
-    span_length2 = 400.0
+    span_length1 = 20.0
+    span_length2 = 0.0
     #num_nodes should always be odd to place a node at midspan and at 
     #each support
     #a minimum of 21 nodes should be used for analysis
