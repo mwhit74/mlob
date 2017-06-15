@@ -297,3 +297,7 @@ class TestMlob(unittest.TestCase):
 
         for c_num, num in zip(c_axle_num, axle_num):
             self.assertEqual(c_num, num)
+
+    
+    def test_calc_load_and_loc(self):
+        
