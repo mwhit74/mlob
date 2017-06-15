@@ -24,12 +24,16 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                                  span2_end, num_user_nodes)
     node_loc_rtl = list(reversed(node_loc_ltr))
 
-    add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
-                      distributed_load, span1_begin, span2_end,
-                      point_load_spacing)
+    axle_spacing, axle_wt = add_trailing_load(axle_spacing, 
+                                              axle_wt, 
+                                              space_to_trailing_load,
+                                              distributed_load,
+                                              span1_begin,
+                                              span2_end,
+                                              point_load_spacing)
     axle_spacing.insert(0, 0.0) #insert a dummy spacing for the first axle
-    num_axles = len(axle_wt)
-    axle_num = number_axles(num_axles)
+    num_axles = len(axle_wt) #number of axles in the pattern
+    axle_num = number_axles(num_axles) #numbered axles
     
     for node_loc,direction in tqdm(zip([node_loc_ltr, 
                                         node_loc_rtl],
@@ -236,8 +240,7 @@ def number_axles(num_axles):
 
 
 def get_abs_axle_location(axle_spacing, start_pt, direction):
-    """Calculates the absolute location of the axles, left support is the
-    origin."""
+    """Calculates the absolute location of the axles wrt the left support."""
     abs_axle_location = []
 
     loc = start_pt #initialize
@@ -253,7 +256,29 @@ def get_abs_axle_location(axle_spacing, start_pt, direction):
 
 def move_axle_loc(x, axle_spacing, axle_id, prev_axle_loc,
                   num_axles, direction):
-    """Steps the axles across the span placing each axle at each node."""
+    """Steps the axles across the span placing each axle at each node.
+   
+    Calculates the current loaction of all the axles on or off the span with the
+    axle_id axle over the current node.
+
+    Updates the x-coordinate of each axle "in place". The x-coordinate stored in
+    the axle_spacing list changes but the relative location of that axle to the
+    other axles in the pattern does not change.
+
+    Args:
+        x (float): x-coordinate of current node
+        axle_spacing (list of floats): the spacing between each axle
+        axle_id (int): index of axle to placed over the node
+        prev_axle_loc (list of floats): x-coordinate of the previous location of
+                                        each axle
+        num_axles (int): number of program defined axles (includes axles for
+                         approximate distributed load)
+    
+    Returns:
+        cur_axle_loc (list of floats): the location of each axle on or off the
+                                       span with the axle_id axle located over
+                                       the current node 
+    """
     #calc current location of all axles on span with the
     #axle_id axle over the current node
 
@@ -270,12 +295,29 @@ def move_axle_loc(x, axle_spacing, axle_id, prev_axle_loc,
     return cur_axle_loc
     
 def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles):
-    """Calculate the load and it's location on the span.
+    """Calculate the load and its location on the span.
     
     Calculates the total load and its location on the span, and the load and
     its location to the left and right of the node (critical section).
+  
+    Args:
+        cur_axle_loc (list of floats): current x-coordinate of all axles on span
+        axle_wt (list of floats): weight of each axle
+        x (float): x-coordinate of node location
+        begin_span (float): x-coordinate of the beginning of the span
+        end_span (float): x-coordinate of the end of the span
+        num_axles (int): number of program defined axles (includes axles for
+                         approximate distributed load)
    
-    
+    Returns:
+        Pt (float): total load on the span due to the axles on the span
+        xt (float): the x-coordinate of the equivalent total load on the span
+        Pl (float): the load on the span to the left of the node 
+        xl (float): the x-coordinate of the equivalent load to the left of the
+                    node
+        Pr (float): the load on the span to the right of the node
+        xr (float): the x-coordinate of the equivalent load to the right of the
+                    node
     """
 
     Pt = 0.0
@@ -379,6 +421,8 @@ def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
         for x in range(num_loads):
             axle_spacing.append(pt_load_spacing)
             axle_wt.append(equivalent_pt_load)
+
+    return axle_spacing, axle_wt
 
 def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
     """Calculate the coordinate location of the analysis nodes.
