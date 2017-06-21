@@ -299,5 +299,14 @@ class TestMlob(unittest.TestCase):
             self.assertEqual(c_num, num)
 
     
-    def test_calc_load_and_loc(self):
+    def test_move_axle_loc(self):
         
+        move_axle_loc(x, axle_spacing, axle_id, prev_axle_loc, num_axle,
+                direction)
+        
+    
+    def test_calc_load_and_loc(self):
+
+
+        calc_load_and_loc(cur_axle_loc, axle_wt, x, span1_begin, span1_end,
+                num_axles)
