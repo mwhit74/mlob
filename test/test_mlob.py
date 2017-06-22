@@ -25,6 +25,7 @@ class TestUserInput(unittest.TestCase):
 
 class TestMlob(unittest.TestCase):
 
+
     def setUp(self):
         self.axle_spacing_E80 = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00,
                                  5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00,
@@ -55,6 +56,7 @@ class TestMlob(unittest.TestCase):
         self.distributed_load_E80 = 8.0
         self.distributed_load_286k = 0.0
         self.distributed_load_ul = 0.0
+
 
     def tearDown(self):
         pass
@@ -107,19 +109,23 @@ class TestMlob(unittest.TestCase):
         func_tuple = mlob.span_begin_end_coords(self.span_25)
         correct_tuple = (0.0,25.0,25.0,25.0)
         self.assertEqual(func_tuple, correct_tuple)
-        
+    
+
     def test_span_begin_end_coords_l1pos_l2pos(self):
         func_tuple = mlob.span_begin_end_coords(self.span_50, self.span_25)
         correct_tuple = (0.0,50.0,50.0,75.0)
         self.assertEqual(func_tuple, correct_tuple)
 
+
     def test_span_begin_end_coords_l1neg_l2(self):
         self.assertRaises(ValueError, mlob.span_begin_end_coords,
                 -1*self.span_50)
 
+
     def test_span_begin_end_coords_l1pos_l2neg(self):
         self.assertRaises(ValueError, mlob.span_begin_end_coords,
                 self.span_50, -1*self.span_25)
+
 
     def test_add_trailing_load_single_span_e80(self):
         (span1_begin,
@@ -153,6 +159,7 @@ class TestMlob(unittest.TestCase):
                                       self.axle_wt_E80):
             self.assertAlmostEqual(cas, uas, places=3)
             self.assertAlmostEqual(cas, uas, places=3)
+
 
     def test_add_trailing_load_two_span_e80(self):
         (span1_begin,
@@ -207,6 +214,7 @@ class TestMlob(unittest.TestCase):
             self.assertAlmostEqual(cas, uas, places=3)
             self.assertAlmostEqual(cas, uas, places=3)
 
+
     def test_add_trailing_load_single_span_none(self):
         (span1_begin,
         span1_end,
@@ -230,6 +238,7 @@ class TestMlob(unittest.TestCase):
             self.assertAlmostEqual(cas, uas, places=3)
             self.assertAlmostEqual(cas, uas, places=3)
 
+
     def test_number_axles_E80_l25(self):
         (span1_begin,
         span1_end,
@@ -252,6 +261,7 @@ class TestMlob(unittest.TestCase):
 
         for c_num, num in zip(c_axle_num, axle_num):
             self.assertEqual(c_num, num)
+
 
     def test_number_axles_E80_l20_l50(self):
         (span1_begin,
@@ -300,7 +310,7 @@ class TestMlob(unittest.TestCase):
             self.assertEqual(c_num, num)
 
     
-    def test_move_axle_loc_E80_ltr(self):
+    def test_move_axle_loc_E80_ltr_x0(self):
         self.axle_spacing_E80.insert(0, 0.0)
         x = 0.0 #node location
         prev_axle_loc = mlob.get_abs_axle_location(self.axle_spacing_E80, 
@@ -319,7 +329,8 @@ class TestMlob(unittest.TestCase):
         for loc, c_loc in zip(cur_axle_loc, c_cur_axle_loc):
             self.assertAlmostEqual(loc, c_loc, places=3)
 
-    def test_move_axle_loc_E80_rtl(self):
+
+    def test_move_axle_loc_E80_rtl_x20(self):
         self.axle_spacing_E80.insert(0, 0.0)
         x = 20.0 #node location
         prev_axle_loc = mlob.get_abs_axle_location(self.axle_spacing_E80, 
@@ -338,8 +349,75 @@ class TestMlob(unittest.TestCase):
         for loc, c_loc in zip(cur_axle_loc, c_cur_axle_loc):
             self.assertAlmostEqual(loc, c_loc, places=3)
 
-    def test_calc_load_and_loc(self):
-        pass
 
-        #calc_load_and_loc(cur_axle_loc, axle_wt, x, span1_begin, span1_end,
-        #        num_axles)
+    def test_calc_load_and_loc_E80_ltr_x75_l100_aid1(self):
+        (span1_begin,
+        span1_end,
+        span2_begin,
+        span2_end) = mlob.span_begin_end_coords(self.span_100)
+        self.axle_spacing_E80.insert(0, 0.0)
+        num_axles = len(self.axle_wt_E80)
+        x = 75.0
+        cur_axle_loc = mlob.get_abs_axle_location(self.axle_spacing_E80,
+                                                       x, "ltr")
+        Pt, xt, Pl, xl, Pr, xr = mlob.calc_load_and_loc(cur_axle_loc,
+                                                        self.axle_wt_E80,
+                                                        x,
+                                                        span1_begin,
+                                                        span1_end,
+                                                        num_axles)
+        c_Pt = 848.0 
+        c_xt = 37.1698
+        c_Pl = 848.0
+        c_xl = 37.1698
+        c_Pr = 40.0
+        c_xr = 75.0
+
+        self.assertAlmostEqual(Pt, c_Pt, places=3)
+        self.assertAlmostEqual(xt, c_xt, places=3)
+        self.assertAlmostEqual(Pl, c_Pl, places=3)
+        self.assertAlmostEqual(xl, c_xl, places=3)
+        self.assertAlmostEqual(Pr, c_Pr, places=3)
+        self.assertAlmostEqual(xr, c_xr, places=3)
+
+
+    def test_calc_load_and_loc_E80_ltr_x75_l100_aid5(self):
+        (span1_begin,
+        span1_end,
+        span2_begin,
+        span2_end) = mlob.span_begin_end_coords(self.span_100)
+        self.axle_spacing_E80.insert(0, 0.0)
+        num_axles = len(self.axle_wt_E80)
+        x = 75.0
+        prev_axle_loc = mlob.get_abs_axle_location(self.axle_spacing_E80,
+                                                       x, "ltr")
+        cur_axle_loc_2 = mlob.move_axle_loc(self.axle_spacing_E80, 2,
+                                          prev_axle_loc, num_axles, "ltr")
+        cur_axle_loc_3 = mlob.move_axle_loc(self.axle_spacing_E80, 3,
+                                          cur_axle_loc_2, num_axles, "ltr")
+        cur_axle_loc_4 = mlob.move_axle_loc(self.axle_spacing_E80, 4,
+                                          cur_axle_loc_3, num_axles, "ltr")
+        cur_axle_loc_5 = mlob.move_axle_loc(self.axle_spacing_E80, 5,
+                                          cur_axle_loc_4, num_axles, "ltr")
+        Pt, xt, Pl, xl, Pr, xr = mlob.calc_load_and_loc(cur_axle_loc_5,
+                                                        self.axle_wt_E80,
+                                                        x,
+                                                        span1_begin,
+                                                        span1_end,
+                                                        num_axles)
+        c_Pt = 1032.0
+        c_xt = 51.6705
+        c_Pl = 752.0
+        c_xl = 38.5691
+        c_Pr = 360.0
+        c_xr = 84.2222
+
+        self.assertAlmostEqual(Pt, c_Pt, places=3)
+        self.assertAlmostEqual(xt, c_xt, places=3)
+        self.assertAlmostEqual(Pl, c_Pl, places=3)
+        self.assertAlmostEqual(xl, c_xl, places=3)
+        self.assertAlmostEqual(Pr, c_Pr, places=3)
+        self.assertAlmostEqual(xr, c_xr, places=3)
+
+
+
