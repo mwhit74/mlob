@@ -1,5 +1,6 @@
 import unittest
 from ml import mlob
+import pdb
 
 class TestUserInput(unittest.TestCase):
     
@@ -299,14 +300,46 @@ class TestMlob(unittest.TestCase):
             self.assertEqual(c_num, num)
 
     
-    def test_move_axle_loc(self):
-        
-        move_axle_loc(x, axle_spacing, axle_id, prev_axle_loc, num_axle,
-                direction)
-        
-    
+    def test_move_axle_loc_E80_ltr(self):
+        self.axle_spacing_E80.insert(0, 0.0)
+        x = 0.0 #node location
+        prev_axle_loc = mlob.get_abs_axle_location(self.axle_spacing_E80, 
+                                                   x, "ltr")
+        num_axles = len(self.axle_wt_E80)
+
+        cur_axle_loc = mlob.move_axle_loc(self.axle_spacing_E80, 2,
+                                          prev_axle_loc, num_axles, "ltr")
+
+        c_cur_axle_loc = [8.0, 0.0, -5.0, -10.0,
+                          -15.0, -24.0, -29.0, -35.0,
+                          -40.0, -48.0, -56.0, -61.0,
+                          -66.0, -71.0, -80.0, -85.0,
+                          -91.0, -96.0]
+
+        for loc, c_loc in zip(cur_axle_loc, c_cur_axle_loc):
+            self.assertAlmostEqual(loc, c_loc, places=3)
+
+    def test_move_axle_loc_E80_rtl(self):
+        self.axle_spacing_E80.insert(0, 0.0)
+        x = 20.0 #node location
+        prev_axle_loc = mlob.get_abs_axle_location(self.axle_spacing_E80, 
+                                                   x, "rtl")
+        num_axles = len(self.axle_wt_E80)
+
+        cur_axle_loc = mlob.move_axle_loc(self.axle_spacing_E80, 2,
+                                          prev_axle_loc, num_axles, "rtl")
+
+        c_cur_axle_loc = [12.0, 20.0, 25.0, 30.0, 
+                          35.0, 44.0, 49.0, 55.0, 
+                          60.0, 68.0, 76.0, 81.0, 
+                          86.0, 91.0, 100.0, 105.0,
+                          111.0, 116.0]
+
+        for loc, c_loc in zip(cur_axle_loc, c_cur_axle_loc):
+            self.assertAlmostEqual(loc, c_loc, places=3)
+
     def test_calc_load_and_loc(self):
+        pass
 
-
-        calc_load_and_loc(cur_axle_loc, axle_wt, x, span1_begin, span1_end,
-                num_axles)
+        #calc_load_and_loc(cur_axle_loc, axle_wt, x, span1_begin, span1_end,
+        #        num_axles)

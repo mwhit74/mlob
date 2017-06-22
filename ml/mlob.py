@@ -76,7 +76,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 else:
                     prev_axle_loc = cur_axle_loc
 
-                    cur_axle_loc = move_axle_loc(x, axle_spacing, axle_id,
+                    cur_axle_loc = move_axle_loc(axle_spacing, axle_id,
                                                  prev_axle_loc, num_axles,
                                                  direction)
 
@@ -254,19 +254,14 @@ def get_abs_axle_location(axle_spacing, start_pt, direction):
 
     return abs_axle_location          
 
-def move_axle_loc(x, axle_spacing, axle_id, prev_axle_loc,
+def move_axle_loc(axle_spacing, axle_id, prev_axle_loc,
                   num_axles, direction):
     """Steps the axles across the span placing each axle at each node.
    
     Calculates the current loaction of all the axles on or off the span with the
     axle_id axle over the current node.
 
-    Updates the x-coordinate of each axle "in place". The x-coordinate stored in
-    the axle_spacing list changes but the relative location of that axle to the
-    other axles in the pattern does not change.
-
     Args:
-        x (float): x-coordinate of current node
         axle_spacing (list of floats): the spacing between each axle
         axle_id (int): index of axle to placed over the node
         prev_axle_loc (list of floats): x-coordinate of the previous location of
