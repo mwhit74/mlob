@@ -134,7 +134,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
            Rmax_pier, span1_begin, span2_begin
     
 def calc_reactions(Pt, xt, span_begin, span_end, direction):
-    """Calculate reactions.
+    """Calculate span reactions.
 
     Calculates the reactions at the end of each span. The pier reaction is not
     calculated in this function.
@@ -153,6 +153,16 @@ def calc_reactions(Pt, xt, span_begin, span_end, direction):
         span_end (float): span end coordinate
         direction (str): flag to determine which direction is being calculated,
                             either 'ltr' or 'rtl'
+
+    Returns:
+        Rb (float): reaction at the beginning of the span
+        Re (float): reaction at the end of the span
+
+    Notes:
+        For the vehicle moving ltr, Rb is the left span reaction and Re is the
+        right span reaction.
+        For the vehicle moving rtl, Rb is the right span reaction and Re is the
+        left span reaction.
     """
     span_length = span_end - span_begin
     if span_length == 0.0:
@@ -170,7 +180,21 @@ def calc_reactions(Pt, xt, span_begin, span_end, direction):
 
 def calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin, span1_end, span2_begin,
         span2_end):
-    """Calculate the interior pier (floorbeam) reaction."""
+    """Calculate the interior pier (floorbeam) reaction.
+    
+    Args:
+        Pt1 (float): total force on span 1
+        xt1 (float): location of the total load on span 1
+        Pt2 (float): total force on span 2
+        xt2 (float): location of the total load on span 2
+        span1_begin (float): coordinate location of beginning of span 1
+        span1_end (float): coordinate location of end of span 1
+        span2_begin (float): coordinate location of beginning of span 2
+        span2_end (float): coordinate location of end of span 2
+
+    Returns:
+        Rpier (float): reaction at the pier (floorbeam)
+    """
     span_length1 = span1_end - span1_begin
     span_length2 = span2_end - span2_begin
     if span_length2 == 0.0:
@@ -182,7 +206,12 @@ def calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin, span1_end, span2_begin,
     return Rpier
 
 def envelope_pier_reaction(Rmax_pier, Rpier):
-    """Envelope the maximum interior pier (floorbeam) reaction."""
+    """Envelope the maximum interior pier (floorbeam) reaction.
+    
+    On each iteration compare the maximum pier reaction to the calculated pier
+    reaction. If the calculate pier reaction is greater than the maximum,
+    replace the maximum.
+    """
     if Rpier > Rmax_pier:
         Rmax_pier = Rpier
 
@@ -240,7 +269,7 @@ def number_axles(num_axles):
 
 
 def get_abs_axle_location(axle_spacing, start_pt, direction):
-    """Calculates the absolute location of the axles wrt the left support."""
+    """Calculates the absolute location of the axles wrt the support."""
     abs_axle_location = []
 
     loc = start_pt #initialize
@@ -256,10 +285,10 @@ def get_abs_axle_location(axle_spacing, start_pt, direction):
 
 def move_axle_loc(axle_spacing, axle_id, prev_axle_loc,
                   num_axles, direction):
-    """Steps the axles across the span placing each axle at each node.
-   
-    Calculates the current loaction of all the axles on or off the span with the
-    axle_id axle over the current node.
+    """Calculates the current loaction of all the axles on or off the span.
+
+    Steps each axle from its previous location to the current location which
+    is determined from the spacing associated with the axle_id axle. 
 
     Args:
         axle_spacing (list of floats): the spacing between each axle
@@ -274,9 +303,6 @@ def move_axle_loc(axle_spacing, axle_id, prev_axle_loc,
                                        span with the axle_id axle located over
                                        the current node 
     """
-    #calc current location of all axles on span with the
-    #axle_id axle over the current node
-
     cur_axle_loc = []
     
     for i in range(num_axles):
