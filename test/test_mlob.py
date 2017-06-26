@@ -703,3 +703,7 @@ class TestMlob(unittest.TestCase):
         self.assertAlmostEqual(c_Re1, Re1, places=3)
         self.assertAlmostEqual(c_Rb2, Rb2, places=3)
         self.assertAlmostEqual(c_Re2, Re2, places=3)
+
+
+    def test_calc_shear(self):
+
