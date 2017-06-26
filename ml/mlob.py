@@ -48,6 +48,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
             span1_index_id = num_user_nodes
             span2_index_id = num_user_nodes
 
+        #loop thru analysis node locations
         for x,i in tqdm(zip(node_loc, range(num_analysis_nodes))): 
             Ve1 = 0.0
             M1 = 0.0
@@ -68,8 +69,12 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 elif direction == "rtl":
                     span2_index_id = span2_index_id - 1
 
+            #loop thru each axle in the axle configuration placing each axle at
+            #current analysis node
             for axle_id in tqdm(axle_num):
-
+                
+                #calculate location of each axle based on the axle currently
+                #over the analysis node
                 if axle_id == 1:
                     cur_axle_loc = get_abs_axle_location(axle_spacing, x,
                             direction)
@@ -82,10 +87,10 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
 
                 Pt1, xt1, Pl1, xl1, Pr1, xr1 = calc_load_and_loc(cur_axle_loc,
                            axle_wt, x, span1_begin, span1_end, num_axles)
-                   
+                
                 Pt2, xt2, Pl2, xl2, Pr2, xr2 = calc_load_and_loc(cur_axle_loc,
                         axle_wt, x, span2_begin, span2_end, num_axles)
-                
+               
                 Rpier = calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin,
                                            span1_end, span2_begin, span2_end)
                 
