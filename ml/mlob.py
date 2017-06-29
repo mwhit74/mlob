@@ -99,7 +99,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 if x >= span1_begin and x <= span1_end:
                     Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end, direction) 
                     
-                    Ve1 = calc_shear(Rb1, Re1, Pr1, Pl1, direction)
+                    Ve1 = calc_shear(Rb1, Pr1, Pl1, direction)
 
                     envelope_shear(Ve1, V_max1, span1_index_id)
 
@@ -118,7 +118,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
                     Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end, direction)
         
-                    Ve2 = calc_shear(Rb2, Re2, Pr2, Pl2, direction)
+                    Ve2 = calc_shear(Rb2, Pr2, Pl2, direction)
 
                     envelope_shear(Ve2, V_max2, span2_index_id)
         
@@ -222,7 +222,7 @@ def envelope_pier_reaction(Rmax_pier, Rpier):
 
     return Rmax_pier
 
-def calc_shear(Rb, Re, Pr, Pl, direction):
+def calc_shear(Rb, Pr, Pl, direction):
     """Calculate shear on one side of the node."""
     #calculate shear on opposite side of section
     #if load move ltr, calc shear on right
