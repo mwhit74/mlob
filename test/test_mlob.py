@@ -685,7 +685,7 @@ class TestMlob(unittest.TestCase):
                                                         span2_end,
                                                         num_axles)
 
-        c_Rpier = 705.9199 
+        c_Rpier = 549.3598
 
         Rpier = mlob.calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin,
                 span1_end, span2_begin, span2_end)
@@ -902,10 +902,10 @@ class TestMlob(unittest.TestCase):
                                                         span2_end,
                                                         num_axles)
 
-        c_Rb1 = 560.3199
-        c_Re1 = 367.6801
-        c_Rb2 = 62.4000
-        c_Re2 = 145.6000
+        c_Rb1 = 298.0000
+        c_Re1 = 62.0000
+        c_Rb2 = 316.6400
+        c_Re2 = 251.3600
 
         Rb1, Re1 = mlob.calc_reactions(Pt1, xt1, span1_begin, span1_end, "rtl")
         Rb2, Re2 = mlob.calc_reactions(Pt2, xt2, span2_begin, span2_end, "rtl")
@@ -1013,9 +1013,9 @@ class TestMlob(unittest.TestCase):
         Rb1, Re1 = mlob.calc_reactions(Pt1, xt1, span1_begin, span1_end, "ltr")
         Rb2, Re2 = mlob.calc_reactions(Pt2, xt2, span2_begin, span2_end, "ltr")
 
-        c_Ve = 274.4803
+        c_Ve = 43.3600
 
-        Ve = mlob.calc_shear(Rb1, Pr1, Pl1, "ltr")
+        Ve = mlob.calc_shear(Rb2, Pr2, Pl2, "ltr")
 
         self.assertAlmostEqual(c_Ve, Ve, places=3)
 
@@ -1117,8 +1117,217 @@ class TestMlob(unittest.TestCase):
         Rb1, Re1 = mlob.calc_reactions(Pt1, xt1, span1_begin, span1_end, "rtl")
         Rb2, Re2 = mlob.calc_reactions(Pt2, xt2, span2_begin, span2_end, "rtl")
 
-        c_Ve = 200.3199
+        c_Ve = 43.3600
 
-        Ve = mlob.calc_shear(Rb1, Pr1, Pl1, "rtl")
+        Ve = mlob.calc_shear(Rb2, Pr2, Pl2, "rtl")
 
         self.assertAlmostEqual(c_Ve, Ve, places=3)
+
+#calc_moment
+
+    def test_calc_moment_E80_ltr_x75_l100_l50_aid10(self):
+        (span1_begin,
+        span1_end,
+        span2_begin,
+        span2_end) = mlob.span_begin_end_coords(self.span_100, self.span_50)
+        self.axle_spacing_E80.insert(0, 0.0)
+        num_axles = len(self.axle_wt_E80)
+        x = 75.0
+        prev_axle_loc = mlob.get_abs_axle_location(self.axle_spacing_E80,
+                                                       x, "ltr")
+        cur_axle_loc_2 = mlob.move_axle_loc(self.axle_spacing_E80, 2,
+                                          prev_axle_loc, num_axles, "ltr")
+        cur_axle_loc_3 = mlob.move_axle_loc(self.axle_spacing_E80, 3,
+                                          cur_axle_loc_2, num_axles, "ltr")
+        cur_axle_loc_4 = mlob.move_axle_loc(self.axle_spacing_E80, 4,
+                                          cur_axle_loc_3, num_axles, "ltr")
+        cur_axle_loc_5 = mlob.move_axle_loc(self.axle_spacing_E80, 5,
+                                          cur_axle_loc_4, num_axles, "ltr")
+        cur_axle_loc_6 = mlob.move_axle_loc(self.axle_spacing_E80, 6,
+                                          cur_axle_loc_5, num_axles, "ltr")
+        cur_axle_loc_7 = mlob.move_axle_loc(self.axle_spacing_E80, 7,
+                                          cur_axle_loc_6, num_axles, "ltr")
+        cur_axle_loc_8 = mlob.move_axle_loc(self.axle_spacing_E80, 8,
+                                          cur_axle_loc_7, num_axles, "ltr")
+        cur_axle_loc_9 = mlob.move_axle_loc(self.axle_spacing_E80, 9,
+                                          cur_axle_loc_8, num_axles, "ltr")
+        cur_axle_loc_10 = mlob.move_axle_loc(self.axle_spacing_E80, 10,
+                                          cur_axle_loc_9, num_axles, "ltr")
+        Pt1, xt1, Pl1, xl1, Pr1, xr1 = mlob.calc_load_and_loc(cur_axle_loc_10,
+                                                        self.axle_wt_E80,
+                                                        x,
+                                                        span1_begin,
+                                                        span1_end,
+                                                        num_axles)
+        Pt2, xt2, Pl2, xl2, Pr2, xr2 = mlob.calc_load_and_loc(cur_axle_loc_10,
+                                                        self.axle_wt_E80,
+                                                        x,
+                                                        span2_begin,
+                                                        span2_end,
+                                                        num_axles)
+
+        Rb1, Re1 = mlob.calc_reactions(Pt1, xt1, span1_begin, span1_end, "ltr")
+        Rb2, Re2 = mlob.calc_reactions(Pt2, xt2, span2_begin, span2_end, "ltr")
+
+        c_Me = 
+
+        Me = mlob.calc_moment()
+
+        self.assertAlmostEqual(c_Me, Me, places=3)
+
+
+    def test_calc_moment_E80_ltr_x125_l100_l50_aid10(self):
+        #x = 125
+        #calc shear in span 2 with direction ltr
+        (span1_begin,
+        span1_end,
+        span2_begin,
+        span2_end) = mlob.span_begin_end_coords(self.span_100, self.span_50)
+        self.axle_spacing_E80.insert(0, 0.0)
+        num_axles = len(self.axle_wt_E80)
+        x = 125.0
+        prev_axle_loc = mlob.get_abs_axle_location(self.axle_spacing_E80,
+                                                       x, "ltr")
+        cur_axle_loc_2 = mlob.move_axle_loc(self.axle_spacing_E80, 2,
+                                          prev_axle_loc, num_axles, "ltr")
+        cur_axle_loc_3 = mlob.move_axle_loc(self.axle_spacing_E80, 3,
+                                          cur_axle_loc_2, num_axles, "ltr")
+        cur_axle_loc_4 = mlob.move_axle_loc(self.axle_spacing_E80, 4,
+                                          cur_axle_loc_3, num_axles, "ltr")
+        cur_axle_loc_5 = mlob.move_axle_loc(self.axle_spacing_E80, 5,
+                                          cur_axle_loc_4, num_axles, "ltr")
+        cur_axle_loc_6 = mlob.move_axle_loc(self.axle_spacing_E80, 6,
+                                          cur_axle_loc_5, num_axles, "ltr")
+        cur_axle_loc_7 = mlob.move_axle_loc(self.axle_spacing_E80, 7,
+                                          cur_axle_loc_6, num_axles, "ltr")
+        cur_axle_loc_8 = mlob.move_axle_loc(self.axle_spacing_E80, 8,
+                                          cur_axle_loc_7, num_axles, "ltr")
+        cur_axle_loc_9 = mlob.move_axle_loc(self.axle_spacing_E80, 9,
+                                          cur_axle_loc_8, num_axles, "ltr")
+        cur_axle_loc_10 = mlob.move_axle_loc(self.axle_spacing_E80, 10,
+                                          cur_axle_loc_9, num_axles, "ltr")
+        Pt1, xt1, Pl1, xl1, Pr1, xr1 = mlob.calc_load_and_loc(cur_axle_loc_10,
+                                                        self.axle_wt_E80,
+                                                        x,
+                                                        span1_begin,
+                                                        span1_end,
+                                                        num_axles)
+        Pt2, xt2, Pl2, xl2, Pr2, xr2 = mlob.calc_load_and_loc(cur_axle_loc_10,
+                                                        self.axle_wt_E80,
+                                                        x,
+                                                        span2_begin,
+                                                        span2_end,
+                                                        num_axles)
+
+        Rb1, Re1 = mlob.calc_reactions(Pt1, xt1, span1_begin, span1_end, "ltr")
+        Rb2, Re2 = mlob.calc_reactions(Pt2, xt2, span2_begin, span2_end, "ltr")
+
+        c_Me = 
+
+        Me = mlob.calc_moment()
+
+        self.assertAlmostEqual(c_Me, Me, places=3)
+
+
+    def test_calc_moment_E80_rtl_x75_l100_l50_aid10(self):
+        (span1_begin,
+        span1_end,
+        span2_begin,
+        span2_end) = mlob.span_begin_end_coords(self.span_100, self.span_50)
+        self.axle_spacing_E80.insert(0, 0.0)
+        num_axles = len(self.axle_wt_E80)
+        x = 75.0
+        prev_axle_loc = mlob.get_abs_axle_location(self.axle_spacing_E80,
+                                                       x, "rtl")
+        cur_axle_loc_2 = mlob.move_axle_loc(self.axle_spacing_E80, 2,
+                                          prev_axle_loc, num_axles, "rtl")
+        cur_axle_loc_3 = mlob.move_axle_loc(self.axle_spacing_E80, 3,
+                                          cur_axle_loc_2, num_axles, "rtl")
+        cur_axle_loc_4 = mlob.move_axle_loc(self.axle_spacing_E80, 4,
+                                          cur_axle_loc_3, num_axles, "rtl")
+        cur_axle_loc_5 = mlob.move_axle_loc(self.axle_spacing_E80, 5,
+                                          cur_axle_loc_4, num_axles, "rtl")
+        cur_axle_loc_6 = mlob.move_axle_loc(self.axle_spacing_E80, 6,
+                                          cur_axle_loc_5, num_axles, "rtl")
+        cur_axle_loc_7 = mlob.move_axle_loc(self.axle_spacing_E80, 7,
+                                          cur_axle_loc_6, num_axles, "rtl")
+        cur_axle_loc_8 = mlob.move_axle_loc(self.axle_spacing_E80, 8,
+                                          cur_axle_loc_7, num_axles, "rtl")
+        cur_axle_loc_9 = mlob.move_axle_loc(self.axle_spacing_E80, 9,
+                                          cur_axle_loc_8, num_axles, "rtl")
+        cur_axle_loc_10 = mlob.move_axle_loc(self.axle_spacing_E80, 10,
+                                          cur_axle_loc_9, num_axles, "rtl")
+        Pt1, xt1, Pl1, xl1, Pr1, xr1 = mlob.calc_load_and_loc(cur_axle_loc_10,
+                                                        self.axle_wt_E80,
+                                                        x,
+                                                        span1_begin,
+                                                        span1_end,
+                                                        num_axles)
+        Pt2, xt2, Pl2, xl2, Pr2, xr2 = mlob.calc_load_and_loc(cur_axle_loc_10,
+                                                        self.axle_wt_E80,
+                                                        x,
+                                                        span2_begin,
+                                                        span2_end,
+                                                        num_axles)
+
+        Rb1, Re1 = mlob.calc_reactions(Pt1, xt1, span1_begin, span1_end, "rtl")
+        Rb2, Re2 = mlob.calc_reactions(Pt2, xt2, span2_begin, span2_end, "rtl")
+
+        c_Me = 
+
+        Me = mlob.calc_moment()
+
+        self.assertAlmostEqual(c_Me, Me, places=3)
+
+
+    def test_calc_moment_E80_rtl_x125_l100_l50_aid10(self):
+        #x = 125
+        #calc shear in span 2 with direction rtl
+        (span1_begin,
+        span1_end,
+        span2_begin,
+        span2_end) = mlob.span_begin_end_coords(self.span_100, self.span_50)
+        self.axle_spacing_E80.insert(0, 0.0)
+        num_axles = len(self.axle_wt_E80)
+        x = 125.0
+        prev_axle_loc = mlob.get_abs_axle_location(self.axle_spacing_E80,
+                                                       x, "rtl")
+        cur_axle_loc_2 = mlob.move_axle_loc(self.axle_spacing_E80, 2,
+                                          prev_axle_loc, num_axles, "rtl")
+        cur_axle_loc_3 = mlob.move_axle_loc(self.axle_spacing_E80, 3,
+                                          cur_axle_loc_2, num_axles, "rtl")
+        cur_axle_loc_4 = mlob.move_axle_loc(self.axle_spacing_E80, 4,
+                                          cur_axle_loc_3, num_axles, "rtl")
+        cur_axle_loc_5 = mlob.move_axle_loc(self.axle_spacing_E80, 5,
+                                          cur_axle_loc_4, num_axles, "rtl")
+        cur_axle_loc_6 = mlob.move_axle_loc(self.axle_spacing_E80, 6,
+                                          cur_axle_loc_5, num_axles, "rtl")
+        cur_axle_loc_7 = mlob.move_axle_loc(self.axle_spacing_E80, 7,
+                                          cur_axle_loc_6, num_axles, "rtl")
+        cur_axle_loc_8 = mlob.move_axle_loc(self.axle_spacing_E80, 8,
+                                          cur_axle_loc_7, num_axles, "rtl")
+        cur_axle_loc_9 = mlob.move_axle_loc(self.axle_spacing_E80, 9,
+                                          cur_axle_loc_8, num_axles, "rtl")
+        cur_axle_loc_10 = mlob.move_axle_loc(self.axle_spacing_E80, 10,
+                                          cur_axle_loc_9, num_axles, "rtl")
+        Pt1, xt1, Pl1, xl1, Pr1, xr1 = mlob.calc_load_and_loc(cur_axle_loc_10,
+                                                        self.axle_wt_E80,
+                                                        x,
+                                                        span1_begin,
+                                                        span1_end,
+                                                        num_axles)
+        Pt2, xt2, Pl2, xl2, Pr2, xr2 = mlob.calc_load_and_loc(cur_axle_loc_10,
+                                                        self.axle_wt_E80,
+                                                        x,
+                                                        span2_begin,
+                                                        span2_end,
+                                                        num_axles)
+
+        Rb1, Re1 = mlob.calc_reactions(Pt1, xt1, span1_begin, span1_end, "rtl")
+        Rb2, Re2 = mlob.calc_reactions(Pt2, xt2, span2_begin, span2_end, "rtl")
+
+        c_Me = 
+
+        Me = mlob.calc_moment()
+
+        self.assertAlmostEqual(c_Me, Me, places=3)
