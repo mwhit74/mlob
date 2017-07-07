@@ -1169,9 +1169,10 @@ class TestMlob(unittest.TestCase):
         Rb1, Re1 = mlob.calc_reactions(Pt1, xt1, span1_begin, span1_end, "ltr")
         Rb2, Re2 = mlob.calc_reactions(Pt2, xt2, span2_begin, span2_end, "ltr")
 
-        c_Me = 
+        c_Me = 8733.99982
 
-        Me = mlob.calc_moment()
+        Me = mlob.calc_moment(x, xl1, xr1, span1_begin, span1_end, Rb1, Pl1,
+                Pr1, "ltr")
 
         self.assertAlmostEqual(c_Me, Me, places=3)
 
@@ -1222,9 +1223,10 @@ class TestMlob(unittest.TestCase):
         Rb1, Re1 = mlob.calc_reactions(Pt1, xt1, span1_begin, span1_end, "ltr")
         Rb2, Re2 = mlob.calc_reactions(Pt2, xt2, span2_begin, span2_end, "ltr")
 
-        c_Me = 
+        c_Me = 2956.0000
 
-        Me = mlob.calc_moment()
+        Me = mlob.calc_moment(x, xl2, xr2, span2_begin, span2_end, Rb2, Pl2,
+                Pr2, "ltr")
 
         self.assertAlmostEqual(c_Me, Me, places=3)
 
@@ -1273,9 +1275,10 @@ class TestMlob(unittest.TestCase):
         Rb1, Re1 = mlob.calc_reactions(Pt1, xt1, span1_begin, span1_end, "rtl")
         Rb2, Re2 = mlob.calc_reactions(Pt2, xt2, span2_begin, span2_end, "rtl")
 
-        c_Me = 
+        c_Me = 9048.0000
 
-        Me = mlob.calc_moment()
+        Me = mlob.calc_moment(x, xl1, xr1, span1_begin, span1_end, Rb1, Pl1,
+                Pr1, "rtl")
 
         self.assertAlmostEqual(c_Me, Me, places=3)
 
@@ -1326,8 +1329,9 @@ class TestMlob(unittest.TestCase):
         Rb1, Re1 = mlob.calc_reactions(Pt1, xt1, span1_begin, span1_end, "rtl")
         Rb2, Re2 = mlob.calc_reactions(Pt2, xt2, span2_begin, span2_end, "rtl")
 
-        c_Me = 
+        c_Me = 2956.0000
 
-        Me = mlob.calc_moment()
+        Me = mlob.calc_moment(x, xl2, xr2, span2_begin, span2_end, Rb2, Pl2,
+                Pr2, "rtl")
 
         self.assertAlmostEqual(c_Me, Me, places=3)
