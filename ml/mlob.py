@@ -8,30 +8,50 @@ from tqdm import tqdm
 def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                      num_user_nodes, space_to_trailing_load, distributed_load,
                       point_load_spacing=0.5):
-   """Calculates the max shear and moment at each analysis node in 1 or 2 spans.
+    """Calculates the max shear and moment at each analysis node in 1 or 2 spans.
 
-   This function uses the other functions in this module to calculate the
-   maximum shear and moment at each analysis node. This is accomplished by
-   iterating through each analysis node, at each analysis node each axle of
-   vehicle is placed on the analysis node and the location of all the other
-   axles is determined, the moment and shear are calculated for this instance of
-   axle locations. This operation is repeated for each axle of the vehicle and
-   for each analysis node. The axles are incremented left to right and right to
-   left to cover all possible axle locations in either direction.
+    This function calculates the maximum shear and moment at each analysis node
+    in one or two spans of equal or unequal lengths. This is accomplished by
+    iterating through each analysis node, at each analysis node each axle of
+    vehicle is placed on the analysis node and the location of all the other
+    axles is determined, the moment and shear are calculated for this instance of
+    axle locations. This operation is repeated for each axle of the vehicle and
+    for each analysis node. The axles are incremented left to right and right to
+    left to cover all possible axle locations in either direction.
 
-   Placing each axle directly at the analysis node ensures that the maximum
-   shear and moment is calculated for each axle and corresponding axle
-   locations. While the maximum shear and moment will be calculated for that
-   specific analysis node location, the overall maximum shear and moment of the
-   span may not be calculated if there is not enough discretization of analysis
-   nodes, i.e. not enough analysis nodes in the span to accurately describe the
-   shear and moment behavior.
+    Args:
+        axle_spacing (list of floats): the spacing between each axle
+        axle_wt (list of floats): weight of each axle
+        span_length1 (float): length of span 1
+        span_length2 (float): length of span 2
+        num_user_nodes (int): number of analysis nodes input by the user
+        space_to_trailing_load (float): distance from last discrete axle to
+                                        beginning of distributed load
+        distributed_load (float): uniformly distributed trailing load magnitude
+        point_load_spacing (float, optional): spacing of approximate discretely
+                                              spaced point loads, 
+                                              defaults to 0.5
 
-   Args:
-
-   Returns:
-
-   Notes:
+    Returns:
+        node_loc_ltr (list of floats): coordinate location of analysis nodes in
+                                       order ltr
+        V_max1 (list of floats): maximum shear at each analysis node in span 1
+        M_max1 (list of floats): maximum moment at each analysis node in span 1
+        V_max2 (list of floats): maximum moment at each analysis node in span 2
+        M_max2 (list of floats): maximum moment at each analysis node in span 2
+        Rmax_pier (float): maximum pier reaction, returns None if span length 2
+                           is not entered by user
+        span1_begin (float): coordinate location of beginning of span 1
+        span2_begin (float): coordinate location of beginning of span 2
+        
+    Notes:
+        Placing each axle directly at the analysis node ensures that the maximum
+        shear and moment is calculated for each axle and corresponding axle
+        locations. While the maximum shear and moment will be calculated for that
+        specific analysis node location, the overall maximum shear and moment of the
+        span may not be calculated if there is not enough discretization of analysis
+        nodes, i.e. not enough analysis nodes in the span to accurately describe the
+        shear and moment behavior.
     """
     #calculates for a full track (2 rails)
     V_max1 = []
@@ -212,6 +232,9 @@ def calc_reactions(Pt, xt, span_begin, span_end, direction):
 def calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin, span1_end, span2_begin,
         span2_end):
     """Calculate the interior pier (floorbeam) reaction.
+
+    Rpier = (Pt1*(xt1 - span1_begin/span_length1 +
+               Pt2*(span2_end - xt2)/span_length2)) 
     
     Args:
         Pt1 (float): total force on span 1
@@ -229,7 +252,7 @@ def calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin, span1_end, span2_begin,
     span_length1 = span1_end - span1_begin
     span_length2 = span2_end - span2_begin
     if span_length2 == 0.0:
-        Rpier = 0.0
+        Rpier = None
     else:
         Rpier = (Pt1*(xt1 - span1_begin)/span_length1 +
                     Pt2*(span2_end - xt2)/span_length2)
@@ -287,7 +310,20 @@ def calc_shear(Rb, Pr, Pl, direction):
 
 
 def envelope_shear(Ve, V_max, index_id):
-    """Envelope the maximum and minimum shear at each node."""
+    """Envelope the maximum and minimum shear at each node.
+    
+    Args:
+        Ve (float): shear at analysis node
+        V_max (list): maximum shear at each node
+        index_id (int): analysis node number 
+    
+    Returns:
+        None
+
+    Notes:
+        If Ve is greater than the current maxmimum shear at the current
+        analysis node the maximum shear is updated as Ve.
+    """
     try:
         if V_max[index_id] < Ve:
             V_max[index_id] = Ve
@@ -338,7 +374,20 @@ def calc_moment(x, xl, xr, span_begin, span_end, Rb, Pl, Pr, direction):
 
 
 def envelope_moment(M, M_max, index_id):
-    """Envelope maximum positive moment at each node."""
+    """Envelope maximum positive moment at each node.
+
+    Args:
+        M (float): moment at analysis node
+        M_max (list): maximum moment at each node
+        index_id (int): analysis node number 
+    
+    Returns:
+        None
+
+    Notes:
+        If M is greater than the current maxmimum moment at the current
+        analysis node the maximum moment is updated as M.
+    """
     try:
         if M_max[index_id] < M:
             M_max[index_id] = M
@@ -498,8 +547,16 @@ def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
         distributed_load (float): uniformly distributed trailing load magnitude
         span1_begin (float): coordinate location of beginning of span 1
         span2_end (float): coordinate location of end of span 2
-        pt_load_spacing (float, optional): spacing of approximate discretely
+        point_load_spacing (float, optional): spacing of approximate discretely
                                            spaced point loads, defaults to 0.5
+
+    Returns:
+        axle_spacing (list of floats): user input axle spacing appended with
+                                       axle spacing for discretely spaced loads
+                                       to approximate the distributed load
+        axle_wt (list of floats): user input axle weights appended with axle
+                                       weights for discretely spaced loads to
+                                       approximate the distributed load
 
     Notes:
         Based on testing it can be shown that a reasonable level of accuracy is

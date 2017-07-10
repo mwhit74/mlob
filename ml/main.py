@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from user_input import get_input
 from output import write_output
 from mlob import analyze_vehicle
@@ -13,8 +14,8 @@ def manager():
     distributed_load = 8.00
     #axle_spacing = []
     #axle_wt = [1.0]
-    span_length1 = 20.0
-    span_length2 = 0.0
+    span_length1 = 6.0
+    span_length2 = 6.0
     #num_nodes should always be odd to place a node at midspan and at 
     #each support
     #a minimum of 21 nodes should be used for analysis
