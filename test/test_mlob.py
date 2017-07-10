@@ -1123,8 +1123,6 @@ class TestMlob(unittest.TestCase):
 
         self.assertAlmostEqual(c_Ve, Ve, places=3)
 
-#calc_moment
-
     def test_calc_moment_E80_ltr_x75_l100_l50_aid10(self):
         (span1_begin,
         span1_end,

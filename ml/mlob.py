@@ -8,7 +8,31 @@ from tqdm import tqdm
 def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                      num_user_nodes, space_to_trailing_load, distributed_load,
                       point_load_spacing=0.5):
-    """Initialize variables, set up loops, run analysis by calling functions."""
+   """Calculates the max shear and moment at each analysis node in 1 or 2 spans.
+
+   This function uses the other functions in this module to calculate the
+   maximum shear and moment at each analysis node. This is accomplished by
+   iterating through each analysis node, at each analysis node each axle of
+   vehicle is placed on the analysis node and the location of all the other
+   axles is determined, the moment and shear are calculated for this instance of
+   axle locations. This operation is repeated for each axle of the vehicle and
+   for each analysis node. The axles are incremented left to right and right to
+   left to cover all possible axle locations in either direction.
+
+   Placing each axle directly at the analysis node ensures that the maximum
+   shear and moment is calculated for each axle and corresponding axle
+   locations. While the maximum shear and moment will be calculated for that
+   specific analysis node location, the overall maximum shear and moment of the
+   span may not be calculated if there is not enough discretization of analysis
+   nodes, i.e. not enough analysis nodes in the span to accurately describe the
+   shear and moment behavior.
+
+   Args:
+
+   Returns:
+
+   Notes:
+    """
     #calculates for a full track (2 rails)
     V_max1 = []
     M_max1 = []
@@ -137,7 +161,8 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
 
     return node_loc_ltr, V_max1, M_max1, V_max2, M_max2, \
            Rmax_pier, span1_begin, span2_begin
-    
+
+
 def calc_reactions(Pt, xt, span_begin, span_end, direction):
     """Calculate span reactions.
 
@@ -183,6 +208,7 @@ def calc_reactions(Pt, xt, span_begin, span_end, direction):
 
     return Rb, Re
 
+
 def calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin, span1_end, span2_begin,
         span2_end):
     """Calculate the interior pier (floorbeam) reaction.
@@ -210,6 +236,7 @@ def calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin, span1_end, span2_begin,
 
     return Rpier
 
+
 def envelope_pier_reaction(Rmax_pier, Rpier):
     """Envelope the maximum interior pier (floorbeam) reaction.
     
@@ -222,8 +249,32 @@ def envelope_pier_reaction(Rmax_pier, Rpier):
 
     return Rmax_pier
 
+
 def calc_shear(Rb, Pr, Pl, direction):
-    """Calculate shear on one side of the node."""
+    """Calculate shear on one side of the node.
+    
+    Moving left to right:
+        Ve = Pl - Rb
+    Moving right to left
+        Ve = abs(Pr - Rb)
+
+    Args:
+        Rb (float): reaction at beginning of span
+        Pr (float): the load on the span to the right of the node
+        Pl (float): the load on the span to the left of the node 
+        direction (str): flag to determine which direction is being calculated,
+                            either 'ltr' or 'rtl'
+
+    Returns:
+        Ve (float): shear at the analysis node
+
+    Notes:
+        Calculate shear on the opposite side of the section.
+        If the load is moving left to right, calculate the shear to the right of
+        the analysis node.
+        If the load is moving right to left, calculate the shear to the left of
+        the analysis node. 
+    """
     #calculate shear on opposite side of section
     #if load move ltr, calc shear on right
     #if load move rtl, calc shear on left
@@ -234,6 +285,7 @@ def calc_shear(Rb, Pr, Pl, direction):
 
     return Ve
 
+
 def envelope_shear(Ve, V_max, index_id):
     """Envelope the maximum and minimum shear at each node."""
     try:
@@ -242,18 +294,48 @@ def envelope_shear(Ve, V_max, index_id):
     except:
         V_max.append(Ve)
 
+
 def calc_moment(x, xl, xr, span_begin, span_end, Rb, Pl, Pr, direction):
-    """Calculate moment at node."""
+    """Calculate moment at node.
+
+    Moving left to right:
+        el = x - xl
+        eb = x - span_begin
+        M = Rb*eb - Pl*el
+    Moving right to left:
+        er = xr - x
+        eb = span_end - x
+        M = Rb*eb - Pr*er
+    
+    Args:
+        x (float): x-coordinate of node location
+        xl (float): the x-coordinate of the equivalent load to the left of the
+                    node
+        xr (float): the x-coordinate of the equivalent load to the right of the
+                    node
+        span_begin (float): coordinate location of beginning of span
+        span_end (float): coordinate location of end of span
+        Rb (float): reaction at the beginning of the span
+        Pl (float): the load on the span to the left of the node 
+        Pr (float): the load on the span to the right of the node
+        direction (str): flag to determine which direction is being calculated,
+                            either 'ltr' or 'rtl'
+
+    Returns:
+        M (float): moment at the analysis node for the given span length and
+                   axle location
+    """
     if direction == "ltr":
         el = x - xl 
         eb = x - span_begin
-        M = Rb*eb- Pl*el
+        M = Rb*eb - Pl*el
     elif direction == "rtl":
         er = xr - x
         eb = span_end - x
         M = Rb*eb - Pr*er
 
     return M
+
 
 def envelope_moment(M, M_max, index_id):
     """Envelope maximum positive moment at each node."""
@@ -262,6 +344,7 @@ def envelope_moment(M, M_max, index_id):
             M_max[index_id] = M
     except:
         M_max.append(M)
+
 
 def number_axles(num_axles):
     """Numbers the axles starting with 1."""
@@ -274,7 +357,7 @@ def number_axles(num_axles):
 
 
 def get_abs_axle_location(axle_spacing, start_pt, direction):
-    """Calculates the absolute location of the axles wrt the support."""
+    """Calculates the absolute location of the axles wrt the start point."""
     abs_axle_location = []
 
     loc = start_pt #initialize
@@ -287,6 +370,7 @@ def get_abs_axle_location(axle_spacing, start_pt, direction):
         abs_axle_location.append(loc)
 
     return abs_axle_location          
+
 
 def move_axle_loc(axle_spacing, axle_id, prev_axle_loc,
                   num_axles, direction):
@@ -302,7 +386,9 @@ def move_axle_loc(axle_spacing, axle_id, prev_axle_loc,
                                         each axle
         num_axles (int): number of program defined axles (includes axles for
                          approximate distributed load)
-    
+        direction (str): flag to determine which direction is being calculated,
+                            either 'ltr' or 'rtl'
+
     Returns:
         cur_axle_loc (list of floats): the location of each axle on or off the
                                        span with the axle_id axle located over
@@ -319,7 +405,8 @@ def move_axle_loc(axle_spacing, axle_id, prev_axle_loc,
         cur_axle_loc.append(axle_loc)
 
     return cur_axle_loc
-    
+   
+
 def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles):
     """Calculate the load and its location on the span.
     
@@ -391,7 +478,8 @@ def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles)
         xr = sum_Prx/Pr
 
     return Pt, xt, Pl, xl, Pr, xr
-    
+   
+
 def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
         distributed_load, span1_begin, span2_end, pt_load_spacing=0.5):
     """Approximates the distributed trailing load as closely spaced point loads.
@@ -450,6 +538,7 @@ def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
 
     return axle_spacing, axle_wt
 
+
 def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
     """Calculate the coordinate location of the analysis nodes.
 
@@ -459,6 +548,7 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
         span2_begin (float): coordinate location of beginning of span 2
         span2_end (float): coordinate location of end of span 2
         num_nodes (int): number of analysis nodes input by the user
+
     Returns:
         node_loc (list of floats): list of the coordinate locations of the
                                     analysis nodes along the beam
@@ -502,6 +592,7 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
                     node_loc.append(x2)
 
     return node_loc
+
 
 def span_begin_end_coords(span_length1, span_length2=0.0):
     """Calculate the span beginning and end coordinates for spans 1 and 2.
