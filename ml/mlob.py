@@ -57,6 +57,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     M_max1 = []
     V_max2 = []
     M_max2 = []
+    Rmax_pier = 0.0
 
     (span1_begin,
     span1_end,
@@ -77,7 +78,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     mod_axle_spacing.insert(0, 0.0) #insert a dummy spacing for the first axle
     num_axles = len(mod_axle_wt) #number of axles in the pattern
     axle_num = number_axles(num_axles) #numbered axles
-    
+    #pdb.set_trace()
     for node_loc,direction in zip([node_loc_ltr, 
                                         node_loc_rtl],
                                         ["ltr","rtl"]):
@@ -93,12 +94,11 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
 
         #loop thru analysis node locations
         for x,i in zip(node_loc, range(num_analysis_nodes)): 
-            pdb.set_trace()
+    #        pdb.set_trace()
             Ve1 = 0.0
             M1 = 0.0
             Ve2 = 0.0
             M2 = 0.0
-            Rmax_pier = 0.0
 
             #calculate span index id value
             if x >= span1_begin and x <= span1_end:
@@ -135,8 +135,8 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 Pt2, xt2, Pl2, xl2, Pr2, xr2 = calc_load_and_loc(cur_axle_loc,
                         mod_axle_wt, x, span2_begin, span2_end, num_axles)
                
-                Rpier = calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin,
-                                           span1_end, span2_begin, span2_end)
+                Rpier = calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin,
+                                    span1_end, span2_begin, span2_end, num_axles)
 
                 Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier)
                 
@@ -229,34 +229,27 @@ def calc_reactions(Pt, xt, span_begin, span_end, direction):
     return Rb, Re
 
 
-def calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin, span1_end, span2_begin,
-        span2_end):
+def calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin, span1_end,
+                       span2_begin, span2_end, num_axles):
     """Calculate the interior pier (floorbeam) reaction.
-
-    Rpier = (Pt1*(xt1 - span1_begin/span_length1 +
-               Pt2*(span2_end - xt2)/span_length2)) 
-    
-    Args:
-        Pt1 (float): total force on span 1
-        xt1 (float): location of the total load on span 1
-        Pt2 (float): total force on span 2
-        xt2 (float): location of the total load on span 2
-        span1_begin (float): coordinate location of beginning of span 1
-        span1_end (float): coordinate location of end of span 1
-        span2_begin (float): coordinate location of beginning of span 2
-        span2_end (float): coordinate location of end of span 2
 
     Returns:
         Rpier (float): reaction at the pier (floorbeam)
     """
-    span_length1 = span1_end - span1_begin
-    span_length2 = span2_end - span2_begin
-    if span_length2 == 0.0:
-        Rpier = None
-    else:
-        Rpier = (Pt1*(xt1 - span1_begin)/span_length1 +
-                    Pt2*(span2_end - xt2)/span_length2)
+    Rpier = 0.0
 
+    span1_length = span1_end - span1_begin
+    span2_length = span2_end - span2_begin
+
+    for i in range(num_axles):
+        if cur_axle_loc[i] > span1_begin and cur_axle_loc[i] < span2_end:
+            if cur_axle_loc[i] <= span1_end:
+                r = (cur_axle_loc[i] - span1_begin)/span1_length*mod_axle_wt[i]
+            if cur_axle_loc[i] > span2_begin:
+                r = (span2_end - cur_axle_loc[i])/span2_length*mod_axle_wt[i]
+
+            Rpier = Rpier + r
+            
     return Rpier
 
 
@@ -527,7 +520,7 @@ def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles)
         xr = sum_Prx/Pr
 
     return Pt, xt, Pl, xl, Pr, xr
-   
+
 
 def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
         distributed_load, span1_begin, span2_end, pt_load_spacing=0.5):
