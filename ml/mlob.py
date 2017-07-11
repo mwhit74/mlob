@@ -136,8 +136,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                
                 Rpier = calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin,
                                            span1_end, span2_begin, span2_end)
-                bug = "{0} {1} {2} {3} {4} {5}".format(x, Pt1, xt1, Pt2, xt2, Rpier)               
-                #print bug
+
                 Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier)
                 
                 if x >= span1_begin and x <= span1_end:
@@ -496,7 +495,7 @@ def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles)
     
     for i in range(num_axles):
         #if the axle is on the span add to total weight on span
-        if cur_axle_loc[i] >= begin_span and cur_axle_loc[i] < end_span:
+        if cur_axle_loc[i] >= begin_span and cur_axle_loc[i] <= end_span:
             Pt = Pt + axle_wt[i]
             sum_Ptx = sum_Ptx + cur_axle_loc[i]*axle_wt[i]
             #if the axle is to the left of the analysis node, add weight to
