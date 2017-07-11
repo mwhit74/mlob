@@ -79,9 +79,9 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     num_axles = len(axle_wt) #number of axles in the pattern
     axle_num = number_axles(num_axles) #numbered axles
     
-    for node_loc,direction in tqdm(zip([node_loc_ltr, 
+    for node_loc,direction in zip([node_loc_ltr, 
                                         node_loc_rtl],
-                                        ["ltr","rtl"])):
+                                        ["ltr","rtl"]):
         num_analysis_nodes = len(node_loc)
 
         #initialize span index id value
@@ -93,7 +93,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
             span2_index_id = num_user_nodes
 
         #loop thru analysis node locations
-        for x,i in tqdm(zip(node_loc, range(num_analysis_nodes))): 
+        for x,i in zip(node_loc, range(num_analysis_nodes)): 
             Ve1 = 0.0
             M1 = 0.0
             Ve2 = 0.0
@@ -115,7 +115,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
 
             #loop thru each axle in the axle configuration placing each axle at
             #current analysis node
-            for axle_id in tqdm(axle_num):
+            for axle_id in axle_num:
                 
                 #calculate location of each axle based on the axle currently
                 #over the analysis node

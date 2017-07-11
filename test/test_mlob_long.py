@@ -22,7 +22,7 @@ class TestMlobLong(unittest.TestCase):
 
         num_user_nodes = 21
 
-        header = "{0}{1}{2}{3}{4}{5}{6}".format("Span Length [ft]",
+        header = "{0} {1} {2} {3} {4} {5} {6}".format("Span Length [ft]",
                                                 "Max Moment [ft-kips]",
                                                 "Max Moment at 1/4 Pt [ft-kips]",
                                                 "Max Shear at End [kips]",
@@ -47,6 +47,7 @@ class TestMlobLong(unittest.TestCase):
             max_shear_e = V_max1[0]/2
             max_shear_q = V_max1[5]/2
             max_shear_c = V_max1[10]/2
+            r_max_pier = Rmax_pier/2
 
             out = "{0} {1} {2} {3} {4} {5} {6}".format(span_length,
                                                  max_moment,
@@ -54,14 +55,8 @@ class TestMlobLong(unittest.TestCase):
                                                  max_shear_e,
                                                  max_shear_q,
                                                  max_shear_c,
-                                                 Rmax_pier)
+                                                 r_max_pier)
 
             print out
 
-            del node_loc
-            del V_max1
-            del M_max1
-            del V_max2
-            del M_max2
-            del Rmax_pier
 
