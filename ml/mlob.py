@@ -3,7 +3,6 @@
 supported span including the pier reaction for two adjacent simply supported
 spans of differing lengths.
 """
-from tqdm import tqdm
 
 def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                      num_user_nodes, space_to_trailing_load, distributed_load,
@@ -68,15 +67,15 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                                  span2_end, num_user_nodes)
     node_loc_rtl = list(reversed(node_loc_ltr))
 
-    axle_spacing, axle_wt = add_trailing_load(axle_spacing, 
+    mod_axle_spacing, mod_axle_wt = add_trailing_load(axle_spacing, 
                                               axle_wt, 
                                               space_to_trailing_load,
                                               distributed_load,
                                               span1_begin,
                                               span2_end,
                                               point_load_spacing)
-    axle_spacing.insert(0, 0.0) #insert a dummy spacing for the first axle
-    num_axles = len(axle_wt) #number of axles in the pattern
+    mod_axle_spacing.insert(0, 0.0) #insert a dummy spacing for the first axle
+    num_axles = len(mod_axle_wt) #number of axles in the pattern
     axle_num = number_axles(num_axles) #numbered axles
     
     for node_loc,direction in zip([node_loc_ltr, 
@@ -120,24 +119,25 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 #calculate location of each axle based on the axle currently
                 #over the analysis node
                 if axle_id == 1:
-                    cur_axle_loc = get_abs_axle_location(axle_spacing, x,
+                    cur_axle_loc = get_abs_axle_location(mod_axle_spacing, x,
                             direction)
                 else:
                     prev_axle_loc = cur_axle_loc
 
-                    cur_axle_loc = move_axle_loc(axle_spacing, axle_id,
+                    cur_axle_loc = move_axle_loc(mod_axle_spacing, axle_id,
                                                  prev_axle_loc, num_axles,
                                                  direction)
 
                 Pt1, xt1, Pl1, xl1, Pr1, xr1 = calc_load_and_loc(cur_axle_loc,
-                           axle_wt, x, span1_begin, span1_end, num_axles)
+                           mod_axle_wt, x, span1_begin, span1_end, num_axles)
                 
                 Pt2, xt2, Pl2, xl2, Pr2, xr2 = calc_load_and_loc(cur_axle_loc,
-                        axle_wt, x, span2_begin, span2_end, num_axles)
+                        mod_axle_wt, x, span2_begin, span2_end, num_axles)
                
                 Rpier = calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin,
                                            span1_end, span2_begin, span2_end)
-                
+                bug = "{0} {1} {2} {3} {4} {5}".format(x, Pt1, xt1, Pt2, xt2, Rpier)               
+                #print bug
                 Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier)
                 
                 if x >= span1_begin and x <= span1_end:
@@ -496,7 +496,7 @@ def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles)
     
     for i in range(num_axles):
         #if the axle is on the span add to total weight on span
-        if cur_axle_loc[i] >= begin_span and cur_axle_loc[i] <= end_span:
+        if cur_axle_loc[i] >= begin_span and cur_axle_loc[i] < end_span:
             Pt = Pt + axle_wt[i]
             sum_Ptx = sum_Ptx + cur_axle_loc[i]*axle_wt[i]
             #if the axle is to the left of the analysis node, add weight to
@@ -573,6 +573,9 @@ def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
     #each point load is the distributed load times the point load spacing
     #the point load spacing is a function of the span lenght and number of
     #divisions required
+    mod_axle_spacing = axle_spacing[:]
+    mod_axle_wt = axle_wt[:]
+    
     if space_to_trailing_load < 0.0:
         raise ValueError("Must enter a positive float for space to trialing"
                             "load.")
@@ -586,14 +589,14 @@ def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
         num_loads = int(total_span_length/pt_load_spacing)
         equivalent_pt_load = distributed_load*pt_load_spacing
 
-        axle_spacing.append(space_to_trailing_load)
-        axle_wt.append(equivalent_pt_load)
+        mod_axle_spacing.append(space_to_trailing_load)
+        mod_axle_wt.append(equivalent_pt_load)
 
         for x in range(num_loads):
-            axle_spacing.append(pt_load_spacing)
-            axle_wt.append(equivalent_pt_load)
+            mod_axle_spacing.append(pt_load_spacing)
+            mod_axle_wt.append(equivalent_pt_load)
 
-    return axle_spacing, axle_wt
+    return mod_axle_spacing, mod_axle_wt
 
 
 def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
