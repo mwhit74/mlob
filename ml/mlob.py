@@ -128,13 +128,19 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                                                  prev_axle_loc, num_axles,
                                                  direction)
 
-                Pt1, xt1, Pl1, xl1, Pr1, xr1 = calc_load_and_loc(cur_axle_loc,
+                Pt1, xt1, Pl1, xl1, Pr1, xr1 = calc_span_load_and_loc(cur_axle_loc,
                            mod_axle_wt, x, span1_begin, span1_end, num_axles)
                 
-                Pt2, xt2, Pl2, xl2, Pr2, xr2 = calc_load_and_loc(cur_axle_loc,
+                Pt2, xt2, Pl2, xl2, Pr2, xr2 = calc_span_load_and_loc(cur_axle_loc,
                         mod_axle_wt, x, span2_begin, span2_end, num_axles)
                
-                Rpier = calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin,
+                Pt1_p, xt1_p = calc_pier_load_and_loc(cur_axle_loc,
+                           mod_axle_wt, x, span1_begin, span1_end, num_axles)
+                
+                Pt2_p, xt2_p = calc_pier_load_and_loc(cur_axle_loc,
+                        mod_axle_wt, x, span2_begin, span2_end, num_axles)
+
+                Rpier = calc_pier_reaction(Pt1_p, xt1_p, Pt2_p, xt2_p, span1_begin,
                                            span1_end, span2_begin, span2_end)
 
                 Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier)
@@ -455,7 +461,7 @@ def move_axle_loc(axle_spacing, axle_id, prev_axle_loc,
     return cur_axle_loc
    
 
-def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles):
+def calc_span_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles):
     """Calculate the load and its location on the span.
     
     Calculates the total load and its location on the span, and the load and
@@ -526,7 +532,46 @@ def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles)
         xr = sum_Prx/Pr
 
     return Pt, xt, Pl, xl, Pr, xr
+
+
+def calc_pier_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles):
+    """Calculate the load and its location on for the pier reaction.
+    
+    Calculates the total load and its location on the span, and the load and
+    its location to the left and right of the node (critical section).
+  
+    Args:
+        cur_axle_loc (list of floats): current x-coordinate of all axles on span
+        axle_wt (list of floats): weight of each axle
+        x (float): x-coordinate of node location
+        begin_span (float): x-coordinate of the beginning of the span
+        end_span (float): x-coordinate of the end of the span
+        num_axles (int): number of program defined axles (includes axles for
+                         approximate distributed load)
    
+    Returns:
+        Pt (float): total load on the span due to the axles on the span
+        xt (float): the x-coordinate of the equivalent total load on the span
+    """
+
+    Pt = 0.0
+    xt = 0.0
+    sum_Ptx = 0.0
+
+    for i in range(num_axles):
+        #if the axle is on the span add to total weight on span
+        if cur_axle_loc[i] > begin_span and cur_axle_loc[i] < end_span:
+            Pt = Pt + axle_wt[i]
+            sum_Ptx = sum_Ptx + cur_axle_loc[i]*axle_wt[i]
+            
+    #avoid divide by zero error
+    if Pt == 0:
+        xt = 0
+    else:        
+        xt = sum_Ptx/Pt
+
+    return Pt, xt
+
 
 def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
         distributed_load, span1_begin, span2_end, pt_load_spacing=0.5):
