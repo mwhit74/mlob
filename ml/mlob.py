@@ -3,7 +3,7 @@
 supported span including the pier reaction for two adjacent simply supported
 spans of differing lengths.
 """
-
+import pdb
 def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                      num_user_nodes, space_to_trailing_load, distributed_load,
                       point_load_spacing=0.5):
@@ -93,6 +93,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
 
         #loop thru analysis node locations
         for x,i in zip(node_loc, range(num_analysis_nodes)): 
+            pdb.set_trace()
             Ve1 = 0.0
             M1 = 0.0
             Ve2 = 0.0
