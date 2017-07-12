@@ -233,8 +233,24 @@ def calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin, span1_end,
                        span2_begin, span2_end, num_axles):
     """Calculate the interior pier (floorbeam) reaction.
 
+    Args:
+        cur_axle_loc (list of floats): current x-coordinate of all axles on span
+        axle_wt (list of floats): weight of each axle
+        begin_span (float): x-coordinate of the beginning of the span
+        end_span (float): x-coordinate of the end of the span
+        num_axles (int): number of program defined axles (includes axles for
+                         approximate distributed load)
+
     Returns:
         Rpier (float): reaction at the pier (floorbeam)
+
+    Notes:
+        This function is very similar to the calc_load_and_loc function. The
+        main reason this function is required is the loads that act directly
+        over the support at the beginning of span 1 and at the end of span 2 do
+        not contribute to the reaction at the pier. However, they do contribute
+        to the reactions of each span and in determining the correct moment and
+        shear in each span. 
     """
     Rpier = 0.0
 
@@ -242,9 +258,16 @@ def calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin, span1_end,
     span2_length = span2_end - span2_begin
 
     for i in range(num_axles):
+        #if load is not over the support at the beginning of span 1
+        #and if the load is not over th support at the end of span 2
         if cur_axle_loc[i] > span1_begin and cur_axle_loc[i] < span2_end:
+            #if the load is on span 1, calc the reaction at the pier
+            #the equals sign includes the loads on the pier
             if cur_axle_loc[i] <= span1_end:
                 r = (cur_axle_loc[i] - span1_begin)/span1_length*mod_axle_wt[i]
+            #if the load is on span 2, calc the reaction at the pier
+            #only one equals sign should be used otherwise the load would be
+            #double counted
             if cur_axle_loc[i] > span2_begin:
                 r = (span2_end - cur_axle_loc[i])/span2_length*mod_axle_wt[i]
 
