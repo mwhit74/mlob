@@ -1,6 +1,7 @@
 import unittest
 from ml import mlob
 import pdb
+import timeit
 
 class TestMlobLong(unittest.TestCase):
 
@@ -27,13 +28,12 @@ class TestMlobLong(unittest.TestCase):
                                                 "Max Moment at 1/4 Pt [ft-kips]",
                                                 "Max Shear at End [kips]",
                                                 "Max Shear at 1/4 Pt [kips]",
-                                                "Max Shear at Center [kips",
+                                                "Max Shear at Center [kips]",
                                                 "Max Pier Reactions [kips]")
         print header
                                          
-
+        start = timeit.default_timer()
         for span_length in span_lengths:
-            pdb.set_trace()
             node_loc, V_max1, M_max1, V_max2, M_max2, Rmax_pier,\
             span1_begin, span2_begin = mlob.analyze_vehicle(self.axle_spacing,
                                                             self.axle_wt,
@@ -49,7 +49,7 @@ class TestMlobLong(unittest.TestCase):
             max_shear_c = V_max1[10]/2
             r_max_pier = Rmax_pier/2
 
-            out = "{0} {1} {2} {3} {4} {5} {6}".format(span_length,
+            out = "{0:^20.3f} {1:^20.3f} {2:^20.3f} {3:^20.3f} {4:^20.3f} {5:^20.3f} {6:^20.3f}".format(span_length,
                                                  max_moment,
                                                  max_moment_q,
                                                  max_shear_e,
@@ -58,5 +58,7 @@ class TestMlobLong(unittest.TestCase):
                                                  r_max_pier)
 
             print out
+        end = timeit.default_timer()
 
+        print end - start
 
