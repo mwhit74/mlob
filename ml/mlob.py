@@ -651,7 +651,7 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
             if i == 0:
                 node_loc.append(x1)
             else:
-                x1 = round(x1 + dx1,2)
+                x1 = round(x1 + dx1,3)
                 node_loc.append(x1)
 
         #span length 2 node locations
@@ -664,7 +664,7 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
                 if i == 0:
                     pass #second span beginning is end of first span
                 else:
-                    x2 = round(x2 + dx2,2)
+                    x2 = round(x2 + dx2,3)
                     node_loc.append(x2)
 
     return node_loc

@@ -501,8 +501,8 @@ class TestMlob(unittest.TestCase):
                                                         num_axles)
         c_Rpier = 718.48
 
-        Rpier = mlob.calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin,
-                span1_end, span2_begin, span2_end)
+        Rpier = mlob.calc_pier_reaction(cur_axle_loc_10,self.axle_wt_E80,span1_begin,
+                span1_end, span2_begin, span2_end, num_axles)
 
         self.assertAlmostEqual(c_Rpier, Rpier, places=3)
 
@@ -540,8 +540,8 @@ class TestMlob(unittest.TestCase):
                                                         num_axles)
         c_Rpier = 533.2396
 
-        Rpier = mlob.calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin,
-                span1_end, span2_begin, span2_end)
+        Rpier = mlob.calc_pier_reaction(cur_axle_loc_5,self.axle_wt_E80,span1_begin,
+                span1_end, span2_begin, span2_end, num_axles)
 
         self.assertAlmostEqual(c_Rpier, Rpier, places=3)
 
@@ -589,8 +589,8 @@ class TestMlob(unittest.TestCase):
 
         c_Rpier = 705.9199 
 
-        Rpier = mlob.calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin,
-                span1_end, span2_begin, span2_end)
+        Rpier = mlob.calc_pier_reaction(cur_axle_loc_10,self.axle_wt_E80,span1_begin,
+                span1_end, span2_begin, span2_end, num_axles)
 
         self.assertAlmostEqual(c_Rpier, Rpier, places=3)
 
@@ -638,8 +638,8 @@ class TestMlob(unittest.TestCase):
 
         c_Rpier = 493.4400
 
-        Rpier = mlob.calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin,
-                span1_end, span2_begin, span2_end)
+        Rpier = mlob.calc_pier_reaction(cur_axle_loc_10,self.axle_wt_E80,span1_begin,
+                span1_end, span2_begin, span2_end, num_axles)
 
         self.assertAlmostEqual(c_Rpier, Rpier, places=3)
 
@@ -687,8 +687,8 @@ class TestMlob(unittest.TestCase):
 
         c_Rpier = 549.3598
 
-        Rpier = mlob.calc_pier_reaction(Pt1, xt1, Pt2, xt2, span1_begin,
-                span1_end, span2_begin, span2_end)
+        Rpier = mlob.calc_pier_reaction(cur_axle_loc_10,self.axle_wt_E80,span1_begin,
+                span1_end, span2_begin, span2_end, num_axles)
 
         self.assertAlmostEqual(c_Rpier, Rpier, places=3)
 
