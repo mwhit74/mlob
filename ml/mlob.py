@@ -628,6 +628,14 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
     Returns:
         node_loc (list of floats): list of the coordinate locations of the
                                     analysis nodes along the beam
+
+    Notes:
+        The node values are rounded to three (3) decimal places. Otherwise the
+        computer rounding messes up the functionality of later functions. For
+        example if a node location is supposed to be directly over a pier
+        support but it is 0.000000001 off the program will run as if that load
+        is acting on span 1 and span 2 won't have that load applied even though
+        it should be. 
     """
     span_length1 = span1_end - span1_begin
     span_length2 = span2_end - span2_begin
