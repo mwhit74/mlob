@@ -32,7 +32,6 @@ class TestMlobLong(unittest.TestCase):
                                                 "Max Pier Reactions [kips]")
         print header
                                          
-        start = timeit.default_timer()
         for span_length in span_lengths:
             node_loc, V_max1, M_max1, V_max2, M_max2, Rmax_pier,\
             span1_begin, span2_begin = mlob.analyze_vehicle(self.axle_spacing,
@@ -58,7 +57,5 @@ class TestMlobLong(unittest.TestCase):
                                                  r_max_pier)
 
             print out
-        end = timeit.default_timer()
 
-        print end - start
 
