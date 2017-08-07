@@ -11,19 +11,19 @@ class TestMlobLong(unittest.TestCase):
                         60.0,70.0,80.0,90.0,100.0,120.0,140.0,160.0,180.0,
                         200.0,250.0,300.0,350.0,400.0]
 
-        self.axle_spacing = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00,
+        self.axle_spacing_e80 = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00,
                                  5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00,
                                  5.00, 6.00, 5.00]
-        self.axle_wt = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00,
+        self.axle_wt_e80 = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00,
                             52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00,
                             52.00, 52.00, 52.00, 52.00]
-        self.space_to_trailing_load = 5.0
-        self.distributed_load = 8.0
+        self.space_to_trailing_load_e80 = 5.0
+        self.distributed_load_e80 = 8.0
 
-        self.alt_axle_spacing = [5.00, 6.00, 5.00]
-        self.alt_axle_wt = [100.00, 100.00, 100.00, 100.00]
-        self.alt_space_to_trailing_load = 0.0
-        self.alt_distributed_load = 8.0
+        self.axle_spacing_alt = [5.00, 6.00, 5.00]
+        self.axle_wt_alt = [100.00, 100.00, 100.00, 100.00]
+        self.space_to_trailing_load_alt = 0.0
+        self.distributed_load_alt = 8.0
 
         self.max_moment_e80 = [50.00,60.00,70.00,80.00,93.89,112.50,
                                131.36,160.00,190.00,220.00,280.00,
@@ -44,7 +44,7 @@ class TestMlobLong(unittest.TestCase):
                                       7098.00,9400.00,11932.00,14820.00,
                                       17990.00,27154.00,38246.00,51114.00,
                                       65588.00]
-        self.max_moment_qtr_pt_alt = [46.88,56.25,68.75,87.50,10625,125.00,
+        self.max_moment_qtr_pt_alt = [46.88,56.25,68.75,87.50,106.25,125.00,
                                       143.75,162.50,181.25,200.00,250.00,
                                       318.79,362.50,500.00,650.00,800.00,
                                       950.00,1100.00,1287.48,1481.05]
@@ -57,22 +57,22 @@ class TestMlobLong(unittest.TestCase):
         self.max_shear_end_alt = [50.00,58.33,64.29,68.75,72.22,75.00,77.27,
                                   83.33,88.46,92.86,100.00,111.11,120.00,
                                   133.33,142.86,150.00,155.56,160.00,164.44]
-        self.max_shear_qtr_pt_e80 = [0.00,30.00,31.43,35.00,37.78,40.00,
+        self.max_shear_qtr_pt_e80 = [None,30.00,31.43,35.00,37.78,40.00,
                                      41.82,43.33,44.61,47.14,52.50,56.67,
                                      60.00,70.00,77.14,83.12,88.90,93.55,
                                      100.27,106.97,113.58,120.21,131.89,
                                      143.41,157.47,173.12,202.19,230.23,
                                      265.51,281.96,306.81,367.30,426.37,
                                      484.67,542.40]
-        self.max_shear_qtr_pt_alt = [0.00,37.50,39.29,43.75,47.23,50.00,
+        self.max_shear_qtr_pt_alt = [None,37.50,39.29,43.75,47.23,50.00,
                                      52.28,54.17,55.76,57.14,62.50,68.05,
-                                     72.50,83.33,92.86,100.00,150.56,
+                                     72.50,83.33,92.86,100.00,105.56,
                                      110.00,114.45,118.42,120.91,123.33]
         self.max_shear_ctr_e80 = [20.00,20.00,20.00,20.00,20.00,20.00,
                                   21.82,23.33,24.61,25.71,27.50,28.89,
                                   28.70,31.75,34.29,37.50,41.10,44.00,
                                   45.90,49.73,52.74,55.69,61.45,67.41,
-                                  73.48,72.72,88.92,101.64,115.20,128.12,
+                                  73.48,78.72,88.92,101.64,115.20,128.12,
                                   140.80,170.05,197.93,225.51,252.44]
         self.max_shear_ctr_alt = [25.00,25.00,25.00,25.00,25.00,25.00,
                                   27.28,29.17,30.76,32.14,34.38,36.11,
@@ -90,66 +90,52 @@ class TestMlobLong(unittest.TestCase):
                                   100.00,108.33,115.39,121.43,131.25,
                                   138.89,145.00,154.17]
 
-    def test_E80(self):
+
+    def test_e80(self):
         num_user_nodes = 21
+        self.run_vehicle(self.axle_spacing_e80,
+                    self.axle_wt_e80,
+                    num_user_nodes,
+                    self.space_to_trailing_load_e80,
+                    self.distributed_load_e80,
+                    self.max_moment_e80,
+                    self.max_moment_qtr_pt_e80,
+                    self.max_shear_end_e80,
+                    self.max_shear_qtr_pt_e80,
+                    self.max_shear_ctr_e80,
+                    self.max_pier_reac_e80)
 
-        header = "{0} {1} {2} {3} {4} {5} {6}".format("Span Length [ft]",
-                                                "Max Moment [ft-kips]",
-                                                "Max Moment at 1/4 Pt [ft-kips]",
-                                                "Max Shear at End [kips]",
-                                                "Max Shear at 1/4 Pt [kips]",
-                                                "Max Shear at Center [kips]",
-                                                "Max Pier Reactions [kips]")
-        print header
-                                         
-        for span_length in self.span_lengths:
-            node_loc, V_max1, M_max1, V_max2, M_max2, Rmax_pier,\
-            span1_begin, span2_begin = mlob.analyze_vehicle(self.axle_spacing,
-                                                            self.axle_wt,
-                                                            span_length,
-                                                            span_length,
-                                                            num_user_nodes,
-                                                            self.space_to_trailing_load,
-                                                            self.distributed_load)
-            max_moment = max(M_max1)/2
-            max_moment_q = M_max1[5]/2
-            max_shear_e = V_max1[0]/2
-            max_shear_q = V_max1[5]/2
-            max_shear_c = V_max1[10]/2
-            r_max_pier = Rmax_pier/2
-
-            out = "{0:^20.3f} {1:^20.3f} {2:^20.3f} {3:^20.3f} {4:^20.3f} {5:^20.3f} {6:^20.3f}".format(span_length,
-                                                 max_moment,
-                                                 max_moment_q,
-                                                 max_shear_e,
-                                                 max_shear_q,
-                                                 max_shear_c,
-                                                 r_max_pier)
-
-            print out
-
-
+    
     def test_alt(self):
         num_user_nodes = 21
+        self.run_vehicle(self.axle_spacing_alt,
+                    self.axle_wt_alt,
+                    num_user_nodes,
+                    self.space_to_trailing_load_alt,
+                    self.distributed_load_alt,
+                    self.max_moment_alt,
+                    self.max_moment_qtr_pt_alt,
+                    self.max_shear_end_alt,
+                    self.max_shear_qtr_pt_alt,
+                    self.max_shear_ctr_alt,
+                    self.max_pier_reac_alt)
 
-        header = "{0} {1} {2} {3} {4} {5} {6}".format("Span Length [ft]",
-                                                "Max Moment [ft-kips]",
-                                                "Max Moment at 1/4 Pt [ft-kips]",
-                                                "Max Shear at End [kips]",
-                                                "Max Shear at 1/4 Pt [kips]",
-                                                "Max Shear at Center [kips]",
-                                                "Max Pier Reactions [kips]")
-        print header
+
+    def run_vehicle(self, axle_spacing, axle_wt, num_user_nodes, space_to_trailing_load,
+            distributed_load, cl_max_moment, cl_max_moment_qtr_pt, cl_max_shear_end,
+            cl_max_shear_qtr_pt, cl_max_shear_ctr, cl_max_pier_reac):
+
                                          
-        for span_length in self.span_lengths:
-            node_loc, V_max1, M_max1, V_max2, M_max2, Rmax_pier,\
-            span1_begin, span2_begin = mlob.analyze_vehicle(self.alt_axle_spacing,
-                                                            self.alt_axle_wt,
+        for i in range(len(self.span_lengths)):
+            span_length = self.span_lengths[i]
+            (node_loc, V_max1, M_max1, V_max2, M_max2, Rmax_pier,
+            span1_begin, span2_begin) = mlob.analyze_vehicle(axle_spacing,
+                                                            axle_wt,
                                                             span_length,
                                                             span_length,
                                                             num_user_nodes,
-                                                            self.alt_space_to_trailing_load,
-                                                            self.alt_distributed_load)
+                                                            space_to_trailing_load,
+                                                            distributed_load)
             max_moment = max(M_max1)/2
             max_moment_q = M_max1[5]/2
             max_shear_e = V_max1[0]/2
@@ -167,4 +153,86 @@ class TestMlobLong(unittest.TestCase):
 
             print out
 
+            try:
+                c_max_moment = cl_max_moment[i]
+                e = self.error(c_max_moment, max_moment)
+                msg = "Max Moment " + str(c_max_moment) + " " + str(max_moment)
+                self.assertLessEqual(e, 0.04,msg)
+            except IndexError as e:
+                pass
 
+            try:
+                c_max_moment_q = cl_max_moment_qtr_pt[i]
+                e = self.error(c_max_moment_q, max_moment_q)
+                msg = ("Max Moment Qtr Pt " + str(c_max_moment_q) + " " +
+                str(max_moment_q))
+                self.assertLessEqual(e, 0.04, msg)
+            except IndexError as e:
+                pass
+
+            try:
+                c_max_shear_e = cl_max_shear_end[i]
+                e = self.error(c_max_shear_e, max_shear_e)
+                msg = ("Max Shear End " + str(c_max_shear_e) + " " +
+                str(max_shear_e))
+                self.assertLessEqual(e, 0.04, msg)
+            except IndexError as e:
+                pass
+
+            try:
+                c_max_shear_q = cl_max_shear_qtr_pt[i]
+                if c_max_shear_q == None:
+                    pass
+                else:
+                    e = self.error(c_max_shear_q, max_shear_q)
+                    msg = ("Max Shear Qtr Pt " + str(c_max_shear_q) + " " +
+                            str(max_shear_q))
+                    self.assertLessEqual(e, 0.04, msg)
+            except IndexError as e:
+                pass
+
+            try:
+                c_max_shear_c = cl_max_shear_ctr[i]
+                e = self.error(c_max_shear_c, max_shear_c)
+                msg = ("Max Shear Ctr " + str(c_max_shear_c) + " " +
+                str(max_shear_c))
+                self.assertLessEqual(e, 0.04, msg)
+            except IndexError as e:
+                pass
+
+            try:
+                c_r_max_pier = cl_max_pier_reac[i]
+                e = self.error(c_r_max_pier, r_max_pier)
+                msg = ("Max Pier Reac " + str(c_r_max_pier) + " " +
+                str(r_max_pier))
+                self.assertLessEqual(e, 0.04, msg)
+            except IndexError as e:
+                pass
+
+
+    def error(self, v1, v2):
+
+        e = abs(v1 - v2)/v1
+        return e
+
+
+
+
+#saving this to write user executed testing
+        #header = "{0} {1} {2} {3} {4} {5} {6}".format("Span Length [ft]",
+        #                                        "Max M [ft-kips]",
+        #                                        "Max M 1/4 Pt [ft-kips]",
+        #                                        "Max V End [kips]",
+        #                                        "Max V 1/4 Pt [kips]",
+        #                                        "Max V Ctr [kips]",
+        #                                        "Max Rpier [kips]")
+        #print header
+
+
+            #out = "{0:^20.3f} {1:^20.3f} {2:^20.3f} {3:^20.3f} {4:^20.3f} {5:^20.3f} {6:^20.3f}".format(span_length,
+            #                                     max_moment,
+            #                                     max_moment_q,
+            #                                     max_shear_e,
+            #                                     max_shear_q,
+            #                                     max_shear_c,
+            #                                     r_max_pier)
