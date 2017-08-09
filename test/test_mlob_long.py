@@ -143,16 +143,6 @@ class TestMlobLong(unittest.TestCase):
             max_shear_c = V_max1[10]/2
             r_max_pier = Rmax_pier/2
 
-            out = "{0:^20.3f} {1:^20.3f} {2:^20.3f} {3:^20.3f} {4:^20.3f} {5:^20.3f} {6:^20.3f}".format(span_length,
-                                                 max_moment,
-                                                 max_moment_q,
-                                                 max_shear_e,
-                                                 max_shear_q,
-                                                 max_shear_c,
-                                                 r_max_pier)
-
-            print out
-
             try:
                 c_max_moment = cl_max_moment[i]
                 e = self.error(c_max_moment, max_moment)
@@ -214,25 +204,3 @@ class TestMlobLong(unittest.TestCase):
 
         e = abs(v1 - v2)/v1
         return e
-
-
-
-
-#saving this to write user executed testing
-        #header = "{0} {1} {2} {3} {4} {5} {6}".format("Span Length [ft]",
-        #                                        "Max M [ft-kips]",
-        #                                        "Max M 1/4 Pt [ft-kips]",
-        #                                        "Max V End [kips]",
-        #                                        "Max V 1/4 Pt [kips]",
-        #                                        "Max V Ctr [kips]",
-        #                                        "Max Rpier [kips]")
-        #print header
-
-
-            #out = "{0:^20.3f} {1:^20.3f} {2:^20.3f} {3:^20.3f} {4:^20.3f} {5:^20.3f} {6:^20.3f}".format(span_length,
-            #                                     max_moment,
-            #                                     max_moment_q,
-            #                                     max_shear_e,
-            #                                     max_shear_q,
-            #                                     max_shear_c,
-            #                                     r_max_pier)
