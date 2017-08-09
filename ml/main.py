@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from user_input import get_input
-from output import write_output
-from mlob import analyze_vehicle
+from ml.user_input import get_input
+from ml.output import write_output
+from ml.mlob import analyze_vehicle
 import timeit
 import pdb
 
