@@ -50,6 +50,7 @@ def test_e80():
     space_to_trailing_load_e80 = 5.0
     distributed_load_e80 = 8.0
     num_user_nodes = 21
+    vehicle_type = "Cooper E80"
 
     max_moment_e80 = [50.00,60.00,70.00,80.00,93.89,112.50,
                       131.36,160.00,190.00,220.00,280.00,
@@ -94,7 +95,8 @@ def test_e80():
                          1225.30,1421.70,1619.00]
 
 
-    run_vehicle(span_lengths,
+    run_vehicle(vehicle_type,
+                span_lengths,
                 axle_spacing_e80,
                 axle_wt_e80,
                 num_user_nodes,
@@ -132,6 +134,7 @@ def test_alt():
 
     Notes:
         Outputs results
+         
     """
     span_lengths = [5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0,13.0,14.0,16.0,
                18.0,20.0,24.0,28.0,32.0,36.0,40.0,45.0,50.0,55.0,
@@ -143,6 +146,7 @@ def test_alt():
     space_to_trailing_load_alt = 0.0
     distributed_load_alt = 8.0
     num_user_nodes = 21
+    vehicle_type = "Alternate"
     
     max_moment_alt = [62.50,75.00,87.50,100.00,117.36,140.63,
                       164.20,188.02,212.83,250.30,325.27,400.24,
@@ -168,7 +172,8 @@ def test_alt():
                          100.00,108.33,115.39,121.43,131.25,
                          138.89,145.00,154.17]
 
-    run_vehicle(span_lengths,
+    run_vehicle(vehicle_type,
+                span_lengths,
                 axle_spacing_alt,
                 axle_wt_alt,
                 num_user_nodes,
@@ -182,8 +187,9 @@ def test_alt():
                 max_pier_reac_alt)
 
 
-def run_vehicle(span_lengths, axle_spacing, axle_wt, num_user_nodes, space_to_trailing_load,
-        distributed_load, cl_max_moment, cl_max_moment_qtr_pt, cl_max_shear_end,
+def run_vehicle(vehicle_type, span_lengths, axle_spacing, axle_wt,
+        num_user_nodes, space_to_trailing_load, distributed_load,
+        cl_max_moment, cl_max_moment_qtr_pt, cl_max_shear_end,
         cl_max_shear_qtr_pt, cl_max_shear_ctr, cl_max_pier_reac):
     """Runs program input for a series of span lenghts and outputs the results.
 
@@ -217,7 +223,20 @@ def run_vehicle(span_lengths, axle_spacing, axle_wt, num_user_nodes, space_to_tr
         3. Outputs the error of the program with respect to the AREMA Table
            values where possible. (The AREMA Tables are incomplete.)
     """
-    header = "{0:^15} {1:^15} {2:^15} {3:^15} {4:^15} {5:^15} {6:^15} {7:^15}".format("Type",
+    echo_input = ""
+    echo_input += "\n\n\n\n---ECHO INPUT---\n"
+    echo_input += "Vehicle type: " + vehicle_type + "\n"
+    echo_input += "Axle spacing: " + str(axle_spacing) + "\n"
+    echo_input += "Axle weights: " + str(axle_wt) + "\n"
+    echo_input += "Number of Nodes: " + str(num_user_nodes) + "\n"
+    echo_input += "Space to trailing load: " + str(space_to_trailing_load) + "\n"
+    echo_input += "Distributed trailing load: " + str(distributed_load) + "\n"
+
+    print echo_input
+
+    print "\n\n\n\n---PROGRAM OUTPUT---\n"
+
+    header = "               {0:^15} {1:^15} {2:^15} {3:^15} {4:^15} {5:^15} {6:^15}".format(
                                             "Span Length [ft]",
                                             "Max M [ft-kip]",
                                             "Max M 1/4 Pt [ft-kip]",
@@ -238,10 +257,10 @@ def run_vehicle(span_lengths, axle_spacing, axle_wt, num_user_nodes, space_to_tr
                                                         space_to_trailing_load,
                                                         distributed_load)
         max_moment = max(M_max1)/2
-        max_moment_q = M_max1[5]/2
+        max_moment_q = M_max1[num_user_nodes/4]/2
         max_shear_e = V_max1[0]/2
-        max_shear_q = V_max1[5]/2
-        max_shear_c = V_max1[10]/2
+        max_shear_q = V_max1[num_user_nodes/4]/2
+        max_shear_c = V_max1[num_user_nodes/2]/2
         r_max_pier = Rmax_pier/2
 
         out = ("{0:^15s} {1:^15.3f} {2:^15.3f} {3:^22.3f} {4:^15.3f}" +
