@@ -223,7 +223,7 @@ def run_vehicle(vehicle_type, span_lengths, axle_spacing, axle_wt,
         3. Outputs the error of the program with respect to the AREMA Table
            values where possible. (The AREMA Tables are incomplete.)
     """
-    num_user_nodes = 61
+    num_user_nodes = 41
     echo_input = ""
     echo_input += "\n\n\n\n---ECHO INPUT---\n"
     echo_input += "Vehicle type: " + vehicle_type + "\n"
