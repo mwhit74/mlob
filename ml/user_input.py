@@ -1,19 +1,26 @@
 def get_input():
     """Get user inputs for calculation values."""
     axle_spacing = get_axle_spacing()
-    axle_wt = get_axle_wt()
+    axle_wt = get_axle_wt(axle_spacing)
     space_to_trailing_load = get_space_to_trailing_load()
     distributed_load = get_distributed_load()
     span1_length = get_span1_length()
     span2_length = get_span2_length()
     num_analysis_nodes = get_num_analysis_nodes()
 
+    return (axle_spacing, axle_wt, space_to_trailing_load, distributed_load,
+    span1_length, span2_length, num_analysis_nodes)
+
 def get_axle_spacing():
     """Get axle spacing from user"""
     print "Enter axle spacing values separated by a space. Hit enter when done."
     while True:
         try:
-            axle_spacing=([float(x) for x in raw_input().split(' ')])
+            user_input_axle_spacing = raw_input()
+            if user_input_axle_spacing == "":
+                axle_spacing = []
+            else:
+                axle_spacing=([float(x) for x in user_input_axle_spacing])
         except ValueError:
             print """Invalid values. Please only enter numbers.\n
                      Start from beginning of axle spacing values:"""
@@ -22,7 +29,7 @@ def get_axle_spacing():
 
     return axle_spacing
 
-def get_axle_wt():
+def get_axle_wt(axle_spacing):
     """Get axle weights from user"""
     print "Enter axle weight values separated by a space. Hit enter when done."
     while True:
