@@ -1,3 +1,4 @@
+import mlob
 
 def user_verification():
     """Runs two tests one for E80 and one for Alternate."""
@@ -93,7 +94,8 @@ def test_e80():
                          1225.30,1421.70,1619.00]
 
 
-    run_vehicle(axle_spacing_e80,
+    run_vehicle(span_lengths,
+                axle_spacing_e80,
                 axle_wt_e80,
                 num_user_nodes,
                 space_to_trailing_load_e80,
@@ -166,7 +168,8 @@ def test_alt():
                          100.00,108.33,115.39,121.43,131.25,
                          138.89,145.00,154.17]
 
-    run_vehicle(axle_spacing_alt,
+    run_vehicle(span_lengths,
+                axle_spacing_alt,
                 axle_wt_alt,
                 num_user_nodes,
                 space_to_trailing_load_alt,
@@ -179,23 +182,31 @@ def test_alt():
                 max_pier_reac_alt)
 
 
-def run_vehicle(axle_spacing, axle_wt, num_user_nodes, space_to_trailing_load,
+def run_vehicle(span_lengths, axle_spacing, axle_wt, num_user_nodes, space_to_trailing_load,
         distributed_load, cl_max_moment, cl_max_moment_qtr_pt, cl_max_shear_end,
         cl_max_shear_qtr_pt, cl_max_shear_ctr, cl_max_pier_reac):
     """Runs program input for a series of span lenghts and outputs the results.
 
     Args:
-        axle_spacing
-        axle_wt
-        num_user_nodes
-        space_to_trailing_load
-        distributed_load
-        cl_max_moment
-        cl_max_moment_qtr_pt
-        cl_max_shear_end
-        cl_max_shear_qtr_pt
-        cl_max_shear_ctr
-        cl_max_pier_reac
+        span_lengths (list of floats): all the span lengths to be run
+        axle_spacing (list of floats): the spacing between each axle
+        axle_wt (list of floats): weight of each axle
+        num_user_nodes (int): number of analysis nodes input by the user
+        space_to_trailing_load (float): distance from last discrete axle to
+                                        beginning of distributed load
+        distributed_load (float): uniformly distributed trailing load magnitude
+        cl_max_moment (list of floats): max moment in span from AREMA Table
+        cl_max_moment_qtr_pt (list of floats): max moment at 1/4 point of span
+                                               from AREMA Table
+        cl_max_shear_end (list of floats): max shear at end of span from AREMA
+                                           Table
+        cl_max_shear_qtr_pt (list of floats): max shear at 1/4 point of span
+                                              from AREMA Table 
+        cl_max_shear_ctr (list of floats): max shear at center of span from
+                                           AREMA Table
+        cl_max_pier_reac (list of floats): max pier (or floorbeam) reaction
+                                           for equal length, adjacent spans from
+                                           AREMA Table
 
     Returns:
         None
@@ -206,18 +217,18 @@ def run_vehicle(axle_spacing, axle_wt, num_user_nodes, space_to_trailing_load,
         3. Outputs the error of the program with respect to the AREMA Table
            values where possible. (The AREMA Tables are incomplete.)
     """
-    header = "{0:^20} {1:^20} {2:^20} {3:^20} {4:^20} {5:^20} {6:^20} {7:^20}".format("Type",
+    header = "{0:^15} {1:^15} {2:^15} {3:^15} {4:^15} {5:^15} {6:^15} {7:^15}".format("Type",
                                             "Span Length [ft]",
-                                            "Max M [ft-kips]",
-                                            "Max M 1/4 Pt [ft-kips]",
-                                            "Max V End [kips]",
-                                            "Max V 1/4 Pt [kips]",
-                                            "Max V Ctr [kips]",
-                                            "Max Rpier [kips]")
+                                            "Max M [ft-kip]",
+                                            "Max M 1/4 Pt [ft-kip]",
+                                            "Max V End [kip]",
+                                            "Max V 1/4 Pt [kip]",
+                                            "Max V Ctr [kip]",
+                                            "Max Rpier [kip]")
     print header
                                      
-    for i in range(len(self.span_lengths)):
-        span_length = self.span_lengths[i]
+    for i in range(len(span_lengths)):
+        span_length = span_lengths[i]
         (node_loc, V_max1, M_max1, V_max2, M_max2, Rmax_pier,
         span1_begin, span2_begin) = mlob.analyze_vehicle(axle_spacing,
                                                         axle_wt,
@@ -233,8 +244,8 @@ def run_vehicle(axle_spacing, axle_wt, num_user_nodes, space_to_trailing_load,
         max_shear_c = V_max1[10]/2
         r_max_pier = Rmax_pier/2
 
-        out = ("{0:^20s} {1:^20.3f} {2:^20.3f} {3:^20.3f} {4:^20.3f}" +
-               "{5:^20.3f} {6:^20.3f} {7:^20.3f}").format("Progam Output",
+        out = ("{0:^15s} {1:^15.3f} {2:^15.3f} {3:^22.3f} {4:^15.3f}" +
+               "{5:^17.3f} {6:^15.3f} {7:^15.3f}").format("Progam Output",
                                              span_length,
                                              max_moment,
                                              max_moment_q,
@@ -246,22 +257,23 @@ def run_vehicle(axle_spacing, axle_wt, num_user_nodes, space_to_trailing_load,
         print out
 
         try:
-            c_max_moment = cl_max_moment[i]
-            e_max_moment = error(c_max_moment, max_moment)
+            c_max_moment = "{0:.3f}".format(cl_max_moment[i])
+            e_max_moment = "{0:.3f}".format(error(cl_max_moment[i], max_moment))
         except IndexError as e:
             c_max_moment = ""
             e_max_moment = ""
 
         try:
-            c_max_moment_q = cl_max_moment_qtr_pt[i]
-            e = error(c_max_moment_q, max_moment_q)
+            c_max_moment_q = "{0:.3f}".format(cl_max_moment_qtr_pt[i])
+            e_max_moment_q = "{0:.3f}".format(error(cl_max_moment_qtr_pt[i],
+                                                    max_moment_q))
         except IndexError as e:
             c_max_moment_q = ""
             e_max_moment = ""
 
         try:
-            c_max_shear_e = cl_max_shear_end[i]
-            e_max_shear_e = error(c_max_shear_e, max_shear_e)
+            c_max_shear_e = "{0:.3f}".format(cl_max_shear_end[i])
+            e_max_shear_e = "{0:.3f}".format(error(cl_max_shear_end[i], max_shear_e))
         except IndexError as e:
             c_max_shear_e = ""
             e_max_shear_e = ""
@@ -272,28 +284,30 @@ def run_vehicle(axle_spacing, axle_wt, num_user_nodes, space_to_trailing_load,
                 c_max_shear_q = ""
                 e_max_shear_q = ""
             else:
-                e_max_shear_q = error(c_max_shear_q, max_shear_q)
+                c_max_shear_q = "{0:.3f}".format(cl_max_shear_qtr_pt[i])
+                e_max_shear_q = "{0:.3f}".format(error(cl_max_shear_qtr_pt[i],
+                                                 max_shear_q))
         except IndexError as e:
             c_max_shear_q = ""
             e_max_shear_q = ""
 
         try:
-            c_max_shear_c = cl_max_shear_ctr[i]
-            e_max_shear_c = error(c_max_shear_c, max_shear_c)
+            c_max_shear_c = "{0:.3f}".format(cl_max_shear_ctr[i])
+            e_max_shear_c = "{0:.3f}".format(error(cl_max_shear_ctr[i], max_shear_c))
         except IndexError as e:
             c_max_shear_c = ""
             e_max_shear_c = ""
 
         try:
-            c_r_max_pier = cl_max_pier_reac[i]
-            e_r_max_pier = error(c_r_max_pier, r_max_pier)
+            c_r_max_pier = "{0:.3f}".format(cl_max_pier_reac[i])
+            e_r_max_pier = "{0:.3f}".format(error(cl_max_pier_reac[i], r_max_pier))
         except IndexError as e:
             c_r_max_pier = ""
             e_r_max_pier = ""
 
 
-        out = ("{0:^20s} {1:^20.3f} {2:^20.3f} {3:^20.3f} {4:^20.3f}" +
-               "{5:^20.3f} {6:^20.3f} {7:^20.3f}").format("AREMA Tb",
+        out = ("{0:^15s} {1:^15.3f} {2:^15s} {3:^22s} {4:^15s}" +
+               "{5:^17s} {6:^15s} {7:^15s}").format("AREMA Tb",
                                              span_length,
                                              c_max_moment,
                                              c_max_moment_q,
@@ -304,8 +318,8 @@ def run_vehicle(axle_spacing, axle_wt, num_user_nodes, space_to_trailing_load,
 
         print out
 
-        out = ("{0:^20s} {1:^20.3f} {2:^20.3f} {3:^20.3f} {4:^20.3f}" +
-               "{5:^20.3f} {6:^20.3f} {7:^20.3f}").format("Error",
+        out = ("{0:^15s} {1:^15.3f} {2:^15s} {3:^22s} {4:^15s}" +
+               "{5:^17s} {6:^15s} {7:^15s}").format("Error",
                                              span_length,
                                              e_max_moment,
                                              e_max_moment_q,
@@ -316,8 +330,13 @@ def run_vehicle(axle_spacing, axle_wt, num_user_nodes, space_to_trailing_load,
 
         print out
 
+        print "\n"
+
 def error(v1, v2):
+    """Returns the relative error with respect to the first value."""
 
     e = abs(v1 - v2)/v1
     return e
 
+if __name__ == "__main__":
+    user_verification()
