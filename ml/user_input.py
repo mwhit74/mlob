@@ -1,3 +1,14 @@
+def user_option():
+    """Get user inputs selecting verification or analysis."""
+    print "Select \"Verification\" (v) or \"Analysis\" (a). Hit enter when done."
+    while True:
+        try:
+            user_option = raw_input()
+        else:
+            break
+
+    return user_option
+
 def get_input():
     """Get user inputs for calculation values."""
     axle_spacing = get_axle_spacing()
@@ -22,8 +33,8 @@ def get_axle_spacing():
             else:
                 axle_spacing=([float(x) for x in user_input_axle_spacing])
         except ValueError:
-            print """Invalid values. Please only enter numbers.\n
-                     Start from beginning of axle spacing values:"""
+            print ("Invalid values. Please only enter numbers.\n" +
+                     "Start from beginning of axle spacing values: ")
         else:
             break
 
@@ -100,8 +111,8 @@ def get_span2_length():
 
 def get_num_analysis_nodes():
     """Get number of analysis nodes from user"""
-    print """Enter the number of nodes as an integer. \
-             Number should be odd and greater than or equal to 21."""
+    print ("Enter the number of nodes as an integer." + 
+             " Number should be odd and greater than or equal to 21.")
     while True:
         try:
             num_nodes=(int(raw_input()))
