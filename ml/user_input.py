@@ -4,6 +4,8 @@ def user_option():
     while True:
         try:
             user_option = raw_input()
+        except ValueError:
+            pass
         else:
             break
 
