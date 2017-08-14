@@ -41,7 +41,7 @@ def manager():
     [uiaw.append(x) for x in axle_wt]
 
     start = timeit.default_timer()
-
+    #pdb.set_trace()
     (node_loc, V_max1, M_max1, V_max2, M_max2, Rmax_pier,
     span1_begin, span2_begin) = analyze_vehicle(axle_spacing, axle_wt,
                                                span_length1, span_length2,

@@ -78,10 +78,11 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     mod_axle_spacing.insert(0, 0.0) #insert a dummy spacing for the first axle
     num_axles = len(mod_axle_wt) #number of axles in the pattern
     axle_num = number_axles(num_axles) #numbered axles
-    #pdb.set_trace()
+    pdb.set_trace()
     for node_loc,direction in zip([node_loc_ltr, 
                                         node_loc_rtl],
                                         ["ltr","rtl"]):
+        pdb.set_trace()
         num_analysis_nodes = len(node_loc)
 
         #initialize span index id value
@@ -94,7 +95,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
 
         #loop thru analysis node locations
         for x,i in zip(node_loc, range(num_analysis_nodes)): 
-            #pdb.set_trace()
+            pdb.set_trace()
             Ve1 = 0.0
             M1 = 0.0
             Ve2 = 0.0
