@@ -4,6 +4,7 @@ from ml.output import write_output
 from ml.mlob import analyze_vehicle
 import timeit
 import pdb
+import matplotlib.pyplot as plt
 
 def manager():
     """Controls the global program execution.
@@ -18,8 +19,8 @@ def manager():
     #testing input
     axle_spacing = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00]
     axle_wt = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
-    space_to_trailing_load = 5.00
-    distributed_load = 8.00
+    space_to_trailing_load = 0.00
+    distributed_load = 0.00
     #axle_spacing = []
     #axle_wt = [1.0]
     #space_to_trailing_load = 0.0
@@ -57,6 +58,18 @@ def manager():
             space_to_trailing_load, distributed_load, node_loc, V_max1,
             M_max1, V_max2, M_max2, Rmax_pier, analysis_time,
             span1_begin, span2_begin)
+
+    graph(node_loc, V_max1, M_max1, V_max2, M_max2)
+
+def graph(node_loc, V_max1, M_max1, V_max2, M_max2):
+    node_loc = node_loc[:(len(node_loc)/2+1)]
+    plt.figure(1)
+    plt.subplot(211)
+    plt.plot(node_loc, V_max1)
+    plt.subplot(212)
+    plt.plot(node_loc, V_max2)
+    plt.show()
+
 
 if __name__ == "__main__":
     manager()

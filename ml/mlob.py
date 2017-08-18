@@ -78,11 +78,11 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     mod_axle_spacing.insert(0, 0.0) #insert a dummy spacing for the first axle
     num_axles = len(mod_axle_wt) #number of axles in the pattern
     axle_num = number_axles(num_axles) #numbered axles
-    pdb.set_trace()
+    #pdb.set_trace()
     for node_loc,direction in zip([node_loc_ltr, 
                                         node_loc_rtl],
                                         ["ltr","rtl"]):
-        pdb.set_trace()
+        #pdb.set_trace()
         num_analysis_nodes = len(node_loc)
 
         #initialize span index id value
@@ -95,7 +95,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
 
         #loop thru analysis node locations
         for x,i in zip(node_loc, range(num_analysis_nodes)): 
-            pdb.set_trace()
+            #pdb.set_trace()
             Ve1 = 0.0
             M1 = 0.0
             Ve2 = 0.0
@@ -148,6 +148,12 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
 
                     envelope_shear(Ve1, V_max1, span1_index_id)
 
+                    if x == 4.8:
+                        print "\nSpan1"
+                        print span1_index_id
+                        print str(axle_id) + " " + str(Ve1)
+                        print str(V_max1[24])
+
                     M1 = calc_moment(x, 
                                      xl1, 
                                      xr1, 
@@ -166,6 +172,13 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     Ve2 = calc_shear(Rb2, Pr2, Pl2, direction)
 
                     envelope_shear(Ve2, V_max2, span2_index_id)
+
+                    if x == 24.8:
+                        print "\nSpan 2"
+                        print span2_index_id
+                        print str(axle_id) + " " + str(Ve2)
+                        print str(V_max2[24])
+
         
                     M2 = calc_moment(x, 
                                      xl2, 
@@ -319,7 +332,7 @@ def calc_shear(Rb, Pr, Pl, direction):
     #if load move ltr, calc shear on right
     #if load move rtl, calc shear on left
     if direction == "ltr":
-        Ve = Pl - Rb
+        Ve = abs(Pl - Rb)
     elif direction == "rtl":
         Ve = abs(Pr - Rb)
 
