@@ -151,7 +151,11 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     if x == 4.8:
                         print "\nSpan1"
                         print span1_index_id
+                        print x
+                        print cur_axle_loc[axle_id-1]
                         print str(axle_id) + " " + str(Ve1)
+                        print Pl1
+                        print Rb1
                         print str(V_max1[24])
 
                     M1 = calc_moment(x, 
@@ -176,7 +180,11 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     if x == 24.8:
                         print "\nSpan 2"
                         print span2_index_id
+                        print x
+                        print cur_axle_loc[axle_id-1]
                         print str(axle_id) + " " + str(Ve2)
+                        print Pl1
+                        print Rb1
                         print str(V_max2[24])
 
         
@@ -443,9 +451,9 @@ def get_abs_axle_location(axle_spacing, start_pt, direction):
 
     for spacing in axle_spacing:
         if direction == "ltr":
-            loc = loc - spacing
+            loc = round(loc - spacing,3)
         elif direction == "rtl":
-            loc = loc + spacing 
+            loc = round(loc + spacing,3)
         abs_axle_location.append(loc)
 
     return abs_axle_location          
