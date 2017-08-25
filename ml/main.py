@@ -7,13 +7,25 @@ import timeit
 import pdb
 
 def manager():
-    """Controls the global program execution.
+    """Controls the program execution.
 
-    Calls the user_input module to get the input from the user.
+    Allows the user to select between analysis and verification. 
 
-    Runs the mlob routine to generate the internal forces.
+    If analysis is chosen the user_input module is called to get the input
+    from the user. The mlob routine is run to generate the internal forces.
+    Finally the output module is passed the user input and program output
+    to write the output to the user.
 
-    Calls the output module to write the output to the user.
+    If the verification is chosen the verification routine is run which compares
+    AREMA Tb 15-1-16 values to the program calculated values. Both values are
+    reported for each span length specified in the AREMA table and the relative
+    error between the table value and program value.
+
+    Args:
+        None
+
+    Returns:
+        None
     """
     while True:
         option = user_option()
