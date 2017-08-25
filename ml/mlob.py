@@ -148,16 +148,6 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
 
                     envelope_shear(Ve1, V_max1, span1_index_id)
 
-                    if x == 4.8:
-                        print "\nSpan1"
-                        print span1_index_id
-                        print x
-                        print cur_axle_loc[axle_id-1]
-                        print str(axle_id) + " " + str(Ve1)
-                        print Pl1
-                        print Rb1
-                        print str(V_max1[24])
-
                     M1 = calc_moment(x, 
                                      xl1, 
                                      xr1, 
@@ -177,17 +167,6 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
 
                     envelope_shear(Ve2, V_max2, span2_index_id)
 
-                    if x == 24.8:
-                        print "\nSpan 2"
-                        print span2_index_id
-                        print x
-                        print cur_axle_loc[axle_id-1]
-                        print str(axle_id) + " " + str(Ve2)
-                        print Pl1
-                        print Rb1
-                        print str(V_max2[24])
-
-        
                     M2 = calc_moment(x, 
                                      xl2, 
                                      xr2, 
@@ -451,10 +430,10 @@ def get_abs_axle_location(axle_spacing, start_pt, direction):
 
     for spacing in axle_spacing:
         if direction == "ltr":
-            loc = round(loc - spacing,3)
+            loc = loc - spacing
         elif direction == "rtl":
-            loc = round(loc + spacing,3)
-        abs_axle_location.append(loc)
+            loc = loc + spacing
+        abs_axle_location.append(round(loc,3))
 
     return abs_axle_location          
 
@@ -489,7 +468,7 @@ def move_axle_loc(axle_spacing, axle_id, prev_axle_loc,
         elif direction == "rtl":
             axle_loc = prev_axle_loc[i] - axle_spacing[axle_id-1]
 
-        cur_axle_loc.append(axle_loc)
+        cur_axle_loc.append(round(axle_loc,3))
 
     return cur_axle_loc
    
