@@ -9,3 +9,6 @@ By placing the axle at each node it ensures that the maximum forces are
 calculated at those nodes. 
 
 This program uses a functional programming paradigm approach. 
+
+For documentation use pydoc or see the poorly formatted html <a
+href="https://mwhit74.github.io/docs/mlob_docs/docs.html">here</a>.
