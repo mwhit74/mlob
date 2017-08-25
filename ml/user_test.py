@@ -123,7 +123,7 @@ def test_alt():
     axle_spacing_alt = [5.00, 6.00, 5.00]
     axle_wt_alt = [100.00, 100.00, 100.00, 100.00]
     space_to_trailing_load_alt = 0.0
-    distributed_load_alt = 8.0
+    distributed_load_alt = 0.0
     num_user_nodes = 21
 
     Args:
@@ -144,7 +144,7 @@ def test_alt():
     axle_spacing_alt = [5.00, 6.00, 5.00]
     axle_wt_alt = [100.00, 100.00, 100.00, 100.00]
     space_to_trailing_load_alt = 0.0
-    distributed_load_alt = 8.0
+    distributed_load_alt = 0.0
     num_user_nodes = 21
     vehicle_type = "Alternate"
     
@@ -223,7 +223,7 @@ def run_vehicle(vehicle_type, span_lengths, axle_spacing, axle_wt,
         3. Outputs the error of the program with respect to the AREMA Table
            values where possible. (The AREMA Tables are incomplete.)
     """
-    num_user_nodes = 41
+    num_user_nodes = 21
     echo_input = ""
     echo_input += "\n\n\n\n---ECHO INPUT---\n"
     echo_input += "Vehicle type: " + vehicle_type + "\n"
