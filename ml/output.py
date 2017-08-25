@@ -1,8 +1,46 @@
-def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
+def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_user_nodes,
            space_to_trailing_load, distributed_load, node_loc, V_max1,
            M_max1, V_max2, M_max2, Rmax_pier, analysis_time,
            span1_begin, span2_begin):
-    """Format and print output."""
+    """Format and print echoed input and program output.
+    
+    Echos the user input for the current run of the program followed by the
+    output for span 1 and span 2, if span 2 is specified. This is followed by a
+    summary of the maximum shear and moment in each span and the maximum
+    pier reaction if span 2 was specified. Finally, the elapsed time for the
+    analysis is printed in seconds.
+
+    The output for this function is for one half track (one rail). This is not
+    the direct output from the mlob module. The mlob module outputs the effects
+    due to a full track. 
+
+    Args:
+        axle_spacing (list of floats): the spacing between each axle
+        axle_wt (list of floats): weight of each axle
+        span_length1 (float): length of span 1
+        span_length2 (float): length of span 2
+        num_user_nodes (int): number of analysis nodes input by the user
+        space_to_trailing_load (float): distance from last discrete axle to
+                                        beginning of distributed load
+        distributed_load (float): uniformly distributed trailing load magnitude
+        V_max1 (list of floats): maximum shear at each analysis node in span 1
+        M_max1 (list of floats): maximum moment at each analysis node in span 1
+        V_max2 (list of floats): maximum moment at each analysis node in span 2
+        M_max2 (list of floats): maximum moment at each analysis node in span 2
+        Rmax_pier (float): maximum pier reaction, returns None if span length 2
+                           is not entered by user
+        span1_begin (float): coordinate location of beginning of span 1
+        span2_begin (float): coordinate location of beginning of span 2
+        node_loc (list of floats): coordinate location of analysis nodes in
+                                       order ltr
+        analysis_time (float): elapsed time for analysis to be completed
+
+    Returns:
+        None
+
+    Notes:
+        Writes echoed input and program output to terminal screen.
+    """
     #currently outputs half track (one rail)
     echo_input = ""
     out_tb = ""
@@ -13,7 +51,7 @@ def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
     echo_input += "Axle weights: " + str(axle_wt) + "\n"
     echo_input += "Length Span 1: " + str(span_length1) + "\n"
     echo_input += "Length Span 2: " + str(span_length2) + "\n"
-    echo_input += "Number of Nodes: " + str(num_nodes) + "\n"
+    echo_input += "Number of Nodes: " + str(num_user_nodes) + "\n"
     echo_input += "Space to trailing load: " + str(space_to_trailing_load) + "\n"
     echo_input += "Distributed trailing load: " + str(distributed_load) + "\n"
   
@@ -38,7 +76,7 @@ def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_nodes,
     out_val += """Span 1 Vmax: {0:<-.3f}\nSpan 1 Mmax: {1:<-.3f}""".format(max(V_max1)/2,
                                                                             max(M_max1)/2)
   
-  
+    #if output for span 2 exists, print span 2 output 
     if V_max2 != []:
         out_tb += "SPAN 2"
         out_tb += "\n" #span 2 title spacing
