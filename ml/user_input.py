@@ -1,5 +1,8 @@
+import os
+
 def user_option():
     """Get user inputs selecting verification or analysis."""
+    clearscreen()
     print "Select \"Verification\" (v) or \"Analysis\" (a). Hit enter when done."
     while True:
         try:
@@ -132,4 +135,18 @@ def get_num_analysis_nodes():
 
     return num_nodes
 
+def clearscreen(numlines=100):
+  """Clear the console.
+numlines is an optional argument used only as a fall-back.
+"""
+# Thanks to Steven D'Aprano, http://www.velocityreviews.com/forums
 
+  if os.name == "posix":
+    # Unix/Linux/MacOS/BSD/etc
+    os.system('clear')
+  elif os.name in ("nt", "dos", "ce"):
+    # DOS/Windows
+    os.system('CLS')
+  else:
+    # Fallback for other operating systems.
+    print('\n' * numlines)
