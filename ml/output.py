@@ -85,7 +85,8 @@ def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_user_nod
                                                     "Mmax")
         out_tb += "\n" #span 2 header spacing
   
-        for x,Vmax,Mmax in zip(node_loc, V_max2, M_max2):
+        for x,Vmax,Mmax in zip(node_loc[num_user_nodes-1:], V_max2, M_max2):
+            x = x - node_loc[num_user_nodes-1]
             out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}\n""".format(x,
                                                                        Vmax/2,
                                                                        Mmax/2)
