@@ -25,12 +25,12 @@ def manager():
     #axle_wt = [1.0]
     #space_to_trailing_load = 0.0
     #distributed_load = 0.0
-    span_length1 = 20.0
-    span_length2 = 20.0
+    span_length1 = 170.0
+    span_length2 = 100.0
     #num_nodes should always be odd to place a node at midspan and at 
     #each support
     #a minimum of 21 nodes should be used for analysis
-    num_nodes = 101
+    num_nodes = 21
      
     #(axle_spacing, axle_wt, space_to_trailing_load, distributed_load, 
     #span_length1, span_length2, num_nodes) = get_input()
