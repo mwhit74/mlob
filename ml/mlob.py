@@ -171,7 +171,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     envelope_shear(Ve1, V_max1, M1, M_corr1, span1_index_id)
 
                     envelope_moment(M1, M_max1, Ve1, V_corr1, span1_index_id)
-        
+
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
                     Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end, direction)
         
@@ -723,7 +723,7 @@ def span_begin_end_coords(span_length1, span_length2=0.0):
                             "nothing for a default value of 0.0).")
     else:
         span1_begin = 0.0
-        span1_end = span_length1
-        span2_begin = span_length1
-        span2_end = span_length1 + span_length2
+        span1_end = round(span_length1,3)
+        span2_begin = round(span_length1,3)
+        span2_end = round(span_length1 + span_length2,3)
         return span1_begin, span1_end, span2_begin, span2_end
