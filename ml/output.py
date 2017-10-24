@@ -1,6 +1,6 @@
 def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_user_nodes,
-           space_to_trailing_load, distributed_load, node_loc, V_max1,
-           M_max1, V_max2, M_max2, Rmax_pier, analysis_time,
+           space_to_trailing_load, distributed_load, node_loc, V_max1, M_corr1,
+           M_max1, V_corr1, V_max2, M_corr2, M_max2, V_corr2, Rmax_pier, analysis_time,
            span1_begin, span2_begin):
     """Format and print echoed input and program output.
     
@@ -25,7 +25,7 @@ def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_user_nod
         distributed_load (float): uniformly distributed trailing load magnitude
         V_max1 (list of floats): maximum shear at each analysis node in span 1
         M_max1 (list of floats): maximum moment at each analysis node in span 1
-        V_max2 (list of floats): maximum moment at each analysis node in span 2
+        V_max2 (list of floats): maximum shear at each analysis node in span 2
         M_max2 (list of floats): maximum moment at each analysis node in span 2
         Rmax_pier (float): maximum pier reaction, returns None if span length 2
                            is not entered by user
@@ -60,15 +60,20 @@ def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_user_nod
     out_tb += "\nValues output are on a per rail (1/2 track) basis.\n\n"
     out_tb += "SPAN 1"
     out_tb += "\n" #span 1 title spacing
-    out_tb += "{0:^15s}{1:^15s}{2:^15s}".format("x",
-                                                "Vmax",
-                                                "Mmax")
+    out_tb += "{0:^15s}{1:^15s}{2:^15s}{3:^15s}{4:^15s}".format("x",
+                                                                "Vmax",
+                                                                "Mcorr",
+                                                                "Mmax",
+                                                                "Vcorr")
     out_tb += "\n" #span 1 header spacing
   
-    for x,Vmax,Mmax in zip(node_loc, V_max1, M_max1):
-        out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}\n""".format(x,
+    for x,Vmax,Mcorr,Mmax,Vcorr in zip(node_loc, V_max1, M_corr1, M_max1,
+        V_corr1):
+        out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}{4:^-15.3f}\n""".format(x,
                                                                    Vmax/2,
-                                                                   Mmax/2)
+                                                                   Mcorr/2,
+                                                                   Mmax/2,
+                                                                   Vcorr/2)
   
     out_tb += "\n" #span 1 table spacing
   
@@ -80,16 +85,21 @@ def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_user_nod
     if V_max2 != []:
         out_tb += "SPAN 2"
         out_tb += "\n" #span 2 title spacing
-        out_tb += "{0:^15s}{1:^15s}{2:^15s}".format("x",
+        out_tb += "{0:^15s}{1:^15s}{2:^15s}{3:^15s}{4:^15s}".format("x",
                                                     "Vmax",
-                                                    "Mmax")
+                                                    "Mcorr",
+                                                    "Mmax",
+                                                    "Vcorr")
         out_tb += "\n" #span 2 header spacing
   
-        for x,Vmax,Mmax in zip(node_loc[num_user_nodes-1:], V_max2, M_max2):
+        for x,Vmax,Mcorr,Mmax,Vcorr in zip(node_loc[num_user_nodes-1:], V_max2,
+            M_corr2, M_max2, V_corr2):
             x = x - node_loc[num_user_nodes-1]
-            out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}\n""".format(x,
+            out_tb += """{0:^-15.3f}{1:^-15.3f}{2:^-15.3f}{3:^-15.3f}{4:^-15.3f}\n""".format(x,
                                                                        Vmax/2,
-                                                                       Mmax/2)
+                                                                       Mcorr/2,
+                                                                       Mmax/2,
+                                                                       Vcorr/2)
   
         out_tb += "\n\n" #span 2 table spacing
         

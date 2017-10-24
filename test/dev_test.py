@@ -43,7 +43,8 @@ def manager():
 
     start = timeit.default_timer()
     #pdb.set_trace()
-    (node_loc, V_max1, M_max1, V_max2, M_max2, Rmax_pier,
+    (node_loc, V_max1, M_corr1, M_max1, V_corr1,
+    V_max2, M_corr2, M_max2, V_corr2, Rmax_pier,
     span1_begin, span2_begin) = analyze_vehicle(axle_spacing, axle_wt,
                                                span_length1, span_length2,
                                                num_nodes,
@@ -56,8 +57,8 @@ def manager():
 
     write_output(uias, uiaw, span_length1, span_length2, num_nodes,
             space_to_trailing_load, distributed_load, node_loc, V_max1,
-            M_max1, V_max2, M_max2, Rmax_pier, analysis_time,
-            span1_begin, span2_begin)
+            M_corr1, M_max1, V_corr1, V_max2, M_corr2, M_max2, V_corr2,
+            Rmax_pier, analysis_time, span1_begin, span2_begin)
 
     #graph(node_loc, V_max1, M_max1, V_max2, M_max2)
 

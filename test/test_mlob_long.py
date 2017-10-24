@@ -128,7 +128,8 @@ class TestMlobLong(unittest.TestCase):
                                          
         for i in range(len(self.span_lengths)):
             span_length = self.span_lengths[i]
-            (node_loc, V_max1, M_max1, V_max2, M_max2, Rmax_pier,
+            (node_loc, V_max1, M_corr1, M_max1, V_corr1,
+            V_max2, M_corr2, M_max2, V_corr2, Rmax_pier,
             span1_begin, span2_begin) = mlob.analyze_vehicle(axle_spacing,
                                                             axle_wt,
                                                             span_length,

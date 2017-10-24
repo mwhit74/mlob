@@ -35,9 +35,17 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
         node_loc_ltr (list of floats): coordinate location of analysis nodes in
                                        order ltr
         V_max1 (list of floats): maximum shear at each analysis node in span 1
+        M_corr1 (list of floats): corresponding moment to maximum shear at each
+                                  analysis node in span 1
         M_max1 (list of floats): maximum moment at each analysis node in span 1
+        V_corr1 (list of floats): corresponding shear to maximum moment at each
+                                  analysis node in span 1
         V_max2 (list of floats): maximum moment at each analysis node in span 2
+        M_corr22 (list of floats): corresponding moment to maximum shear at each
+                                  analysis node in span 2
         M_max2 (list of floats): maximum moment at each analysis node in span 2
+        V_corr2 (list of floats): corresponding shear to maximum moment at each
+                                  analysis node in span 2
         Rmax_pier (float): maximum pier reaction, returns None if span length 2
                            is not entered by user
         span1_begin (float): coordinate location of beginning of span 1
@@ -54,9 +62,13 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     """
     #calculates for a full track (2 rails)
     V_max1 = []
+    M_corr1 = []
     M_max1 = []
+    V_corr1 = []
     V_max2 = []
+    M_corr2 = []
     M_max2 = []
+    V_corr2 = []
     Rmax_pier = 0.0
 
     (span1_begin,
@@ -146,8 +158,6 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                     
                     Ve1 = calc_shear(Rb1, Pr1, Pl1, direction)
 
-                    envelope_shear(Ve1, V_max1, span1_index_id)
-
                     M1 = calc_moment(x, 
                                      xl1, 
                                      xr1, 
@@ -158,14 +168,14 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                                      Pr1, 
                                      direction)
                     
-                    envelope_moment(M1, M_max1, span1_index_id)
+                    envelope_shear(Ve1, V_max1, M1, M_corr1, span1_index_id)
+
+                    envelope_moment(M1, M_max1, Ve1, V_corr1, span1_index_id)
         
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
                     Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end, direction)
         
                     Ve2 = calc_shear(Rb2, Pr2, Pl2, direction)
-
-                    envelope_shear(Ve2, V_max2, span2_index_id)
 
                     M2 = calc_moment(x, 
                                      xl2, 
@@ -177,11 +187,14 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                                      Pr2, 
                                      direction)
         
-                    envelope_moment(M2, M_max2, span2_index_id)
+                    envelope_shear(Ve2, V_max2, M2, M_corr2, span2_index_id)
+
+                    envelope_moment(M2, M_max2, Ve2, V_corr2, span2_index_id)
 
 
-    return node_loc_ltr, V_max1, M_max1, V_max2, M_max2, \
-           Rmax_pier, span1_begin, span2_begin
+    return (node_loc_ltr, V_max1, M_corr1, M_max1, V_corr1, 
+           V_max2, M_corr2, M_max2, V_corr2, Rmax_pier,
+           span1_begin, span2_begin)
 
 
 def calc_reactions(Pt, xt, span_begin, span_end, direction):
@@ -326,12 +339,14 @@ def calc_shear(Rb, Pr, Pl, direction):
     return Ve
 
 
-def envelope_shear(Ve, V_max, index_id):
+def envelope_shear(Ve, V_max, M, M_corr, index_id):
     """Envelope the maximum and minimum shear at each node.
     
     Args:
         Ve (float): shear at analysis node
         V_max (list): maximum shear at each node
+        M (float): corresponding moment at analysis node
+        M_corr (list): corresponding moment at each node
         index_id (int): analysis node number 
     
     Returns:
@@ -344,8 +359,10 @@ def envelope_shear(Ve, V_max, index_id):
     try:
         if V_max[index_id] < Ve:
             V_max[index_id] = Ve
+            M_corr[index_id] = M
     except:
         V_max.append(Ve)
+        M_corr.append(M)
 
 
 def calc_moment(x, xl, xr, span_begin, span_end, Rb, Pl, Pr, direction):
@@ -390,12 +407,14 @@ def calc_moment(x, xl, xr, span_begin, span_end, Rb, Pl, Pr, direction):
     return M
 
 
-def envelope_moment(M, M_max, index_id):
+def envelope_moment(M, M_max, Ve, V_corr, index_id):
     """Envelope maximum positive moment at each node.
 
     Args:
         M (float): moment at analysis node
         M_max (list): maximum moment at each node
+        Ve (float): corresponding shear at analysis node
+        V_corr (list): corresponding shear at each node
         index_id (int): analysis node number 
     
     Returns:
@@ -408,8 +427,10 @@ def envelope_moment(M, M_max, index_id):
     try:
         if M_max[index_id] < M:
             M_max[index_id] = M
+            V_corr[index_id] = Ve
     except:
         M_max.append(M)
+        V_corr.append(Ve)
 
 
 def number_axles(num_axles):

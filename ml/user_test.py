@@ -249,7 +249,8 @@ def run_vehicle(vehicle_type, span_lengths, axle_spacing, axle_wt,
                                      
     for i in range(len(span_lengths)):
         span_length = span_lengths[i]
-        (node_loc, V_max1, M_max1, V_max2, M_max2, Rmax_pier,
+        (node_loc, V_max1, M_corr1, M_max1, V_corr1,
+        V_max2, M_corr2, M_max2, V_corr2, Rmax_pier,
         span1_begin, span2_begin) = mlob.analyze_vehicle(axle_spacing,
                                                         axle_wt,
                                                         span_length,
