@@ -167,7 +167,13 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                                      Pl1, 
                                      Pr1, 
                                      direction)
-                    
+                   
+                    #print "x: " + str(x)
+                    #print "span index id:" + str(span1_index_id)
+                    #print "axle id: " + str(axle_id)
+                    #print "Ve1: " + str(Ve1)
+                    #print "M1: " + str(M1)
+
                     envelope_shear(Ve1, V_max1, M1, M_corr1, span1_index_id)
 
                     envelope_moment(M1, M_max1, Ve1, V_corr1, span1_index_id)
@@ -428,6 +434,8 @@ def envelope_moment(M, M_max, Ve, V_corr, index_id):
         if M_max[index_id] < M:
             M_max[index_id] = M
             V_corr[index_id] = Ve
+        if M_max[index_id] == M and V_corr[index_id] < Ve:
+            V_corr[index_id] = Ve
     except:
         M_max.append(M)
         V_corr.append(Ve)
@@ -680,6 +688,8 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
         for i in range(num_nodes):
             if i == 0:
                 node_loc.append(x1)
+            elif i == num_nodes-1:
+                node_loc.append(span_length1)
             else:
                 x1 = round(x1 + dx1,3)
                 node_loc.append(x1)
@@ -693,6 +703,8 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
             for i in range(num_nodes):
                 if i == 0:
                     pass #second span beginning is end of first span
+                elif i == num_nodes-1:
+                    node_loc.append(span_length2)
                 else:
                     x2 = round(x2 + dx2,3)
                     node_loc.append(x2)

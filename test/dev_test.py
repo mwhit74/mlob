@@ -20,8 +20,8 @@ def manager():
     axle_spacing = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00]
     axle_wt = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
     axle_wt = [round(72.0/80.0*p,3) for p in axle_wt]
-    space_to_trailing_load = 5.00
-    distributed_load = round(8.00*72.0/80.0,3)
+    space_to_trailing_load = 0.0
+    distributed_load = 0.0
     #axle_spacing = []
     #axle_wt = [1.0]
     #space_to_trailing_load = 0.0
