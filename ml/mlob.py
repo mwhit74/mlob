@@ -63,13 +63,18 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     #calculates for a full track (2 rails)
     V_max1 = []
     M_corr1 = []
+    V_max1_axle = []
     M_max1 = []
     V_corr1 = []
+    M_max1_axle = []
     V_max2 = []
     M_corr2 = []
+    V_max2_axle = []
     M_max2 = []
     V_corr2 = []
+    M_max2_axle = []
     Rmax_pier = 0.0
+    Rmax_pier_axle = [None, None]
 
     (span1_begin,
     span1_end,
@@ -149,9 +154,14 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                         mod_axle_wt, x, span2_begin, span2_end, num_axles)
                
                 Rpier = calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin,
-                                    span1_end, span2_begin, span2_end, num_axles)
+                                    span1_end, span2_begin, span2_end,
+                                    num_axles)
 
-                Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier)
+                Rmax_pier, Rmax_pier_axle = envelope_pier_reaction(Rmax_pier, 
+                                                                   Rpier,
+                                                                   Rmax_pier_axle,
+                                                                   axle_id,
+                                                                   direction)
                 
                 if x >= span1_begin and x <= span1_end:
                     Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end, direction) 
@@ -168,9 +178,11 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                                      Pr1, 
                                      direction)
                     
-                    envelope_shear(Ve1, V_max1, M1, M_corr1, span1_index_id)
+                    envelope_shear(Ve1, V_max1, M1, M_corr1, axle_id,
+                                   direction, V_max1_axle, span1_index_id)
 
-                    envelope_moment(M1, M_max1, Ve1, V_corr1, span1_index_id)
+                    envelope_moment(M1, M_max1, Ve1, V_corr1, axle_id,
+                                    direction, M_max1_axle, span1_index_id)
 
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
                     Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end, direction)
@@ -187,14 +199,20 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                                      Pr2, 
                                      direction)
         
-                    envelope_shear(Ve2, V_max2, M2, M_corr2, span2_index_id)
+                    envelope_shear(Ve2, V_max2, M2, M_corr2, axle_id, 
+                                   direction, V_max2_axle, span2_index_id)
 
-                    envelope_moment(M2, M_max2, Ve2, V_corr2, span2_index_id)
+                    envelope_moment(M2, M_max2, Ve2, V_corr2, axle_id,
+                                    direction, M_max2_axle, span2_index_id)
 
 
-    return (node_loc_ltr, V_max1, M_corr1, M_max1, V_corr1, 
-           V_max2, M_corr2, M_max2, V_corr2, Rmax_pier,
-           span1_begin, span2_begin)
+    return (node_loc_ltr,
+            V_max1, M_corr1, V_max1_axle,
+            M_max1, V_corr1, M_max1_axle,
+            V_max2, M_corr2, V_max2_axle,
+            M_max2, V_corr2, M_max2_axle,
+            Rmax_pier, Rmax_pier_axle,
+            span1_begin, span2_begin)
 
 
 def calc_reactions(Pt, xt, span_begin, span_end, direction):
@@ -290,7 +308,7 @@ def calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin, span1_end,
     return Rpier
 
 
-def envelope_pier_reaction(Rmax_pier, Rpier):
+def envelope_pier_reaction(Rmax_pier, Rpier, Rmax_pier_axle, axle_id, direction):
     """Envelope the maximum interior pier (floorbeam) reaction.
     
     On each iteration compare the maximum pier reaction to the calculated pier
@@ -298,9 +316,10 @@ def envelope_pier_reaction(Rmax_pier, Rpier):
     replace the maximum.
     """
     if Rpier > Rmax_pier:
-        Rmax_pier = Rpier
+        return Rpier, [axle_id, direction]
+    else:
+        return Rmax_pier, Rmax_pier_axle
 
-    return Rmax_pier
 
 
 def calc_shear(Rb, Pr, Pl, direction):
@@ -339,7 +358,7 @@ def calc_shear(Rb, Pr, Pl, direction):
     return Ve
 
 
-def envelope_shear(Ve, V_max, M, M_corr, index_id):
+def envelope_shear(Ve, V_max, M, M_corr, axle_id, direction, V_max_axle, index_id):
     """Envelope the maximum and minimum shear at each node.
     
     Args:
@@ -360,9 +379,12 @@ def envelope_shear(Ve, V_max, M, M_corr, index_id):
         if V_max[index_id] < Ve:
             V_max[index_id] = Ve
             M_corr[index_id] = M
+            V_max_axle[index_id][0] = axle_id
+            V_max_axle[index_id][1] = direction
     except:
         V_max.append(Ve)
         M_corr.append(M)
+        V_max_axle.append([axle_id, direction])
 
 
 def calc_moment(x, xl, xr, span_begin, span_end, Rb, Pl, Pr, direction):
@@ -407,7 +429,7 @@ def calc_moment(x, xl, xr, span_begin, span_end, Rb, Pl, Pr, direction):
     return M
 
 
-def envelope_moment(M, M_max, Ve, V_corr, index_id):
+def envelope_moment(M, M_max, Ve, V_corr, axle_id, direction, M_max_axle, index_id):
     """Envelope maximum positive moment at each node.
 
     Args:
@@ -428,9 +450,12 @@ def envelope_moment(M, M_max, Ve, V_corr, index_id):
         if M_max[index_id] < M:
             M_max[index_id] = M
             V_corr[index_id] = Ve
+            M_max_axle[index_id][0] = axle_id
+            M_max_axle[index_id][1] = direction
     except:
         M_max.append(M)
         V_corr.append(Ve)
+        M_max_axle.append([axle_id, direction])
 
 
 def number_axles(num_axles):

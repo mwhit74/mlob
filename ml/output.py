@@ -1,6 +1,11 @@
 def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_user_nodes,
-           space_to_trailing_load, distributed_load, node_loc, V_max1, M_corr1,
-           M_max1, V_corr1, V_max2, M_corr2, M_max2, V_corr2, Rmax_pier, analysis_time,
+           space_to_trailing_load, distributed_load, node_loc,
+           V_max1, M_corr1, V_max1_axle,
+           M_max1, V_corr1, M_max1_axle,
+           V_max2, M_corr2, V_max2_axle,
+           M_max2, V_corr2, M_max2_axle,
+           Rmax_pier, Rmax_pier_axle,
+           analysis_time,
            span1_begin, span2_begin):
     """Format and print echoed input and program output.
     
@@ -78,8 +83,16 @@ def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_user_nod
     out_tb += "\n" #span 1 table spacing
   
   
-    out_val += """Span 1 Vmax: {0:<-.3f}\nSpan 1 Mmax: {1:<-.3f}""".format(max(V_max1)/2,
-                                                                            max(M_max1)/2)
+    out1 = ("""Span 1 Vmax: {0:<-.3f}\n"""+
+                """Span 1 Vmax Axle Location: {1:<d} {2:<s}\n"""+
+                """Span 1 Mmax:{3:<-.3f}\n"""+
+                """Span 1 Mmax Axle Location: {4:<d} {5:<s}""")
+    out_val += out1.format(max(V_max1)/2,
+                           V_max1_axle[V_max1.index(max(V_max1))][0],
+                           V_max1_axle[V_max1.index(max(V_max1))][1],
+                           max(M_max1)/2,
+                           M_max1_axle[M_max1.index(max(M_max1))][0],
+                           M_max1_axle[M_max1.index(max(M_max1))][1])
   
     #if output for span 2 exists, print span 2 output 
     if V_max2 != []:
@@ -103,8 +116,16 @@ def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_user_nod
   
         out_tb += "\n\n" #span 2 table spacing
         
-        out_val += """\nSpan 2 Vmax: {0:<-.3f}\nSpan 2 Mmax: {1:<-.3f}""".format(max(V_max2)/2,
-                                                                                max(M_max2)/2)
+        out2 = ("""\nSpan 2 Vmax: {0:<-.3f}\n"""+
+                    """Span 2 Vmax Axle Location: {1:<d} {2:<s}\n"""+
+                    """Span 2 Mmax: {3:<-.3f}\n"""+
+                    """Span 2 Mmax Axle Location: {4:<d} {5:<s}\n""")
+        out_val += out2.format(max(V_max2)/2,
+                                 V_max2_axle[V_max2.index(max(V_max2))][0],
+                                 V_max2_axle[V_max2.index(max(V_max2))][1],
+                                 max(M_max2)/2,
+                                 M_max2_axle[M_max2.index(max(M_max2))][0],
+                                 M_max2_axle[M_max2.index(max(M_max2))][1])
   
         out_val += "\nRmax pier or floorbeam: {0:<-.3f}".format(Rmax_pier/2)
 

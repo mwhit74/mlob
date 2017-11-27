@@ -128,9 +128,13 @@ class TestMlobLong(unittest.TestCase):
                                          
         for i in range(len(self.span_lengths)):
             span_length = self.span_lengths[i]
-            (node_loc, V_max1, M_corr1, M_max1, V_corr1,
-            V_max2, M_corr2, M_max2, V_corr2, Rmax_pier,
-            span1_begin, span2_begin) = mlob.analyze_vehicle(axle_spacing,
+            (node_loc, 
+             V_max1, M_corr1, V_max1_axle, 
+             M_max1, V_corr1, M_max1_axle,
+             V_max2, M_corr2, V_max2_axle,
+             M_max2, V_corr2, M_max2_axle,
+             Rmax_pier, Rmax_pier_axle,
+             span1_begin, span2_begin) = mlob.analyze_vehicle(axle_spacing,
                                                             axle_wt,
                                                             span_length,
                                                             span_length,
@@ -138,10 +142,10 @@ class TestMlobLong(unittest.TestCase):
                                                             space_to_trailing_load,
                                                             distributed_load)
             max_moment = max(M_max1)/2
-            max_moment_q = M_max1[5]/2
+            max_moment_q = M_max1[num_user_nodes/4]/2
             max_shear_e = V_max1[0]/2
-            max_shear_q = V_max1[5]/2
-            max_shear_c = V_max1[10]/2
+            max_shear_q = V_max1[num_user_nodes/4]/2
+            max_shear_c = V_max1[num_user_nodes/2]/2
             r_max_pier = Rmax_pier/2
 
             try:

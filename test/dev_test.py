@@ -19,14 +19,15 @@ def manager():
     #testing input
     axle_spacing = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00]
     axle_wt = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
-    axle_wt = [round(72.0/80.0*p,3) for p in axle_wt]
+    #axle_wt = [round(0.00234*p,3) for p in axle_wt]
     space_to_trailing_load = 5.00
-    distributed_load = round(8.00*72.0/80.0,3)
+    distributed_load = 8.00
+    #distributed_load = round(distributed_load*0.00234,3)
     #axle_spacing = []
     #axle_wt = [1.0]
     #space_to_trailing_load = 0.0
     #distributed_load = 0.0
-    span_length1 = 26.75
+    span_length1 = 72.0
     span_length2 = 0.0
     #num_nodes should always be odd to place a node at midspan and at 
     #each support
@@ -44,8 +45,12 @@ def manager():
 
     start = timeit.default_timer()
     #pdb.set_trace()
-    (node_loc, V_max1, M_corr1, M_max1, V_corr1,
-    V_max2, M_corr2, M_max2, V_corr2, Rmax_pier,
+    (node_loc, 
+     V_max1, M_corr1, V_max1_axle,
+     M_max1, V_corr1, M_max1_axle,
+     V_max2, M_corr2, V_max2_axle,
+     M_max2, V_corr2, M_max2_axle,
+     Rmax_pier, Rmax_pier_axle,
     span1_begin, span2_begin) = analyze_vehicle(axle_spacing, axle_wt,
                                                span_length1, span_length2,
                                                num_nodes,
@@ -57,9 +62,13 @@ def manager():
     analysis_time = stop - start
 
     write_output(uias, uiaw, span_length1, span_length2, num_nodes,
-            space_to_trailing_load, distributed_load, node_loc, V_max1,
-            M_corr1, M_max1, V_corr1, V_max2, M_corr2, M_max2, V_corr2,
-            Rmax_pier, analysis_time, span1_begin, span2_begin)
+            space_to_trailing_load, distributed_load, node_loc, 
+            V_max1, M_corr1, V_max1_axle,
+            M_max1, V_corr1, M_max1_axle,
+            V_max2, M_corr2, V_max2_axle,
+            M_max2, V_corr2, M_max2_axle,
+            Rmax_pier, Rmax_pier_axle,
+            analysis_time, span1_begin, span2_begin)
 
     #graph(node_loc, V_max1, M_max1, V_max2, M_max2)
 

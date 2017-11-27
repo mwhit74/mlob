@@ -42,9 +42,13 @@ def manager():
 
             start = timeit.default_timer()
 
-            (node_loc, V_max1, M_corr1, M_max1, V_corr1,
-            V_max2, M_corr2, M_max2, V_corr2, Rmax_pier,
-            span1_begin, span2_begin) = analyze_vehicle(axle_spacing, axle_wt,
+            (node_loc, 
+             V_max1, M_corr1, V_max1_axle,
+             M_max1, V_corr1, M_max1_axle,
+             V_max2, M_corr2, V_max2_axle,
+             M_max2, V_corr2, M_max2_axle,
+             Rmax_pier, Rmax_pier_axle,
+             span1_begin, span2_begin) = analyze_vehicle(axle_spacing, axle_wt,
                                                        span_length1, span_length2,
                                                        num_nodes,
                                                        space_to_trailing_load, 
@@ -55,9 +59,13 @@ def manager():
             analysis_time = stop - start
 
             write_output(uias, uiaw, span_length1, span_length2, num_nodes,
-                    space_to_trailing_load, distributed_load, node_loc, V_max1,
-                    M_corr1, M_max1, V_corr1, V_max2, M_corr2, M_max2, V_corr2,
-                    Rmax_pier, analysis_time, span1_begin, span2_begin)
+                    space_to_trailing_load, distributed_load, node_loc, 
+                    V_max1, M_corr1, V_max1_axle,
+                    M_max1, V_corr1, M_max1_axle,
+                    V_max2, M_corr2, V_max2_axle,
+                    M_max2, V_corr2, M_max2_axle,
+                    Rmax_pier, Rmax_pier_axle,
+                    analysis_time, span1_begin, span2_begin)
         elif option == "v" or option == "V" or option == "Verify":
             user_verification()
         else:
