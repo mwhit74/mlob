@@ -452,6 +452,10 @@ def envelope_moment(M, M_max, Ve, V_corr, axle_id, direction, M_max_axle, index_
             V_corr[index_id] = Ve
             M_max_axle[index_id][0] = axle_id
             M_max_axle[index_id][1] = direction
+        if M_max[index_id] == M and V_corr[index_id] < Ve:
+            V_corr[index_id] = Ve
+            M_max_axle[index_id][0] = axle_id
+            M_max_axle[index_id][1] = direction
     except:
         M_max.append(M)
         V_corr.append(Ve)
@@ -705,6 +709,8 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
         for i in range(num_nodes):
             if i == 0:
                 node_loc.append(x1)
+            elif i == num_nodes-1:
+                node_loc.append(span_length1)
             else:
                 x1 = round(x1 + dx1,3)
                 node_loc.append(x1)
@@ -718,6 +724,8 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
             for i in range(num_nodes):
                 if i == 0:
                     pass #second span beginning is end of first span
+                elif i == num_nodes-1:
+                    node_loc.append(span_length2)
                 else:
                     x2 = round(x2 + dx2,3)
                     node_loc.append(x2)
