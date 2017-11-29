@@ -112,7 +112,6 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
 
         #loop thru analysis node locations
         for x,i in zip(node_loc, range(num_analysis_nodes)): 
-            #pdb.set_trace()
             Ve1 = 0.0
             M1 = 0.0
             Ve2 = 0.0
@@ -134,7 +133,6 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
             #loop thru each axle in the axle configuration placing each axle at
             #current analysis node
             for axle_id in axle_num:
-                
                 #calculate location of each axle based on the axle currently
                 #over the analysis node
                 if axle_id == 1:
@@ -355,7 +353,7 @@ def calc_shear(Rb, Pr, Pl, direction):
     elif direction == "rtl":
         Ve = abs(Pr - Rb)
 
-    return Ve
+    return round(Ve,3)
 
 
 def envelope_shear(Ve, V_max, M, M_corr, axle_id, direction, V_max_axle, index_id):
@@ -426,7 +424,7 @@ def calc_moment(x, xl, xr, span_begin, span_end, Rb, Pl, Pr, direction):
         eb = span_end - x
         M = Rb*eb - Pr*er
 
-    return M
+    return round(M,3)
 
 
 def envelope_moment(M, M_max, Ve, V_corr, axle_id, direction, M_max_axle, index_id):
@@ -709,8 +707,8 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
         for i in range(num_nodes):
             if i == 0:
                 node_loc.append(x1)
-            elif i == num_nodes-1:
-                node_loc.append(span_length1)
+            elif i == (num_nodes - 1):
+                node_loc.append(span1_end)
             else:
                 x1 = round(x1 + dx1,3)
                 node_loc.append(x1)
@@ -724,8 +722,8 @@ def node_location(span1_begin, span1_end, span2_begin, span2_end, num_nodes):
             for i in range(num_nodes):
                 if i == 0:
                     pass #second span beginning is end of first span
-                elif i == num_nodes-1:
-                    node_loc.append(span_length2)
+                elif i == (num_nodes - 1):
+                    node_loc.append(span2_end)
                 else:
                     x2 = round(x2 + dx2,3)
                     node_loc.append(x2)
