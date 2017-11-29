@@ -85,7 +85,7 @@ def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_user_nod
   
     out1 = ("""Span 1 Vmax: {0:<-.3f}\n"""+
                 """Span 1 Vmax Axle Location: {1:<d} {2:<s}\n"""+
-                """Span 1 Mmax:{3:<-.3f}\n"""+
+                """Span 1 Mmax: {3:<-.3f}\n"""+
                 """Span 1 Mmax Axle Location: {4:<d} {5:<s}""")
     out_val += out1.format(max(V_max1)/2,
                            V_max1_axle[V_max1.index(max(V_max1))][0],
