@@ -224,18 +224,22 @@ def run_vehicle(vehicle_type, span_lengths, axle_spacing, axle_wt,
            values where possible. (The AREMA Tables are incomplete.)
     """
     num_user_nodes = 21
-    echo_input = ""
+    echo_input = "\n\n\n\n---USER NOTES---\n"
+    echo_input += ("1. Positive error means that program output is greater than " +
+                    "AREMA table value.\n")
+    echo_input += ("2. Negative error means that program output is less than " +
+                    "AREMA table value.")
     echo_input += "\n\n\n\n---ECHO INPUT---\n"
     echo_input += "Vehicle type: " + vehicle_type + "\n"
     echo_input += "Axle spacing: " + str(axle_spacing) + "\n"
     echo_input += "Axle weights: " + str(axle_wt) + "\n"
     echo_input += "Number of Nodes: " + str(num_user_nodes) + "\n"
     echo_input += "Space to trailing load: " + str(space_to_trailing_load) + "\n"
-    echo_input += "Distributed trailing load: " + str(distributed_load) + "\n"
+    echo_input += "Distributed trailing load: " + str(distributed_load)
 
     print echo_input
 
-    print "\n\n\n\n---PROGRAM OUTPUT---\n"
+    print "\n\n\n---PROGRAM OUTPUT---\n"
 
     header = "               {0:^15} {1:^15} {2:^15} {3:^15} {4:^15} {5:^15} {6:^15}".format(
                                             "Span Length [ft]",
@@ -262,9 +266,9 @@ def run_vehicle(vehicle_type, span_lengths, axle_spacing, axle_wt,
                                                    distributed_load)
 
         max_moment = max(M_max1)/2
-        max_moment_q = M_max1[num_user_nodes/4-1]/2
+        max_moment_q = M_max1[num_user_nodes/4]/2
         max_shear_e = V_max1[0]/2
-        max_shear_q = V_max1[num_user_nodes/4-1]/2
+        max_shear_q = V_max1[num_user_nodes/4]/2
         max_shear_c = V_max1[num_user_nodes/2]/2
         r_max_pier = Rmax_pier/2
 
@@ -277,7 +281,6 @@ def run_vehicle(vehicle_type, span_lengths, axle_spacing, axle_wt,
                                              max_shear_q,
                                              max_shear_c,
                                              r_max_pier)
-
         print out
 
         try:
@@ -357,9 +360,13 @@ def run_vehicle(vehicle_type, span_lengths, axle_spacing, axle_wt,
         print "\n"
 
 def error(v1, v2):
-    """Returns the relative error with respect to the first value."""
+    """Returns the relative error with respect to the first value.
+    
+    Positive error if program output is greater than AREMA table.
+    Negative error if program output is less than AREMA table.
+    """
 
-    e = (v1 - v2)/v1
+    e = (v2 - v1)/v1
     return e
 
 if __name__ == "__main__":
