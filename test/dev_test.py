@@ -19,15 +19,16 @@ def manager():
     #testing input
     axle_spacing = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00]
     axle_wt = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
-    #axle_wt = [round(0.00234*p,3) for p in axle_wt]
+    sf = 72.0/80.0 #scale factor
+    axle_wt = [round(sf*p,3) for p in axle_wt]
     space_to_trailing_load = 5.00
     distributed_load = 8.00
-    #distributed_load = round(distributed_load*0.00234,3)
+    distributed_load = round(sf*distributed_load,3)
     #axle_spacing = []
     #axle_wt = [1.0]
     #space_to_trailing_load = 0.0
     #distributed_load = 0.0
-    span_length1 = 32.0
+    span_length1 = 26.75
     span_length2 = 0.0
     #num_nodes should always be odd to place a node at midspan and at 
     #each support
@@ -56,12 +57,9 @@ def manager():
                                                num_nodes,
                                                space_to_trailing_load, 
                                                distributed_load)
-
     stop = timeit.default_timer()
 
     analysis_time = stop - start
-
-    print V_max1
 
     write_output(uias, uiaw, span_length1, span_length2, num_nodes,
             space_to_trailing_load, distributed_load, node_loc, 
