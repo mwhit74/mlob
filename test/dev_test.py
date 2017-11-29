@@ -27,7 +27,7 @@ def manager():
     #axle_wt = [1.0]
     #space_to_trailing_load = 0.0
     #distributed_load = 0.0
-    span_length1 = 72.0
+    span_length1 = 32.0
     span_length2 = 0.0
     #num_nodes should always be odd to place a node at midspan and at 
     #each support
@@ -60,6 +60,8 @@ def manager():
     stop = timeit.default_timer()
 
     analysis_time = stop - start
+
+    print V_max1
 
     write_output(uias, uiaw, span_length1, span_length2, num_nodes,
             space_to_trailing_load, distributed_load, node_loc, 
