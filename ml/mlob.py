@@ -151,7 +151,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 Pt2, xt2, Pl2, xl2, Pr2, xr2 = calc_load_and_loc(cur_axle_loc,
                         mod_axle_wt, x, span2_begin, span2_end, num_axles)
                
-                Rpier = calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin,
+                Rpier, R1, R2 = calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin,
                                     span1_end, span2_begin, span2_end,
                                     num_axles)
 
@@ -159,7 +159,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                                                                    Rpier,
                                                                    Rmax_pier_axle,
                                                                    axle_id,
-                                                                   direction)
+                                                                   direction, R1, R2)
                 
                 if x >= span1_begin and x <= span1_end:
                     Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end, direction) 
@@ -283,6 +283,8 @@ def calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin, span1_end,
         shear in each span. 
     """
     Rpier = 0.0
+    R1 = 0.0
+    R2 = 0.0
 
     span1_length = span1_end - span1_begin
     span2_length = span2_end - span2_begin
@@ -291,22 +293,26 @@ def calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin, span1_end,
         #if load is not over the support at the beginning of span 1
         #and if the load is not over th support at the end of span 2
         if cur_axle_loc[i] > span1_begin and cur_axle_loc[i] < span2_end:
+            #if axle is directly over pier
+            if cur_axle_loc[i] == span1_end:
+                r = mod_axle_wt[i]
+                R1 = R1 + r/2
+                R2 = R2 + r/2
             #if the load is on span 1, calc the reaction at the pier
-            #the equals sign includes the loads on the pier
-            if cur_axle_loc[i] <= span1_end:
+            if cur_axle_loc[i] < span1_end:
                 r = (cur_axle_loc[i] - span1_begin)/span1_length*mod_axle_wt[i]
+                R1 = R1 + r
             #if the load is on span 2, calc the reaction at the pier
-            #only one equals sign should be used otherwise the load would be
-            #double counted
             if cur_axle_loc[i] > span2_begin:
                 r = (span2_end - cur_axle_loc[i])/span2_length*mod_axle_wt[i]
+                R2 = R2 + r
 
-            Rpier = Rpier + r
+    Rpier = R1 + R2
             
-    return Rpier
+    return [Rpier, R1, R2]
 
 
-def envelope_pier_reaction(Rmax_pier, Rpier, Rmax_pier_axle, axle_id, direction):
+def envelope_pier_reaction(Rmax_pier, Rpier, Rmax_pier_axle, axle_id, direction, R1, R2):
     """Envelope the maximum interior pier (floorbeam) reaction.
     
     On each iteration compare the maximum pier reaction to the calculated pier
@@ -314,7 +320,7 @@ def envelope_pier_reaction(Rmax_pier, Rpier, Rmax_pier_axle, axle_id, direction)
     replace the maximum.
     """
     if Rpier > Rmax_pier:
-        return Rpier, [axle_id, direction]
+        return Rpier, [axle_id, direction, R1, R2]
     else:
         return Rmax_pier, Rmax_pier_axle
 

@@ -37,11 +37,11 @@ def manager():
     distributed_load2 = 0.0
 
 
-    span_length1_1 = 30.083
-    span_length2_1 = 0.0
+    span_length1_1 = 74.00
+    span_length2_1 = 34.00
 
-    #span_length1_2 = 0.0
-    #span_length2_2 = 0.0
+    span_length1_2 = 74.00
+    span_length2_2 = 34.00
 
     #num_nodes should always be odd to place a node at midspan and at 
     #each support
@@ -55,6 +55,12 @@ def manager():
 
     sls = [[span_length1_1, span_length2_1]]
      
+    #asps = [axle_spacing1]
+    #awts = [axle_wt1]
+    #sttls = [space_to_trailing_load1]
+    #dls = [distributed_load1]
+
+    #sls = [[span_length1_1, span_length2_1]]
     #(axle_spacing, axle_wt, space_to_trailing_load, distributed_load, 
     #span_length1, span_length2, num_nodes) = get_input()
 

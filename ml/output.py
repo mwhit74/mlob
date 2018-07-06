@@ -128,8 +128,11 @@ def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_user_nod
                                  M_max2_axle[M_max2.index(max(M_max2))][1])
   
         out_val += "\nRmax pier or floorbeam: {0:<-.3f}".format(Rmax_pier/2)
+        out_val += "\nRmax pier Axle Location: {0:<d} {1:<s}".format(Rmax_pier_axle[0],
+                                                                       Rmax_pier_axle[1])
+        out_val += "\nRmax pier R1: {0:<-.3f}".format(Rmax_pier_axle[2]/2)
+        out_val += "\nRmax pier R2: {0:<-.3f}\n".format(Rmax_pier_axle[3]/2)
 
-      
     print echo_input + out_tb + out_val
        
     print "\nRuntime [sec]: {0:<.3f}\n\n".format(analysis_time)
