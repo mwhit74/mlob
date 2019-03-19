@@ -356,10 +356,13 @@ def calc_shear(Pt, xt, Pl, Pr, direction, span_begin, span_end):
     #if load move rtl, calc shear on left
     span_length = span_end - span_begin
 
-    if direction == "ltr":
-        Ve = abs(Pt*xt/span_length - Pr)
-    elif direction == "rtl":
-        Ve = abs(Pt*(span_end - xt)/span_length- Pl)
+    V1 = Pt*xt/span_length - Pr 
+    V2 = Pt*(span_end - xt)/span_length - Pl
+    Ve = max(abs(V1), abs(V2))
+    #if direction == "ltr":
+    #    Ve = abs(Pt*xt/span_length - Pr) 
+    #elif direction == "rtl":
+    #    Ve = abs(Pt*(span_end - xt)/span_length - Pl)
 
     return round(Ve,3)
 
