@@ -95,7 +95,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     mod_axle_spacing.insert(0, 0.0) #insert a dummy spacing for the first axle
     num_axles = len(mod_axle_wt) #number of axles in the pattern
     axle_num = number_axles(num_axles) #numbered axles
-    pdb.set_trace()
+    #pdb.set_trace()
     for node_loc,direction in zip([node_loc_ltr, 
                                         node_loc_rtl],
                                         ["ltr","rtl"]):
@@ -330,7 +330,7 @@ def calc_shear(Pt, xt, Pl, Pr, direction, span_begin, span_end):
     """Calculate shear on one side of the node.
     
     Moving left to right:
-        Ve = 
+        Ve = abs(
     Moving right to left
         Ve = abs(Pr - Rb)
 
@@ -465,17 +465,17 @@ def envelope_moment(M, M_max, Ve, V_corr, axle_id, direction, M_max_axle, index_
             V_corr[index_id] = Ve
             M_max_axle[index_id][0] = axle_id
             M_max_axle[index_id][1] = direction
-            print index_id, M, Ve, M_max[index_id], V_corr[index_id], axle_id, direction
+            #print index_id, M, Ve, M_max[index_id], V_corr[index_id], axle_id, direction
         if M_max[index_id] == M and V_corr[index_id] < Ve:
             V_corr[index_id] = Ve
             M_max_axle[index_id][0] = axle_id
             M_max_axle[index_id][1] = direction
-            print index_id, M, Ve, M_max[index_id], V_corr[index_id], axle_id, direction
+            #print index_id, M, Ve, M_max[index_id], V_corr[index_id], axle_id, direction
     except:
         M_max.append(M)
         V_corr.append(Ve)
         M_max_axle.append([axle_id, direction])
-        print index_id, M, Ve, M_max[index_id], V_corr[index_id], axle_id, direction
+        #print index_id, M, Ve, M_max[index_id], V_corr[index_id], axle_id, direction
 
 
 def number_axles(num_axles):
