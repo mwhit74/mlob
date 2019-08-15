@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from user_input import get_input, user_option
 from output import write_output
-from mlob import analyze_vehicle
+from analysis import analyze_vehicle
 from user_test import user_verification
 import timeit
 import pdb

@@ -1,4 +1,4 @@
-import mlob
+import analysis
 
 def user_verification():
     """Runs two tests one for E80 and one for Alternate."""
@@ -259,7 +259,7 @@ def run_vehicle(vehicle_type, span_lengths, axle_spacing, axle_wt,
          V_max2, M_corr2, V_max2_axle,
          M_max2, V_corr2, M_max2_axle,
          Rmax_pier, Rmax_pier_axle,
-        span1_begin, span2_begin) = mlob.analyze_vehicle(axle_spacing, axle_wt,
+        span1_begin, span2_begin) = analysis.analyze_vehicle(axle_spacing, axle_wt,
                                                    span_length, span_length,
                                                    num_user_nodes,
                                                    space_to_trailing_load, 
