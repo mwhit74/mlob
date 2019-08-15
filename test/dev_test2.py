@@ -62,10 +62,10 @@ def manager():
     #a minimum of 21 nodes should be used for analysis
     num_nodes = 21
 
-    asps = [axle_spacing1, axle_spacing2, axle_spacing3]
-    awts = [axle_wt1, axle_wt2, axle_wt3]
-    sttls = [space_to_trailing_load1, space_to_trailing_load2, space_to_trailing_load3]
-    dls = [distributed_load1, distributed_load2, distributed_load3]
+    asps = [axle_spacing1]
+    awts = [axle_wt1]
+    sttls = [space_to_trailing_load1]
+    dls = [distributed_load1]
 
     sls = [[span_length1_1, span_length2_1]]
      
