@@ -466,18 +466,18 @@ def envelope_moment(M, M_max, Ve, V_corr, axle_id, direction, M_max_axle, index_
     try:
         if M_max[index_id] < M:
             M_max[index_id] = M
-            V_corr[index_id] = Ve
+            V_corr[index_id] = abs(Ve)
             M_max_axle[index_id][0] = axle_id
             M_max_axle[index_id][1] = direction
             #print index_id, M, Ve, M_max[index_id], V_corr[index_id], axle_id, direction
-        if M_max[index_id] == M and V_corr[index_id] < Ve:
-            V_corr[index_id] = Ve
+        if M_max[index_id] == M and V_corr[index_id] < abs(Ve):
+            V_corr[index_id] = abs(Ve)
             M_max_axle[index_id][0] = axle_id
             M_max_axle[index_id][1] = direction
             #print index_id, M, Ve, M_max[index_id], V_corr[index_id], axle_id, direction
     except:
         M_max.append(M)
-        V_corr.append(Ve)
+        V_corr.append(abs(Ve))
         M_max_axle.append([axle_id, direction])
         #print index_id, M, Ve, M_max[index_id], V_corr[index_id], axle_id, direction
 
@@ -588,7 +588,7 @@ def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles)
             sum_Ptx = sum_Ptx + cur_axle_loc[i]*axle_wt[i]
             #if the axle is to the left of the analysis node, add weight to
             #total left of the analysis node
-            if cur_axle_loc[i] >= begin_span and cur_axle_loc[i] < x:
+            if cur_axle_loc[i] >= begin_span and cur_axle_loc[i] <= x:
                 Pl = Pl + axle_wt[i]
                 sum_Plx = sum_Plx + cur_axle_loc[i]*axle_wt[i]
             #if the axle is to the right of the analysis node, add weight to
@@ -613,8 +613,8 @@ def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles)
     else:        
         xr = sum_Prx/Pr
 
-    print Pt
-    print (Pl + Pr)
+    #print Pt
+    #print (Pl + Pr)
 
     return Pt, xt, Pl, xl, Pr, xr
 
