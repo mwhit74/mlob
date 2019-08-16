@@ -1,5 +1,5 @@
 import unittest
-from ml import mlob
+from mlob import analysis
 import pdb
 import timeit
 
@@ -134,7 +134,7 @@ class TestMlobLong(unittest.TestCase):
              V_max2, M_corr2, V_max2_axle,
              M_max2, V_corr2, M_max2_axle,
              Rmax_pier, Rmax_pier_axle,
-             span1_begin, span2_begin) = mlob.analyze_vehicle(axle_spacing,
+             span1_begin, span2_begin) = analysis.analyze_vehicle(axle_spacing,
                                                             axle_wt,
                                                             span_length,
                                                             span_length,

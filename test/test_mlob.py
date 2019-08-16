@@ -1,5 +1,5 @@
 import unittest
-from ml import mlob
+from mlob import analysis
 import pdb
 
 class TestUserInput(unittest.TestCase):
