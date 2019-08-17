@@ -52,7 +52,7 @@ def manager():
     distributed_load3 = 0.0
 
     span_length1_1 = 110.25
-    span_length2_1 = 0.00
+    span_length2_1 = 110.25
 
     #span_length1_2 = 80.00
     #span_length2_2 = 30.00
@@ -91,7 +91,7 @@ def manager():
              M_max1, V_corr1, M_max1_axle,
              V_max2, M_corr2, V_max2_axle,
              M_max2, V_corr2, M_max2_axle,
-             Rmax_pier, Rmax_pier_axle,
+             Rmax_pier, 
             span1_begin, span2_begin) = analyze_vehicle(axle_spacing, axle_wt,
                                                        span_length1, span_length2,
                                                        num_nodes,
@@ -107,7 +107,7 @@ def manager():
                     M_max1, V_corr1, M_max1_axle,
                     V_max2, M_corr2, V_max2_axle,
                     M_max2, V_corr2, M_max2_axle,
-                    Rmax_pier, Rmax_pier_axle,
+                    Rmax_pier,
                     analysis_time, span1_begin, span2_begin)
 
             #graph(node_loc, V_max1, M_max1, V_max2, M_max2)

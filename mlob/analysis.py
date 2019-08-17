@@ -151,16 +151,12 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 Pt2, xt2, Pl2, xl2, Pr2, xr2 = calc_load_and_loc(cur_axle_loc,
                         mod_axle_wt, x, span2_begin, span2_end, num_axles)
                
-                Rpier, R1, R2 = calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin,
+                Rpier = calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin,
                                     span1_end, span2_begin, span2_end,
                                     num_axles)
 
-                Rmax_pier, Rmax_pier_axle = envelope_pier_reaction(Rmax_pier, 
-                                                                   Rpier,
-                                                                   Rmax_pier_axle,
-                                                                   axle_id,
-                                                                   direction, R1, R2)
-                
+                Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier) 
+                                                                   
                 if x >= span1_begin and x <= span1_end:
                     Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end, direction) 
                     
@@ -213,7 +209,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
             M_max1, V_corr1, M_max1_axle,
             V_max2, M_corr2, V_max2_axle,
             M_max2, V_corr2, M_max2_axle,
-            Rmax_pier, Rmax_pier_axle,
+            Rmax_pier,
             span1_begin, span2_begin)
 
 
@@ -287,36 +283,35 @@ def calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin, span1_end,
         shear in each span. 
     """
     Rpier = 0.0
-    R1 = 0.0
-    R2 = 0.0
+    L_S1 = 0.0 #center pier reaction from loads on span 1
+    L_S2 = 0.0 #center pier reaction from loads on span 2
 
     span1_length = span1_end - span1_begin
     span2_length = span2_end - span2_begin
 
     for i in range(num_axles):
         #if load is not over the support at the beginning of span 1
-        #and if the load is not over th support at the end of span 2
+        #and if the load is not over the support at the end of span 2
         if cur_axle_loc[i] > span1_begin and cur_axle_loc[i] < span2_end:
             #if axle is directly over pier
             if cur_axle_loc[i] == span1_end:
                 r = mod_axle_wt[i]
-                R1 = R1 + r/2
-                R2 = R2 + r/2
+                L_S1 = L_S1 + r/2
+                L_S2 = L_S2 + r/2
             #if the load is on span 1, calc the reaction at the pier
             if cur_axle_loc[i] < span1_end:
                 r = (cur_axle_loc[i] - span1_begin)/span1_length*mod_axle_wt[i]
-                R1 = R1 + r
+                L_S1 = L_S1 + r
             #if the load is on span 2, calc the reaction at the pier
             if cur_axle_loc[i] > span2_begin:
                 r = (span2_end - cur_axle_loc[i])/span2_length*mod_axle_wt[i]
-                R2 = R2 + r
+                L_S2 = L_S2 + r
 
-    Rpier = R1 + R2
+    Rpier = L_S1 + L_S2
             
-    return [Rpier, R1, R2]
+    return Rpier
 
-
-def envelope_pier_reaction(Rmax_pier, Rpier, Rmax_pier_axle, axle_id, direction, R1, R2):
+def envelope_pier_reaction(Rmax_pier, Rpier):
     """Envelope the maximum interior pier (floorbeam) reaction.
     
     On each iteration compare the maximum pier reaction to the calculated pier
@@ -324,9 +319,9 @@ def envelope_pier_reaction(Rmax_pier, Rpier, Rmax_pier_axle, axle_id, direction,
     replace the maximum.
     """
     if Rpier > Rmax_pier:
-        return Rpier, [axle_id, direction, R1, R2]
+        return Rpier
     else:
-        return Rmax_pier, Rmax_pier_axle
+        return Rmax_pier
 
 
 
@@ -466,18 +461,18 @@ def envelope_moment(M, M_max, Ve, V_corr, axle_id, direction, M_max_axle, index_
     try:
         if M_max[index_id] < M:
             M_max[index_id] = M
-            V_corr[index_id] = abs(Ve)
+            V_corr[index_id] = Ve
             M_max_axle[index_id][0] = axle_id
             M_max_axle[index_id][1] = direction
             #print index_id, M, Ve, M_max[index_id], V_corr[index_id], axle_id, direction
-        if M_max[index_id] == M and V_corr[index_id] < abs(Ve):
-            V_corr[index_id] = abs(Ve)
+        if M_max[index_id] == M and V_corr[index_id] < Ve:
+            V_corr[index_id] = Ve
             M_max_axle[index_id][0] = axle_id
             M_max_axle[index_id][1] = direction
             #print index_id, M, Ve, M_max[index_id], V_corr[index_id], axle_id, direction
     except:
         M_max.append(M)
-        V_corr.append(abs(Ve))
+        V_corr.append(Ve)
         M_max_axle.append([axle_id, direction])
         #print index_id, M, Ve, M_max[index_id], V_corr[index_id], axle_id, direction
 
