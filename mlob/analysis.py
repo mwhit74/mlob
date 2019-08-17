@@ -158,6 +158,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier) 
                                                                    
                 if x >= span1_begin and x <= span1_end:
+                    #pdb.set_trace()
                     Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end, direction) 
                     
                     Ve1 = calc_shear(Pt1, xt1, Pl1, Pr1, direction, span1_begin, span1_end, Rb1)
@@ -181,6 +182,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                                     direction, M_max1_axle, span1_index_id)
 
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
+                    #pdb.set_trace()
                     Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end, direction)
         
                     Ve2 = calc_shear(Pt2, xt2, Pl2, Pr2, direction, span2_begin, span2_end, Rb2)
@@ -359,7 +361,7 @@ def calc_shear(Pt, xt, Pl, Pr, direction, span_begin, span_end, Rb):
     #V2 = Pt*(span_end - xt)/span_length - Pl
     #Ve = max(abs(V1), abs(V2))
     if direction == "ltr":
-        Ve = abs(Pt*xt/span_length - Pr) 
+        Ve = abs(Pt*(xt-span_begin)/span_length - Pr) 
     elif direction == "rtl":
         Ve = abs(Pt*(span_end - xt)/span_length - Pl)
 
