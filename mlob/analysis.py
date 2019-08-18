@@ -3,7 +3,7 @@
 supported span including the pier reaction for two adjacent simply supported
 spans of differing lengths.
 """
-import pdb
+
 def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                      num_user_nodes, space_to_trailing_load, distributed_load,
                       point_load_spacing=0.5):
@@ -95,11 +95,9 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     mod_axle_spacing.insert(0, 0.0) #insert a dummy spacing for the first axle
     num_axles = len(mod_axle_wt) #number of axles in the pattern
     axle_num = number_axles(num_axles) #numbered axles
-    #pdb.set_trace()
     for node_loc,direction in zip([node_loc_ltr, 
                                         node_loc_rtl],
                                         ["ltr","rtl"]):
-        #pdb.set_trace()
         num_analysis_nodes = len(node_loc)
 
         #initialize span index id value
@@ -145,11 +143,11 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                                                  prev_axle_loc, num_axles,
                                                  direction)
 
-                Pt1, xt1, Pl1, xl1, Pr1, xr1 = calc_load_and_loc(cur_axle_loc,
+                Pt1, xt1, Pli1, Ple1, xli1, xle1, Pri1, Pre1, xri1, xre1 = calc_load_and_loc(cur_axle_loc,
                            mod_axle_wt, x, span1_begin, span1_end, num_axles)
                 
-                Pt2, xt2, Pl2, xl2, Pr2, xr2 = calc_load_and_loc(cur_axle_loc,
-                        mod_axle_wt, x, span2_begin, span2_end, num_axles)
+                Pt2, xt2, Pli2, Ple2, xli2, xle2, Pri2, Pre2, xri2, xre2 = calc_load_and_loc(cur_axle_loc,
+                           mod_axle_wt, x, span2_begin, span2_end, num_axles)
                
                 Rpier = calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin,
                                     span1_end, span2_begin, span2_end,
@@ -158,19 +156,22 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                 Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier) 
                                                                    
                 if x >= span1_begin and x <= span1_end:
-                    #pdb.set_trace()
                     Rb1, Re1 = calc_reactions(Pt1, xt1, span1_begin, span1_end, direction) 
                     
-                    Ve1 = calc_shear(Pt1, xt1, Pl1, Pr1, direction, span1_begin, span1_end, Rb1)
+                    Ve1 = calc_shear(Pt1, xt1, Pli1, Ple1, Pri1, Pre1, direction, span1_begin, span1_end)
 
                     M1 = calc_moment(x, 
-                                     xl1, 
-                                     xr1, 
+                                     xli1,
+                                     xle1,
+                                     xri1,
+                                     xre1,
                                      span1_begin, 
                                      span1_end, 
                                      Rb1, 
-                                     Pl1, 
-                                     Pr1, 
+                                     Pli1,
+                                     Ple1,
+                                     Pri1,
+                                     Pre1,
                                      direction,
                                      Pt1,
                                      xt1)
@@ -182,22 +183,25 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                                     direction, M_max1_axle, span1_index_id)
 
                 if span_length2 != 0.0 and x >= span2_begin and x <= span2_end:
-                    #pdb.set_trace()
                     Rb2, Re2 = calc_reactions(Pt2, xt2, span2_begin, span2_end, direction)
         
-                    Ve2 = calc_shear(Pt2, xt2, Pl2, Pr2, direction, span2_begin, span2_end, Rb2)
+                    Ve2 = calc_shear(Pt2, xt2, Pli2, Ple2, Pri2, Pre2, direction, span2_begin, span2_end)
 
                     M2 = calc_moment(x, 
-                                     xl2, 
-                                     xr2, 
+                                     xli2,
+                                     xle2,
+                                     xri2,
+                                     xre2,
                                      span2_begin, 
                                      span2_end, 
                                      Rb2, 
-                                     Pl2, 
-                                     Pr2, 
+                                     Pli2,
+                                     Ple2,
+                                     Pri2,
+                                     Pre2,
                                      direction,
-                                     Pt1,
-                                     xt1)
+                                     Pt2,
+                                     xt2)
         
                     envelope_shear(Ve2, V_max2, M2, M_corr2, axle_id, 
                                    direction, V_max2_axle, span2_index_id)
@@ -285,6 +289,8 @@ def calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin, span1_end,
         shear in each span. 
     """
     Rpier = 0.0
+    #these are *not* the reactions at the beginning and end supports of a two
+    #span structure
     L_S1 = 0.0 #center pier reaction from loads on span 1
     L_S2 = 0.0 #center pier reaction from loads on span 2
 
@@ -327,13 +333,16 @@ def envelope_pier_reaction(Rmax_pier, Rpier):
 
 
 
-def calc_shear(Pt, xt, Pl, Pr, direction, span_begin, span_end, Rb):
+def calc_shear(Pt, xt, Pli, Ple, Pri, Pre, direction, span_begin, span_end):
     """Calculate shear on one side of the node.
-    
+   
+
     Moving left to right:
-        Ve = abs(Pl - Rb)
+        Ve1 = abs(Pt*(xt-span_begin)/span_length - Pri)
+        Ve2 = abs(Pt*(xt-span_begin)/span_length - Pre)
     Moving right to left
-        Ve = abs(Pr - Rb)
+        Ve1 = abs(Pt*(span_end - xt)/span_length - Pli)
+        Ve2 = abs(Pt*(span_end - xt)/span_length - Ple)
 
     Args:
         Rb (float): reaction at beginning of span
@@ -343,29 +352,32 @@ def calc_shear(Pt, xt, Pl, Pr, direction, span_begin, span_end, Rb):
                             either 'ltr' or 'rtl'
 
     Returns:
-        Ve (float): shear at the analysis node
+        Vi (float): shear at analysis node with load included
+        Ve (float): shear at analysis node with load excluded
 
     Notes:
-        Calculate shear on the opposite side of the section.
-        If the load is moving left to right, calculate the shear to the right of
-        the analysis node.
-        If the load is moving right to left, calculate the shear to the left of
-        the analysis node. 
+        Calculate shear on both sides of the analysis node, with the load at
+        the node included and load excluded.
+
+        Effectively this considers the load at the analysis node to be just
+        to the right or left of the analysis node to accurately capture the
+        effects of shear on each side of the node.
+
+        The load occuring directly at the analysis node is effectively a
+        discontinuity in the shear force. To overcome the discontinuity the
+        program looks at the shear force just before and just after the 
+        load at the analysis node.
     """
-    #calculate shear on opposite side of section
-    #if load move ltr, calc shear on right
-    #if load move rtl, calc shear on left
     span_length = span_end - span_begin
 
-    #V1 = Pt*xt/span_length - Pr 
-    #V2 = Pt*(span_end - xt)/span_length - Pl
-    #Ve = max(abs(V1), abs(V2))
     if direction == "ltr":
-        Ve = abs(Pt*(xt-span_begin)/span_length - Pr) 
+        Vi = abs(Pt*(xt-span_begin)/span_length - Pri)
+        Ve = abs(Pt*(xt-span_begin)/span_length - Pre)
     elif direction == "rtl":
-        Ve = abs(Pt*(span_end - xt)/span_length - Pl)
+        Vi = abs(Pt*(span_end - xt)/span_length - Pli)
+        Ve = abs(Pt*(span_end - xt)/span_length - Ple)
 
-    return round(Ve,3)
+    return round(max(Vi,Ve),3)
 
 
 def envelope_shear(Ve, V_max, M, M_corr, axle_id, direction, V_max_axle, index_id):
@@ -401,46 +413,72 @@ def envelope_shear(Ve, V_max, M, M_corr, axle_id, direction, V_max_axle, index_i
         V_max_axle.append([axle_id, direction])
 
 
-def calc_moment(x, xl, xr, span_begin, span_end, Rb, Pl, Pr, direction, Pt, xt):
+def calc_moment(x, xli, xle, xri, xre, span_begin, span_end, Rb, Pli, Ple, Pri, Pre, direction, Pt, xt):
     """Calculate moment at node.
 
     Moving left to right:
-        el = x - xl
+        eli = x - xli
+        ele = x - xle
         eb = x - span_begin
-        M = Rb*eb - Pl*el
+        Mi = Rb*eb - Pli*eli
+        Me = Rb*eb - Ple*ele
     Moving right to left:
-        er = xr - x
+        eri = xri - x
+        ere = xre - x
         eb = span_end - x
-        M = Rb*eb - Pr*er
+        Mi = Rb*eb - Pri*eri
+        Me = Rb*eb - Pre*ere
     
     Args:
         x (float): x-coordinate of node location
-        xl (float): the x-coordinate of the equivalent load to the left of the
-                    node
-        xr (float): the x-coordinate of the equivalent load to the right of the
-                    node
+        xli (float): the x-coordinate of the equivalent load to the left of the
+                    node including the load at the node
+        xle (float): the x-coordinate of the equivalent load to the left of the
+                    node excluding the load at the node
+        xri (float): the x-coordinate of the equivalent load to the right of the
+                    node including the load at the node
+        xre (float): the x-coordinate of the equivalent load to the right of the
+                    node excluding the load at the node
         span_begin (float): coordinate location of beginning of span
         span_end (float): coordinate location of end of span
         Rb (float): reaction at the beginning of the span
-        Pl (float): the load on the span to the left of the node 
-        Pr (float): the load on the span to the right of the node
+        Pli (float): the load on the span to the left of the node including the
+                    load at the node
+        Ple (float): the load on the span to the left of the node excluding the
+                    load at the node
+        Pri (float): the load on the span to the right of the node including the
+                    load at the node
+        Pre (float): the load on the span to the right of the node excluding the
+                    load at the node
         direction (str): flag to determine which direction is being calculated,
                             either 'ltr' or 'rtl'
 
     Returns:
         M (float): moment at the analysis node for the given span length and
                    axle location
+
+    Notes:
+        It shouldn't matter if the point load at the analysis node is included
+        or excluded. The moment is being taken about the analysis node so the 
+        point load located directly at the analysis node will not produce any
+        moment at the analysis node.
+
+        Include both "sides" here for berevity. 
     """
     if direction == "ltr":
-        el = x - xl 
+        eli = x - xli
+        ele = x - xle
         eb = x - span_begin
-        M = Rb*eb - Pl*el
+        Mi = Rb*eb - Pli*eli
+        Me = Rb*eb - Ple*ele
     elif direction == "rtl":
-        er = xr - x
+        eri = xri - x
+        ere = xre - x
         eb = span_end - x
-        M = Rb*eb - Pr*er
+        Mi = Rb*eb - Pri*eri
+        Me = Rb*eb - Pre*ere
 
-    return round(M,3)
+    return round(max(Mi,Me),3)
 
 
 def envelope_moment(M, M_max, Ve, V_corr, axle_id, direction, M_max_axle, index_id):
@@ -544,7 +582,9 @@ def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles)
     """Calculate the load and its location on the span.
     
     Calculates the total load and its location on the span, and the load and
-    its location to the left and right of the node (critical section).
+    its location to the left and right of the node (critical section) both
+    including and excluding the load at the node to capture the effects of the 
+    load to either side of the node.
   
     Args:
         cur_axle_loc (list of floats): current x-coordinate of all axles on span
@@ -558,26 +598,44 @@ def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles)
     Returns:
         Pt (float): total load on the span due to the axles on the span
         xt (float): the x-coordinate of the equivalent total load on the span
-        Pl (float): the load on the span to the left of the node 
-        xl (float): the x-coordinate of the equivalent load to the left of the
-                    node
-        Pr (float): the load on the span to the right of the node
-        xr (float): the x-coordinate of the equivalent load to the right of the
-                    node
+        Pli (float): the load on the span to the left of the node *including*
+                     the load at the node
+        Ple (float): the load on the span to the left of the node *excluding*
+                     the load at the node
+        xli (float): the x-coordinate of the equivalent load to the left of the
+                     node *including* the load at the node
+        xlei (float): the x-coordinate of the equivalent load to the left of the
+                     node *excluding* the load at the node
+        Pri (float): the load on the span to the right of the node *including*
+                     the load at the node
+        Pre (float): the load on the span to the right of the node *excluding*
+                     the load at the node
+        xri (float): the x-coordinate of the equivalent load to the right of
+                     the node *including* the load at the node
+        xre (float): the x-coordinate of the equivalent load to the right of
+                     the node *excluding* the load at the node
     """
 
     Pt = 0.0
     xt = 0.0
     sum_Ptx = 0.0
 
-    Pl = 0.0
-    xl = 0.0
-    sum_Plx = 0.0
+    Pli = 0.0
+    xli = 0.0
+    sum_Plix = 0.0
 
-    Pr = 0.0
-    xr = 0.0
-    sum_Prx = 0.0
+    Ple = 0.0
+    xle = 0.0
+    sum_Plex = 0.0
+
+    Pri = 0.0
+    xri = 0.0
+    sum_Prix = 0.0
     
+    Pre = 0.0
+    xre = 0.0
+    sum_Prex = 0.0
+
     for i in range(num_axles):
         #if the axle is on the span add to total weight on span
         if cur_axle_loc[i] >= begin_span and cur_axle_loc[i] <= end_span:
@@ -585,14 +643,24 @@ def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles)
             sum_Ptx = sum_Ptx + cur_axle_loc[i]*axle_wt[i]
             #if the axle is to the left of the analysis node, add weight to
             #total left of the analysis node
+            #point load included
             if cur_axle_loc[i] >= begin_span and cur_axle_loc[i] <= x:
-                Pl = Pl + axle_wt[i]
-                sum_Plx = sum_Plx + cur_axle_loc[i]*axle_wt[i]
+                Pli = Pli + axle_wt[i]
+                sum_Plix = sum_Plix + cur_axle_loc[i]*axle_wt[i]
+            #point load excluded
+            if cur_axle_loc[i] >= begin_span and cur_axle_loc[i] < x:
+                Ple = Ple + axle_wt[i]
+                sum_Plex = sum_Plex + cur_axle_loc[i]*axle_wt[i]
             #if the axle is to the right of the analysis node, add weight to
             #total right of the analysis node
+            #point load included
             if cur_axle_loc[i] >= x and cur_axle_loc[i] <= end_span:
-                Pr = Pr + axle_wt[i]
-                sum_Prx = sum_Prx + cur_axle_loc[i]*axle_wt[i]
+                Pri = Pri + axle_wt[i]
+                sum_Prix = sum_Prix + cur_axle_loc[i]*axle_wt[i]
+            #point load excluded
+            if cur_axle_loc[i] > x and cur_axle_loc[i] <= end_span:
+                Pre = Pre + axle_wt[i]
+                sum_Prex = sum_Prex + cur_axle_loc[i]*axle_wt[i]
             
     #avoid divide by zero error
     if Pt == 0:
@@ -600,20 +668,30 @@ def calc_load_and_loc(cur_axle_loc, axle_wt, x, begin_span, end_span, num_axles)
     else:        
         xt = sum_Ptx/Pt
 
-    if Pl == 0:
-        xl = 0
+    if Pli == 0:
+        xli = 0
     else:        
-        xl = sum_Plx/Pl
+        xli = sum_Plix/Pli
 
-    if Pr == 0:
-        xr = 0
+    if Ple == 0:
+        xle = 0
     else:        
-        xr = sum_Prx/Pr
+        xle = sum_Plex/Ple
+
+    if Pri == 0:
+        xri = 0
+    else:        
+        xri = sum_Prix/Pri
+
+    if Pre == 0:
+        xre = 0
+    else:        
+        xre = sum_Prex/Pre
 
     #print Pt
     #print (Pl + Pr)
 
-    return Pt, xt, Pl, xl, Pr, xr
+    return Pt, xt, Pli, Ple, xli, xle, Pri, Pre, xri, xre
 
 
 def add_trailing_load(axle_spacing, axle_wt, space_to_trailing_load,
