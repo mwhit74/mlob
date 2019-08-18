@@ -6,12 +6,6 @@ import timeit
 import pdb
 import matplotlib.pyplot as plt
 
-"""
-To run dev_test.py
-1. Navigate to moving_loads directory
-2. python -m test.dev_test
-"""
-
 def manager():
     """Controls the global program execution.
 
@@ -23,8 +17,10 @@ def manager():
     """
      
     #testing input
-    axle_spacing1 = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00, 8.00, 8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00]
-    axle_wt1 = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
+    axle_spacing1 = [8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00, 
+                     8.00, 8.00, 5.00, 5.00, 5.00, 9.00, 5.00, 6.00, 5.00]
+    axle_wt1 = [40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00, 
+                40.00, 80.00, 80.00, 80.00, 80.00, 52.00, 52.00, 52.00, 52.00]
     sf1 = 80.0/80.0 #scale factor
     axle_wt1 = [round(sf1*p,3) for p in axle_wt1]
     space_to_trailing_load1 = 5.00
@@ -109,17 +105,6 @@ def manager():
                     M_max2, V_corr2, M_max2_axle,
                     Rmax_pier,
                     analysis_time, span1_begin, span2_begin)
-
-            #graph(node_loc, V_max1, M_max1, V_max2, M_max2)
-
-def graph(node_loc, V_max1, M_max1, V_max2, M_max2):
-    node_loc = node_loc[:(len(node_loc)/2+1)]
-    plt.figure(1)
-    plt.subplot(211)
-    plt.plot(node_loc, V_max1)
-    plt.subplot(212)
-    plt.plot(node_loc, V_max2)
-    plt.show()
 
 
 if __name__ == "__main__":
