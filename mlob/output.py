@@ -127,7 +127,10 @@ def write_output(axle_spacing, axle_wt, span_length1, span_length2, num_user_nod
                                  M_max2_axle[M_max2.index(max(M_max2))][0],
                                  M_max2_axle[M_max2.index(max(M_max2))][1])
   
-        out_val += "\nRmax pier or floorbeam: {0:<-.3f}".format(Rmax_pier/2)
+        out_val += "\nRmax pier or floorbeam: {0:<-.3f}".format(Rmax_pier[0]/2)
+        out_val += "\nRpier span 1 component: {0:<-.3f}".format(Rmax_pier[1]/2)
+        out_val += "\nRpier span 2 component: {0:<-.3f}".format(Rmax_pier[2]/2)
+        out_val += "\nRmax axle location: {0:<d} {1:<s}".format(Rmax_pier[3], Rmax_pier[4])
 
     print echo_input + out_tb + out_val
        

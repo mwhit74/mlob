@@ -46,8 +46,10 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
         M_max2 (list of floats): maximum moment at each analysis node in span 2
         V_corr2 (list of floats): corresponding shear to maximum moment at each
                                   analysis node in span 2
-        Rmax_pier (float): maximum pier reaction, returns None if span length 2
-                           is not entered by user
+        Rmax_pier (list of floats): maximum pier reaction, 
+                                    [max pier reaction, right component,
+                                    left component]; returns None if span length
+                                    2 is not entered by user
         span1_begin (float): coordinate location of beginning of span 1
         span2_begin (float): coordinate location of beginning of span 2
         
@@ -73,8 +75,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
     M_max2 = []
     V_corr2 = []
     M_max2_axle = []
-    Rmax_pier = 0.0
-    Rmax_pier_axle = [None, None]
+    Rmax_pier = [None, None, None, None, None]
 
     (span1_begin,
     span1_end,
@@ -151,7 +152,7 @@ def analyze_vehicle(axle_spacing, axle_wt, span_length1, span_length2,
                
                 Rpier = calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin,
                                     span1_end, span2_begin, span2_end,
-                                    num_axles)
+                                    num_axles, axle_id, direction)
 
                 Rmax_pier = envelope_pier_reaction(Rmax_pier, Rpier) 
                                                                    
@@ -266,7 +267,7 @@ def calc_reactions(Pt, xt, span_begin, span_end, direction):
 
 
 def calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin, span1_end,
-                       span2_begin, span2_end, num_axles):
+                       span2_begin, span2_end, num_axles, axle_id, direction):
     """Calculate the interior pier (floorbeam) reaction.
 
     Args:
@@ -291,6 +292,7 @@ def calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin, span1_end,
     Rpier = 0.0
     #these are *not* the reactions at the beginning and end supports of a two
     #span structure
+    #these are the two reactions on the center pier for the adjacent span
     L_S1 = 0.0 #center pier reaction from loads on span 1
     L_S2 = 0.0 #center pier reaction from loads on span 2
 
@@ -317,7 +319,7 @@ def calc_pier_reaction(cur_axle_loc, mod_axle_wt, span1_begin, span1_end,
 
     Rpier = L_S1 + L_S2
             
-    return Rpier
+    return Rpier, L_S1, L_S2, axle_id, direction
 
 def envelope_pier_reaction(Rmax_pier, Rpier):
     """Envelope the maximum interior pier (floorbeam) reaction.
@@ -326,7 +328,7 @@ def envelope_pier_reaction(Rmax_pier, Rpier):
     reaction. If the calculate pier reaction is greater than the maximum,
     replace the maximum.
     """
-    if Rpier > Rmax_pier:
+    if Rpier[0] > Rmax_pier[0]:
         return Rpier
     else:
         return Rmax_pier
